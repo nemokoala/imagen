@@ -26,11 +26,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { loginSchema, type LoginFormData } from "@/schemas/auth";
 import { FetchUtil } from "@/lib/Fetch.util";
+import { toast } from "sonner";
+import { useUserStore } from "@/stores/userStore";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const { login } = useUserStore();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -46,19 +49,28 @@ export default function LoginPage() {
 
     try {
       const response = await FetchUtil.post("/api/auth/login", data);
+      login(response.user);
 
-      if (response.success) {
-        // 로그인 성공 시 메인 페이지로 이동
+      // 로그인 성공 시 토스트 메시지 표시
+      toast.success("로그인이 완료되었습니다!", {
+        description: "환영합니다!",
+      });
+
+      // 잠시 후 메인 페이지로 이동
+      setTimeout(() => {
         router.push("/");
-      } else {
-        setError(response.error || "로그인에 실패했습니다.");
-      }
+      }, 100);
     } catch (error) {
-      setError(
+      const errorMessage =
         error instanceof Error
           ? error.message
-          : "로그인 중 오류가 발생했습니다."
-      );
+          : "로그인 중 오류가 발생했습니다.";
+
+      // 에러 토스트 표시
+      toast.error("오류 발생", {
+        description: errorMessage,
+      });
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -15,12 +15,12 @@ const handleFetch = async <T>(endpoint: string, options: RequestInit) => {
 
     const data = await response.json();
 
-    // if (response.status === 401) {
-    //   const tokenRefreshed = await getNewAccessToken();
-    //   if (tokenRefreshed) {
-    //     return await handleFetch(endpoint, options);
-    //   }
-    // }
+    if (response.status === 401) {
+      const tokenRefreshed = await getNewAccessToken();
+      if (tokenRefreshed) {
+        return await handleFetch(endpoint, options);
+      }
+    }
 
     if (!response.ok) {
       throw new Error(data.message || "데이터를 불러오는데 실패했습니다");
@@ -92,7 +92,7 @@ export const getNewAccessToken = async () => {
       lastTokenRefreshTime = currentTime;
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`,
         {
           method: "POST",
           headers: {

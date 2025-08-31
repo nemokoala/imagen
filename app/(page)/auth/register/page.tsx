@@ -25,6 +25,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { registerSchema, type RegisterFormData } from "@/schemas/auth";
+import { toast } from "sonner";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -56,19 +57,33 @@ export default function RegisterPage() {
       const responseData = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          responseData.error || "회원가입 중 오류가 발생했습니다."
-        );
+        const errorMessage =
+          responseData.message || "회원가입 중 오류가 발생했습니다.";
+
+        // 에러 토스트 표시
+        toast.error("회원가입 실패", {
+          description: errorMessage,
+        });
+
+        throw new Error(errorMessage);
       }
 
-      // 회원가입 성공 시 로그인 페이지로 이동
-      router.push("/auth/login");
+      // 회원가입 성공 시 성공 토스트 표시
+      toast.success("회원가입이 완료되었습니다!", {
+        description: "로그인 페이지로 이동합니다.",
+      });
+
+      // 잠시 후 로그인 페이지로 이동
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 1500);
     } catch (error) {
-      setError(
+      const errorMessage =
         error instanceof Error
           ? error.message
-          : "회원가입 중 오류가 발생했습니다."
-      );
+          : "회원가입 중 오류가 발생했습니다.";
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -155,7 +170,7 @@ export default function RegisterPage() {
               <div className="text-sm text-muted-foreground text-center">
                 이미 계정이 있으신가요?{" "}
                 <Link
-                  href="/login"
+                  href="/auth/login"
                   className="text-primary underline-offset-4 hover:underline"
                 >
                   로그인

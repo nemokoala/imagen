@@ -19,7 +19,7 @@ export interface GenerateImageResponse {
 }
 
 export const imageService = {
-  async generateImage(
+  async generateImageByOpenAI(
     request: GenerateImageRequest
   ): Promise<GenerateImageResponse> {
     try {
@@ -74,14 +74,89 @@ export const imageService = {
     }
   },
 
+  async generateImageByStableDiffusion(
+    request: GenerateImageRequest
+  ): Promise<GenerateImageResponse> {
+    try {
+      const { prompt, model = defaultModel, userId } = request;
+
+      if (!prompt) {
+        return { success: false, error: "프롬프트가 필요합니다." };
+      }
+
+      const token = btoa(`${process.env.STABLE_DIFFUSION_API_KEY}`);
+      const requestBody = {
+        prompt: prompt,
+        negative_prompt: "blurry, low quality",
+        steps: 24,
+        cfg_scale: 7,
+        width: 768,
+        height: 768,
+        sampler_index: "DPM++ 2M Karras",
+        seed: -1,
+        batch_size: 1,
+        n_iter: 1,
+        send_images: true,
+        save_images: false,
+      };
+
+      const response = await fetch(
+        `${process.env.STABLE_DIFFUSION_API_URL}/sdapi/v1/txt2img`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Basic ${token}`,
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (!response.ok) {
+        return { success: false, error: "이미지 생성에 실패했습니다." };
+      }
+
+      const data = await response.json();
+
+      const imageUrl = data.images[0];
+
+      const savedImagePath = await imageService.saveImageToFileSystem(
+        imageUrl,
+        userId
+      );
+
+      await imageService.saveImageToDatabase({
+        userId,
+        prompt,
+        imageUrl: savedImagePath,
+        model,
+        size: "768x768",
+      });
+
+      return {
+        success: true,
+        imageUrl: savedImagePath,
+      };
+    } catch (error) {
+      console.error("Error generating image by Stable Diffusion:", error);
+      return { success: false, error: "이미지 생성에 실패했습니다." };
+    }
+  },
+
   async saveImageToFileSystem(
     imageUrl: string,
     userId: number
   ): Promise<string> {
     try {
+      let imageBuffer: Buffer;
       // 이미지 URL에서 이미지 데이터 가져오기
-      const response = await fetch(imageUrl);
-      const imageBuffer = await response.arrayBuffer();
+      if (imageUrl.includes("https://")) {
+        const response = await fetch(imageUrl);
+        imageBuffer = Buffer.from(await response.arrayBuffer());
+      } else {
+        const base64Image = imageUrl.replace(/^data:image\/[a-z]+;base64,/, "");
+        imageBuffer = Buffer.from(base64Image, "base64");
+      }
 
       // 저장할 디렉토리 생성
       const uploadDir = join(

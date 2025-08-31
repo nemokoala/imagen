@@ -3,6 +3,7 @@ import { imageService } from "../services/image/imageService";
 import { authService } from "../services/auth/authService";
 import { cookies } from "next/headers";
 import { errorHandler } from "../errors/errorHandler";
+import { ApiError } from "../errors/AppError";
 
 export const imageController = {
   async generateImage(req: NextRequest) {
@@ -19,14 +20,18 @@ export const imageController = {
       const cookieStore = await cookies();
       const userId = await authService.getUserIdFromCookie(cookieStore);
 
-      const result = await imageService.generateImage({
+      const result = await imageService.generateImageByStableDiffusion({
         prompt,
         model,
         userId,
       });
 
       if (!result.success) {
-        return NextResponse.json({ error: result.error }, { status: 500 });
+        throw new ApiError(
+          result.error || "이미지 생성에 실패했습니다.",
+          400,
+          "IMAGE_GENERATION_FAILED"
+        );
       }
 
       return NextResponse.json(

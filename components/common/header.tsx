@@ -6,10 +6,29 @@ import { useUserStore } from "@/stores/userStore";
 import { Skeleton } from "../ui/skeleton";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useLogoutMutation } from "@/queries/auth/mutations";
+import { toast } from "sonner";
 
 export const Header = () => {
-  const { isAuthenticated, isLoading } = useUserStore();
+  const { isAuthenticated, isLoading, logout } = useUserStore();
   const router = useRouter();
+
+  const logoutMutation = useLogoutMutation(
+    () => {
+      logout();
+      toast.success("로그아웃이 완료되었습니다.");
+      router.push("/");
+    },
+    (error) => {
+      toast.error("로그아웃 중 오류가 발생했습니다.");
+      console.error("로그아웃 에러:", error);
+    }
+  );
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
+
   return (
     <>
       <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-white">
@@ -38,9 +57,13 @@ export const Header = () => {
               </Link>
             </>
           ) : (
-            <Link href="/auth/logout">
-              <Button variant="ghost">로그아웃</Button>
-            </Link>
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              disabled={logoutMutation.isPending}
+            >
+              {logoutMutation.isPending ? "로그아웃 중..." : "로그아웃"}
+            </Button>
           )}
         </div>
       </nav>

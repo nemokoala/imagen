@@ -84,7 +84,7 @@ export default function ImageGenPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
             <Sparkles className="h-8 w-8 text-purple-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold gradient-purple-text">
               AI 이미지 생성기
             </h1>
           </div>

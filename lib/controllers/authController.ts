@@ -93,4 +93,21 @@ export const authController = {
       return errorHandler(error);
     }
   },
+
+  async logout(): Promise<NextResponse> {
+    try {
+      // authService의 로그아웃 메서드 호출
+      await authService.logout();
+
+      return NextResponse.json(
+        {
+          message: "로그아웃이 완료되었습니다.",
+        },
+        { status: 200 }
+      );
+    } catch (error) {
+      console.error("로그아웃 에러:", error);
+      return errorHandler(error);
+    }
+  },
 };

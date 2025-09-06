@@ -238,4 +238,12 @@ export const authService = {
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   },
+
+  async logout(): Promise<void> {
+    const cookieStore = await cookies();
+
+    // 쿠키에서 토큰 제거
+    cookieStore.delete("accessToken");
+    cookieStore.delete("refreshToken");
+  },
 };

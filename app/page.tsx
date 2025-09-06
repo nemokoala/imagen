@@ -10,9 +10,7 @@ export default function Home() {
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
             AI로 만드는
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-              특별한 사진
-            </span>
+            <span className="gradient-purple-text">특별한 사진</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
             Imagen와 함께 AI 이미지 생성으로 독특하고 창의적인 메뉴를

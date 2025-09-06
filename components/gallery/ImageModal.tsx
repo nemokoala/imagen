@@ -55,7 +55,7 @@ export function ImageModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-5xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl scrollbar-hide">
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center justify-between text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             <div className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export function ImageModal({
                 <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button
                     onClick={() => onDownload(image.imageUrl, image.prompt)}
-                    className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
+                    className="gradient-purple-bg hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
                   >
                     <Download className="mr-2 h-4 w-4" />
                     다운로드
@@ -96,7 +96,7 @@ export function ImageModal({
                 <Sparkles className="h-5 w-5 text-purple-600" />
                 프롬프트
               </h3>
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-xl border border-purple-100">
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 p-4 rounded-xl">
                 <p className="text-gray-700 leading-relaxed">{image.prompt}</p>
               </div>
             </div>

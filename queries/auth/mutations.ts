@@ -31,3 +31,17 @@ export const useRegisterMutation = (
     onError: (error) => onError(error),
   });
 };
+
+export const useLogoutMutation = (
+  onSuccess: (response: SuccessResponse) => void,
+  onError: (error: ErrorResponse) => void
+) => {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await FetchUtil.post("/api/auth/logout", {});
+      return response;
+    },
+    onSuccess: (response) => onSuccess(response),
+    onError: (error) => onError(error),
+  });
+};

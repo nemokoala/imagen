@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid3X3 } from "lucide-react";
+import { Image as ImageIcon } from "lucide-react";
 
 interface GalleryHeaderProps {
   title?: string;
@@ -14,10 +14,8 @@ export function GalleryHeader({
   return (
     <div className="text-center mb-8">
       <div className="inline-flex items-center gap-2 mb-4">
-        <Grid3X3 className="h-8 w-8 text-purple-600" />
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-          {title}
-        </h1>
+        <ImageIcon className="h-8 w-8 text-purple-600" />
+        <h1 className="text-4xl font-bold gradient-purple-text">{title}</h1>
       </div>
       <p className="text-gray-600 text-lg max-w-2xl mx-auto">{description}</p>
     </div>

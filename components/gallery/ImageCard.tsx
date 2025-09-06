@@ -41,20 +41,19 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
       className="overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:scale-105 gap-1 p-0"
       onClick={() => onImageClick(image)}
     >
-      <div className="relative">
+      <div className="relative h-64">
         <Image
           src={image.imageUrl}
           alt={image.prompt}
-          width={400}
-          height={256}
-          className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
           unoptimized
         />
         <div className="absolute top-3 right-3">
           <Badge
             variant="secondary"
-            className="text-xs bg-white/90 backdrop-blur-sm border-0 shadow-lg"
+            className="text-xs gradient-purple-bg text-white backdrop-blur-sm border-0 shadow-lg"
           >
             {image.model}
           </Badge>

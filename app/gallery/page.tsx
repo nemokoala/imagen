@@ -1,41 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { ChevronLeft, ChevronRight, Calendar, User, X } from "lucide-react";
-
-interface Image {
-  id: number;
-  prompt: string;
-  imageUrl: string;
-  model: string;
-  size: string;
-  createdAt: string;
-  user: {
-    id: number;
-    nickname: string;
-  };
-}
-
-interface GalleryResponse {
-  success: boolean;
-  images: Image[];
-  totalCount: number;
-  currentPage: number;
-  totalPages: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  error?: string;
-}
+import { Layout } from "@/components/layout/Layout";
+import { ImageCard } from "@/components/gallery/ImageCard";
+import { Pagination } from "@/components/gallery/Pagination";
+import { ImageModal } from "@/components/gallery/ImageModal";
+import { LoadingSkeleton } from "@/components/gallery/LoadingSkeleton";
+import { GalleryHeader } from "@/components/gallery/GalleryHeader";
+import { PageInfo } from "@/components/gallery/PageInfo";
+import { Image, GalleryResponse } from "@/components/gallery/types";
 
 export default function GalleryPage() {
   const [images, setImages] = useState<Image[]>([]);
@@ -93,217 +67,84 @@ export default function GalleryPage() {
     setSelectedImage(null);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  const handleDownload = (imageUrl: string, prompt: string) => {
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = `gallery-image-${prompt
+      .slice(0, 20)
+      .replace(/[^a-zA-Z0-9]/g, "-")}-${Date.now()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (loading && images.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-8">이미지 갤러리</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <Skeleton className="h-64 w-full" />
-              <CardHeader className="p-4">
-                <Skeleton className="h-4 w-3/4 mb-2" />
-                <Skeleton className="h-3 w-1/2" />
-              </CardHeader>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <LoadingSkeleton />
+      </Layout.Content>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-4">이미지 갤러리</h1>
-          <p className="text-red-500 mb-4">{error}</p>
-          <Button onClick={() => fetchImages(1)}>다시 시도</Button>
+      <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <div className="container mx-auto px-4 py-8">
+          <GalleryHeader />
+          <div className="text-center">
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 max-w-md mx-auto shadow-xl">
+              <p className="text-red-500 mb-4">{error}</p>
+              <Button
+                onClick={() => fetchImages(1)}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+              >
+                다시 시도
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      </Layout.Content>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-center mb-8">이미지 갤러리</h1>
+    <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-8">
+        <GalleryHeader />
 
-      {/* 이미지 그리드 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-        {images.map((image) => (
-          <Card
-            key={image.id}
-            className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-            onClick={() => handleImageClick(image)}
-          >
-            <div className="relative">
-              <img
-                src={image.imageUrl}
-                alt={image.prompt}
-                className="w-full h-64 object-cover"
-                loading="lazy"
-              />
-              <div className="absolute top-2 right-2">
-                <Badge variant="secondary" className="text-xs">
-                  {image.model}
-                </Badge>
-              </div>
-            </div>
-
-            <CardHeader className="p-4 pb-2">
-              <CardTitle className="text-sm line-clamp-2 mb-2">
-                {image.prompt}
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className="p-4 pt-0">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <User className="w-3 h-3" />
-                  <span>{image.user.nickname}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-3 h-3" />
-                  <span>{formatDate(image.createdAt)}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* 페이지네이션 */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={!hasPrevPage}
-          >
-            <ChevronLeft className="w-4 h-4" />
-            이전
-          </Button>
-
-          <div className="flex items-center gap-1">
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum;
-              if (totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (currentPage <= 3) {
-                pageNum = i + 1;
-              } else if (currentPage >= totalPages - 2) {
-                pageNum = totalPages - 4 + i;
-              } else {
-                pageNum = currentPage - 2 + i;
-              }
-
-              return (
-                <Button
-                  key={pageNum}
-                  variant={currentPage === pageNum ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePageChange(pageNum)}
-                  className="w-8 h-8 p-0"
-                >
-                  {pageNum}
-                </Button>
-              );
-            })}
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={!hasNextPage}
-          >
-            다음
-            <ChevronRight className="w-4 h-4" />
-          </Button>
+        {/* 이미지 그리드 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+          {images.map((image) => (
+            <ImageCard
+              key={image.id}
+              image={image}
+              onImageClick={handleImageClick}
+              onDownload={handleDownload}
+            />
+          ))}
         </div>
-      )}
 
-      {/* 페이지 정보 */}
-      <div className="text-center text-sm text-muted-foreground mt-4">
-        {totalPages > 0 && (
-          <p>
-            {currentPage} / {totalPages} 페이지 (총 {images.length}개 이미지)
-          </p>
-        )}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasNextPage={hasNextPage}
+          hasPrevPage={hasPrevPage}
+          onPageChange={handlePageChange}
+        />
+
+        <PageInfo
+          currentPage={currentPage}
+          totalPages={totalPages}
+          imageCount={images.length}
+        />
+
+        <ImageModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          image={selectedImage}
+          onDownload={handleDownload}
+        />
       </div>
-
-      {/* 이미지 상세 모달 */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center justify-between">
-              <span>이미지 상세 정보</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={closeModal}
-                className="h-8 w-8 p-0"
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </DialogTitle>
-          </DialogHeader>
-
-          {selectedImage && (
-            <div className="space-y-6">
-              {/* 이미지 */}
-              <div className="flex justify-center">
-                <img
-                  src={selectedImage.imageUrl}
-                  alt={selectedImage.prompt}
-                  className="max-w-full max-h-96 object-contain rounded-lg shadow-lg"
-                />
-              </div>
-
-              {/* 프롬프트 */}
-              <div className="space-y-2">
-                <h3 className="font-semibold text-lg">프롬프트</h3>
-                <p className="text-gray-700 bg-gray-50 p-4 rounded-lg">
-                  {selectedImage.prompt}
-                </p>
-              </div>
-
-              {/* 이미지 정보 */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <h3 className="font-semibold">생성자</h3>
-                  <p className="text-gray-700">{selectedImage.user.nickname}</p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-semibold">모델</h3>
-                  <p className="text-gray-700">{selectedImage.model}</p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-semibold">크기</h3>
-                  <p className="text-gray-700">{selectedImage.size}</p>
-                </div>
-                <div className="space-y-2">
-                  <h3 className="font-semibold">생성일</h3>
-                  <p className="text-gray-700">
-                    {formatDate(selectedImage.createdAt)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
+    </Layout.Content>
   );
 }

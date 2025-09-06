@@ -28,6 +28,7 @@ import { loginSchema, type LoginFormData } from "@/schemas/auth";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { toast } from "sonner";
 import { useUserStore } from "@/stores/userStore";
+import { Layout } from "@/components/layout/Layout";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -77,7 +78,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+    <Layout.Content className="flex items-center justify-center">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>로그인</CardTitle>
@@ -132,7 +133,7 @@ export default function LoginPage() {
                 )}
               />
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
+            <CardFooter className="flex flex-col space-y-4 mt-8">
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "로그인 중..." : "로그인"}
               </Button>
@@ -149,6 +150,6 @@ export default function LoginPage() {
           </form>
         </Form>
       </Card>
-    </div>
+    </Layout.Content>
   );
 }

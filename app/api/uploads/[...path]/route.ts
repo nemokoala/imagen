@@ -5,17 +5,18 @@ import { existsSync } from "fs";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: Promise<{ path: string[] }> }
 ) {
   try {
-    const filePath = join(process.cwd(), "uploads", ...params.path);
+    const resolvedParams = await params;
+    const filePath = join(process.cwd(), "uploads", ...resolvedParams.path);
 
     if (!existsSync(filePath)) {
       return new NextResponse("File not found", { status: 404 });
     }
 
     const fileBuffer = await readFile(filePath);
-    const fileName = params.path[params.path.length - 1];
+    const fileName = resolvedParams.path[resolvedParams.path.length - 1];
     const fileExtension = fileName.split(".").pop()?.toLowerCase();
 
     let contentType = "image/png"; // 기본값

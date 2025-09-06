@@ -12,9 +12,9 @@ export const Header = () => {
   const router = useRouter();
   return (
     <>
-      <nav className="flex items-center justify-between h-[60px] p-2 max-w-7xl mx-auto sticky top-0 z-50 bg-white">
+      <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-white">
         <button
-          className="relative w-32 h-12 flex-shrink-0"
+          className="relative w-32 h-9 flex-shrink-0"
           onClick={() => router.push("/")}
         >
           <Image

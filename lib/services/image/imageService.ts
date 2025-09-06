@@ -4,11 +4,10 @@ import { join } from "path";
 import { prisma } from "../../prisma";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const defaultModel = "dall-e-3";
 
 export interface GenerateImageRequest {
   prompt: string;
-  model?: string;
+  model: string;
   userId: number;
 }
 
@@ -23,7 +22,7 @@ export const imageService = {
     request: GenerateImageRequest
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model = defaultModel, userId } = request;
+      const { prompt, model, userId } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -78,13 +77,14 @@ export const imageService = {
     request: GenerateImageRequest
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model = defaultModel, userId } = request;
+      const { prompt, model, userId } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
       const token = btoa(`${process.env.STABLE_DIFFUSION_API_KEY}`);
+      console.log(token);
       const requestBody = {
         prompt: prompt,
         negative_prompt: "blurry, low quality",

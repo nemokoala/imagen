@@ -20,11 +20,21 @@ export const imageController = {
       const cookieStore = await cookies();
       const userId = await authService.getUserIdFromCookie(cookieStore);
 
-      const result = await imageService.generateImageByStableDiffusion({
-        prompt,
-        model,
-        userId,
-      });
+      let result;
+
+      if (model === "dall-e-3") {
+        result = await imageService.generateImageByOpenAI({
+          prompt,
+          model,
+          userId,
+        });
+      } else {
+        result = await imageService.generateImageByStableDiffusion({
+          prompt,
+          model,
+          userId,
+        });
+      }
 
       if (!result.success) {
         throw new ApiError(

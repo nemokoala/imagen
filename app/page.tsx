@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
+import { Layout } from "@/components/layout/Layout";
 export default function Home() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <Layout.Content className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
       <main className="mx-auto px-6 py-20">
         <div className="text-center">
@@ -123,13 +123,13 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 mt-32">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="text-2xl font-bold mb-4">MenuMoa</div>
-          <p className="text-gray-400 mb-6">AI로 만드는 특별한 메뉴</p>
+          <div className="text-2xl font-bold mb-4">Imagen</div>
+          <p className="text-gray-400 mb-6">AI로 만드는 특별한 이미지</p>
           <div className="text-sm text-gray-500">
-            © 2024 MenuMoa. All rights reserved.
+            © 2024 Imagen. All rights reserved.
           </div>
         </div>
       </footer>
-    </div>
+    </Layout.Content>
   );
 }

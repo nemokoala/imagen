@@ -1,6 +1,6 @@
-import { getCookie, removeCookie } from "./action";
+import { removeCookie } from "./action";
 
-const handleFetch = async <T>(endpoint: string, options: RequestInit) => {
+const handleFetch = async (endpoint: string, options: RequestInit) => {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
@@ -108,9 +108,9 @@ export const getNewAccessToken = async () => {
 
       return true;
     } catch (error) {
-      await removeCookie("rft");
-      if (window.location.pathname !== "/auth") {
-        window.location.href = "/auth?expired=true";
+      await removeCookie("refreshToken");
+      if (!window.location.pathname.includes("/auth")) {
+        window.location.href = "/auth/login?expired=true";
       }
       console.error("새로운 액세스 토큰을 발급받는데 실패했습니다", error);
       return false;

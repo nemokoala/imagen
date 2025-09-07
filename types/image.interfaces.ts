@@ -14,8 +14,7 @@ export interface GeneratedImage {
 
 export interface GenerateImageRequest {
   prompt: string;
-  model?: string;
-  userId: number;
+  model: string;
 }
 
 export interface GenerateImageResponse {

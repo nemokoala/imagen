@@ -161,7 +161,9 @@ export const authService = {
     }
   },
 
-  async getUserIdFromCookie(cookieStore: any): Promise<number> {
+  async getUserIdFromCookie(
+    cookieStore: Awaited<ReturnType<typeof cookies>>
+  ): Promise<number> {
     const accessToken = cookieStore.get("accessToken")?.value;
 
     if (!accessToken) {

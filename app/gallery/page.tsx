@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
 import { ImageCard } from "@/components/gallery/ImageCard";
@@ -9,52 +9,31 @@ import { ImageModal } from "@/components/gallery/ImageModal";
 import { LoadingSkeleton } from "@/components/gallery/LoadingSkeleton";
 import { GalleryHeader } from "@/components/gallery/GalleryHeader";
 import { PageInfo } from "@/components/gallery/PageInfo";
-import { Image, GalleryResponse } from "@/components/gallery/types";
+import { Image } from "@/components/gallery/types";
+import { useGetGalleryImagesQuery } from "@/queries/image/queries";
 
 export default function GalleryPage() {
-  const [images, setImages] = useState<Image[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [hasNextPage, setHasNextPage] = useState(false);
-  const [hasPrevPage, setHasPrevPage] = useState(false);
   const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchImages = async (page: number = 1) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
-      const response = await fetch(`/api/images?page=${page}&limit=20`);
-      const data: GalleryResponse = await response.json();
+  const {
+    data: galleryData,
+    isLoading: loading,
+    error,
+    refetch,
+  } = useGetGalleryImagesQuery(currentPage, 20);
 
-      if (data.success) {
-        setImages(data.images);
-        setCurrentPage(data.currentPage);
-        setTotalPages(data.totalPages);
-        setHasNextPage(data.hasNextPage);
-        setHasPrevPage(data.hasPrevPage);
-      } else {
-        setError(data.error || "이미지를 불러오는데 실패했습니다.");
-      }
-    } catch (err) {
-      setError("서버 오류가 발생했습니다.");
-      console.error("Error fetching images:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchImages(1);
-  }, []);
+  const images = galleryData?.images || [];
+  const totalPages = galleryData?.totalPages || 1;
+  const hasNextPage = galleryData?.hasNextPage || false;
+  const hasPrevPage = galleryData?.hasPrevPage || false;
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    fetchImages(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    containerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleImageClick = (image: Image) => {
@@ -93,9 +72,13 @@ export default function GalleryPage() {
           <GalleryHeader />
           <div className="text-center">
             <div className="bg-white/80 backdrop-blur-sm rounded-xl p-8 max-w-md mx-auto shadow-xl">
-              <p className="text-red-500 mb-4">{error}</p>
+              <p className="text-red-500 mb-4">
+                {error instanceof Error
+                  ? error.message
+                  : "이미지를 불러오는데 실패했습니다."}
+              </p>
               <Button
-                onClick={() => fetchImages(1)}
+                onClick={() => refetch()}
                 className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
               >
                 다시 시도
@@ -108,13 +91,16 @@ export default function GalleryPage() {
   }
 
   return (
-    <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+    <Layout.Content
+      ref={containerRef}
+      className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100"
+    >
       <div className="container mx-auto px-4 py-8">
         <GalleryHeader />
 
         {/* 이미지 그리드 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-          {images.map((image) => (
+          {images.map((image: Image) => (
             <ImageCard
               key={image.id}
               image={image}

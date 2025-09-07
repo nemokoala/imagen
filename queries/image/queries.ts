@@ -1,55 +1,62 @@
+import { FetchUtil } from "@/lib/Fetch.util";
 import { GeneratedImage } from "../../types/image.interfaces";
+import { useQuery } from "@tanstack/react-query";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "";
+export const useGetUserImagesQuery = (userId: number) => {
+  return useQuery({
+    queryKey: ["userImages", userId],
+    queryFn: async (): Promise<GeneratedImage[]> => {
+      const response = await FetchUtil.get(`/api/images/user?userId=${userId}`);
+      return response.images || [];
+    },
+    enabled: !!userId,
+  });
+};
 
-export const imageQueries = {
-  // 사용자별 이미지 목록 조회
-  getUserImages: async (userId: number): Promise<GeneratedImage[]> => {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/images/user?userId=${userId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("이미지 조회에 실패했습니다.");
-      }
-
-      const data = await response.json();
-      return data.images || [];
-    } catch (error) {
-      console.error("Error fetching user images:", error);
-      throw error;
-    }
-  },
-
-  // 개별 이미지 조회
-  getImageById: async (id: number): Promise<GeneratedImage | null> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/images/${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
+export const useGetImageByIdQuery = (id: number) => {
+  return useQuery({
+    queryKey: ["image", id],
+    queryFn: async (): Promise<GeneratedImage | null> => {
+      try {
+        const response = await FetchUtil.get(`/api/images/${id}`);
+        return response.image || null;
+      } catch (error: unknown) {
+        if (
+          error &&
+          typeof error === "object" &&
+          "status" in error &&
+          error.status === 404
+        ) {
           return null;
         }
-        throw new Error("이미지 조회에 실패했습니다.");
+        throw error;
       }
+    },
+    enabled: !!id,
+  });
+};
 
-      const data = await response.json();
-      return data.image || null;
-    } catch (error) {
-      console.error("Error fetching image by id:", error);
-      throw error;
-    }
-  },
+export const useGetGalleryImagesQuery = (
+  page: number = 1,
+  limit: number = 20
+) => {
+  return useQuery({
+    queryKey: ["galleryImages", page, limit],
+    queryFn: async () => {
+      const response = await FetchUtil.get(
+        `/api/images?page=${page}&limit=${limit}`
+      );
+      return response;
+    },
+  });
+};
+
+export const useHealthCheckQuery = () => {
+  return useQuery({
+    queryKey: ["healthCheck"],
+    queryFn: async () => {
+      const response = await FetchUtil.get("/api/health-check/stable");
+      return response;
+    },
+  });
 };

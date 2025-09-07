@@ -9,5 +9,6 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  return await imageController.getImageById(req);
+  const resolvedParams = await params;
+  return await imageController.getImageById(req, resolvedParams.id);
 }

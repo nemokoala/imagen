@@ -91,16 +91,14 @@ export const imageService = {
         console.error("Error translating prompt:", error);
       }
 
-      console.log("translatedPrompt", translatedPrompt);
       const token = btoa(`${process.env.STABLE_DIFFUSION_API_KEY}`);
-      console.log(token);
       const requestBody = {
         prompt: translatedPrompt,
         negative_prompt: "blurry, low quality",
         steps: 24,
         cfg_scale: 7,
-        width: 768,
-        height: 768,
+        width: 1024,
+        height: 1024,
         sampler_index: "DPM++ 2M Karras",
         seed: -1,
         batch_size: 1,
@@ -270,13 +268,18 @@ export const imageService = {
   },
 
   async stableHealthCheck(): Promise<boolean> {
-    const response = await fetch(
-      `${process.env.STABLE_DIFFUSION_API_URL}/user`
-    );
-    if (!response.ok) {
+    try {
+      const response = await fetch(
+        `${process.env.STABLE_DIFFUSION_API_URL}/user`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to check stable health");
+      }
+
+      return response.ok;
+    } catch (error) {
+      console.error("Error checking stable health:", error);
       throw new Error("Failed to check stable health");
     }
-
-    return response.ok;
   },
 };

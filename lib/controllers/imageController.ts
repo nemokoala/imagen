@@ -84,11 +84,8 @@ export const imageController = {
     }
   },
 
-  async getImageById(req: NextRequest) {
+  async getImageById(req: NextRequest, id: string) {
     try {
-      const { searchParams } = new URL(req.url);
-      const id = searchParams.get("id");
-
       if (!id) {
         return NextResponse.json(
           { error: "이미지 ID가 필요합니다." },

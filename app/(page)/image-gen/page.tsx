@@ -1,28 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { FetchUtil } from "@/lib/Fetch.util";
-import {
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, Sparkles, Download, RefreshCw } from "lucide-react";
 import Image from "next/image";
 import { Layout } from "@/components/layout/Layout";
+import { useGenerateImageMutation } from "@/queries/image/mutations";
+import { useHealthCheckQuery } from "@/queries/image/queries";
+import { ModelSelect } from "@/components/image-gen/ModelSelect";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [model, setModel] = useState("dall-e-3");
+  const [model, setModel] = useState("stable-diffusion-xl");
+
+  const { data: healthCheck, isLoading: isHealthCheckLoading } =
+    useHealthCheckQuery();
+
+  const { mutate: generateImage, isPending } = useGenerateImageMutation(
+    (data) => {
+      setImageUrl(data.imageUrl!);
+      toast.success("이미지 생성 완료!", {
+        description: "AI가 이미지를 생성했습니다.",
+      });
+    },
+    (error) => {
+      toast.error(error.message);
+    }
+  );
+
+  useEffect(() => {
+    if (healthCheck?.healthy) {
+      setModel("stable-diffusion-xl");
+    } else {
+      setModel("dall-e-3");
+    }
+  }, [healthCheck]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -32,33 +48,10 @@ export default function ImageGenPage() {
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const data = await FetchUtil.post("/api/generate-image", {
-        prompt,
-        model,
-      });
-
-      setImageUrl(data.imageUrl);
-
-      // 성공 토스트 표시
-      toast.success("이미지 생성 완료!", {
-        description: "AI가 이미지를 생성했습니다.",
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "이미지 생성 중 오류가 발생했습니다.";
-
-      // 에러 토스트 표시
-      toast.error("이미지 생성 실패", {
-        description: errorMessage,
-      });
-    } finally {
-      setLoading(false);
-    }
+    generateImage({
+      prompt,
+      model,
+    });
   };
 
   const handleDownload = () => {
@@ -88,13 +81,13 @@ export default function ImageGenPage() {
               AI 이미지 생성기
             </h1>
           </div>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 text-lg max-w-3xl mx-auto">
             상상력을 현실로 만들어보세요. AI가 당신의 아이디어를 아름다운
             이미지로 변환합니다.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
           {/* 입력 섹션 */}
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="pb-4">
@@ -113,7 +106,7 @@ export default function ImageGenPage() {
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     className="min-h-[120px] resize-none border-2 focus:border-purple-500 transition-colors"
-                    disabled={loading}
+                    disabled={isPending}
                   />
                 </div>
 
@@ -121,37 +114,22 @@ export default function ImageGenPage() {
                   <label className="text-sm font-medium text-gray-700">
                     AI 모델
                   </label>
-                  <Select
-                    value={model}
-                    onValueChange={(value) => setModel(value)}
-                  >
-                    <SelectTrigger className="border-2 focus:border-purple-500 transition-colors">
-                      <SelectValue placeholder="모델 선택" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="dall-e-3">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            추천
-                          </Badge>
-                          Dall-E 3
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="stable-diffusion-xl">
-                        Stable Diffusion XL
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <ModelSelect
+                    model={model}
+                    setModel={setModel}
+                    healthCheck={healthCheck}
+                    isHealthCheckLoading={isHealthCheckLoading}
+                  />
                 </div>
               </div>
 
               <div className="flex gap-3">
                 <Button
                   onClick={handleGenerate}
-                  disabled={loading || !prompt.trim()}
+                  disabled={isPending || !prompt.trim()}
                   className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:opacity-50"
                 >
-                  {loading ? (
+                  {isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       생성 중...
@@ -165,7 +143,7 @@ export default function ImageGenPage() {
                 </Button>
               </div>
 
-              {loading && (
+              {isPending && (
                 <div className="text-center py-4">
                   <div className="inline-flex items-center gap-2 text-purple-600">
                     <RefreshCw className="h-4 w-4 animate-spin" />
@@ -215,7 +193,7 @@ export default function ImageGenPage() {
                       onClick={handleRegenerate}
                       variant="outline"
                       className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50"
-                      disabled={loading}
+                      disabled={isPending}
                     >
                       <RefreshCw className="mr-2 h-4 w-4" />
                       다시 생성
@@ -237,14 +215,6 @@ export default function ImageGenPage() {
               )}
             </CardContent>
           </Card>
-        </div>
-
-        {/* 하단 정보 */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-            <span>AI 이미지 생성 서비스가 정상 작동 중입니다</span>
-          </div>
         </div>
       </div>
     </Layout.Content>

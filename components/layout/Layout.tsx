@@ -7,16 +7,19 @@ const Header = () => {
 const Content = ({
   children,
   className,
+  ref,
 }: {
   children: React.ReactNode;
   className?: string;
+  ref?: React.RefObject<HTMLDivElement | null>;
 }) => {
   return (
     <div
       className={cn(
-        "flex flex-col h-full max-h-[calc(100dvh-60px)] overflow-y-auto",
+        "flex flex-col h-full max-h-[calc(100dvh-60px)] overflow-y-auto content",
         className
       )}
+      ref={ref}
     >
       {children}
     </div>

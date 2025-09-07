@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { prisma } from "../../prisma";
+import { ollamaService } from "../ollamaService";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -83,10 +84,18 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      let translatedPrompt = prompt;
+      try {
+        translatedPrompt = await ollamaService.translateText(prompt);
+      } catch (error) {
+        console.error("Error translating prompt:", error);
+      }
+
+      console.log("translatedPrompt", translatedPrompt);
       const token = btoa(`${process.env.STABLE_DIFFUSION_API_KEY}`);
       console.log(token);
       const requestBody = {
-        prompt: prompt,
+        prompt: translatedPrompt,
         negative_prompt: "blurry, low quality",
         steps: 24,
         cfg_scale: 7,
@@ -258,5 +267,16 @@ export const imageService = {
       console.error("Error fetching all images:", error);
       throw new Error("모든 이미지 조회에 실패했습니다.");
     }
+  },
+
+  async stableHealthCheck(): Promise<boolean> {
+    const response = await fetch(
+      `${process.env.STABLE_DIFFUSION_API_URL}/user`
+    );
+    if (!response.ok) {
+      throw new Error("Failed to check stable health");
+    }
+
+    return response.ok;
   },
 };

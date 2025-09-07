@@ -33,7 +33,7 @@ export const Header = () => {
     <>
       <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-white">
         <button
-          className="relative w-32 h-9 flex-shrink-0"
+          className="relative w-32 h-9 flex-shrink-0 cursor-pointer"
           onClick={() => router.push("/")}
         >
           <Image

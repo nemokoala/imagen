@@ -110,4 +110,15 @@ export const authController = {
       return errorHandler(error);
     }
   },
+
+  async getUserCredit(): Promise<NextResponse> {
+    const cookieStore = await cookies();
+    try {
+      const userId = await authService.getUserIdFromCookie(cookieStore);
+      const credit = await authService.getCreditById(userId);
+      return NextResponse.json(credit);
+    } catch (error) {
+      return errorHandler(error);
+    }
+  },
 };

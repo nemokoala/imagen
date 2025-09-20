@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
+import { Sparkles } from "lucide-react";
 export default function Home() {
   return (
     <Layout.Content className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -18,8 +19,12 @@ export default function Home() {
           </p>
           <div className="flex gap-4 justify-center md:flex-row flex-col">
             <Link href="/image-gen">
-              <Button size="lg" className="text-lg px-8 py-6">
-                이미지 생성 시작하기
+              <Button
+                size="lg"
+                className="gradient-purple-bg hover:from-purple-700 hover:to-blue-700 text-white shadow-lg text-lg px-8 py-6"
+              >
+                <Sparkles className="h-4 w-4" />
+                이미지 생성하기
               </Button>
             </Link>
             <Link href="/gallery">

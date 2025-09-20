@@ -3,6 +3,8 @@ import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
 import { prisma } from "../../prisma";
 import { ollamaService } from "../ollamaService";
+import { authService } from "../auth/authService";
+import { creditConstants } from "@/constants/credit.constants";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -39,6 +41,12 @@ export const imageService = {
       if (!result.data?.[0]?.url) {
         return { success: false, error: "이미지 생성에 실패했습니다." };
       }
+
+      const credit = await authService.updateUserCredit(
+        userId,
+        -creditConstants.DALL_E_3
+      );
+      console.log("credit", credit);
 
       const imageUrl = result.data[0].url;
 
@@ -122,6 +130,11 @@ export const imageService = {
       if (!response.ok) {
         return { success: false, error: "이미지 생성에 실패했습니다." };
       }
+
+      await authService.updateUserCredit(
+        userId,
+        -creditConstants.STABLE_DIFFUSION_XL
+      );
 
       const data = await response.json();
 

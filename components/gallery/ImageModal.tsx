@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 interface Image {
   id: number;
@@ -43,6 +44,13 @@ export function ImageModal({
   image,
   onDownload,
 }: ImageModalProps) {
+  const [imageData, setImageData] = useState<Image | null>(image);
+
+  // 모달이 닫힐 때 content 내용 유지
+  useEffect(() => {
+    if (image) setImageData(image);
+  }, [image]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("ko-KR", {
       year: "numeric",
@@ -65,14 +73,14 @@ export function ImageModal({
           </DialogTitle>
         </DialogHeader>
 
-        {image && (
+        {imageData && (
           <div className="space-y-6">
             {/* 이미지 */}
             <div className="flex justify-center">
               <div className="relative group">
                 <Image
-                  src={image.imageUrl}
-                  alt={image.prompt}
+                  src={imageData.imageUrl}
+                  alt={imageData.prompt}
                   width={800}
                   height={600}
                   className="max-w-full max-h-96 object-contain rounded-xl shadow-2xl transition-transform duration-300 group-hover:scale-105"
@@ -80,7 +88,9 @@ export function ImageModal({
                 />
                 <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button
-                    onClick={() => onDownload(image.imageUrl, image.prompt)}
+                    onClick={() =>
+                      onDownload(imageData.imageUrl, imageData.prompt)
+                    }
                     className="gradient-purple-bg hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
                   >
                     <Download className="mr-2 h-4 w-4" />
@@ -97,7 +107,9 @@ export function ImageModal({
                 프롬프트
               </h3>
               <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 p-4 rounded-xl">
-                <p className="text-gray-700 leading-relaxed">{image.prompt}</p>
+                <p className="text-gray-700 leading-relaxed">
+                  {imageData.prompt}
+                </p>
               </div>
             </div>
 
@@ -109,7 +121,7 @@ export function ImageModal({
                     <User className="h-4 w-4 text-purple-600" />
                     생성자
                   </h3>
-                  <p className="text-gray-700">{image.user.nickname}</p>
+                  <p className="text-gray-700">{imageData.user.nickname}</p>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 shadow-lg">
                   <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
@@ -117,7 +129,7 @@ export function ImageModal({
                     모델
                   </h3>
                   <Badge variant="secondary" className="text-sm">
-                    {image.model}
+                    {imageData.model}
                   </Badge>
                 </div>
               </div>
@@ -127,14 +139,16 @@ export function ImageModal({
                     <ImageIcon className="h-4 w-4 text-purple-600" />
                     크기
                   </h3>
-                  <p className="text-gray-700">{image.size}</p>
+                  <p className="text-gray-700">{imageData.size}</p>
                 </div>
                 <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 shadow-lg">
                   <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-purple-600" />
                     생성일
                   </h3>
-                  <p className="text-gray-700">{formatDate(image.createdAt)}</p>
+                  <p className="text-gray-700">
+                    {formatDate(imageData.createdAt)}
+                  </p>
                 </div>
               </div>
             </div>

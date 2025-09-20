@@ -1,6 +1,7 @@
 "use client";
 
-import { Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, Sparkles } from "lucide-react";
+import { Button } from "../ui/button";
 
 interface GalleryHeaderProps {
   title?: string;
@@ -18,6 +19,13 @@ export function GalleryHeader({
         <h1 className="text-4xl font-bold gradient-purple-text">{title}</h1>
       </div>
       <p className="text-gray-600 text-lg max-w-2xl mx-auto">{description}</p>
+      <Button
+        variant="secondary"
+        className="gradient-purple-bg hover:from-purple-700 hover:to-blue-700 text-white shadow-lg mt-3"
+      >
+        <Sparkles className="h-4 w-4" />
+        이미지 생성하기
+      </Button>
     </div>
   );
 }

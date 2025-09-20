@@ -19,8 +19,10 @@ model User {
   email     String   @unique
   password  String
   nickname  String   @unique
+  credits   Int      @default(100)  // 기본 100 크레딧
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  profileImageUrl String?
   loginAttempts LoginAttempt[]
   generatedImages GeneratedImage[]
 }
@@ -36,7 +38,6 @@ model LoginAttempt {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
-  @@index([failedAt])
 }
 
 model GeneratedImage {

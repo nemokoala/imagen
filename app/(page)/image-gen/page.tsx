@@ -11,14 +11,20 @@ import { Layout } from "@/components/layout/Layout";
 import { useGenerateImageMutation } from "@/queries/image/mutations";
 import { useHealthCheckQuery } from "@/queries/image/queries";
 import { ModelSelect } from "@/components/image-gen/ModelSelect";
+import { CreditDisplay } from "@/components/image-gen/CreditDisplay";
+import { useGetUserCreditQuery } from "@/queries/auth/queries";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [model, setModel] = useState("stable-diffusion-xl");
+  const queryClient = useQueryClient();
 
   const { data: healthCheck, isLoading: isHealthCheckLoading } =
     useHealthCheckQuery();
+
+  const { data: credit, isLoading: isCreditLoading } = useGetUserCreditQuery();
 
   const { mutate: generateImage, isPending } = useGenerateImageMutation(
     (data) => {
@@ -26,9 +32,11 @@ export default function ImageGenPage() {
       toast.success("이미지 생성 완료!", {
         description: "AI가 이미지를 생성했습니다.",
       });
+      queryClient.invalidateQueries({ queryKey: ["credit"] });
     },
     (error) => {
       toast.error(error.message);
+      queryClient.invalidateQueries({ queryKey: ["credit"] });
     }
   );
 
@@ -44,6 +52,14 @@ export default function ImageGenPage() {
     if (!prompt.trim()) {
       toast.error("프롬프트를 입력해주세요", {
         description: "이미지 생성을 위한 설명을 입력해주세요.",
+      });
+      return;
+    }
+
+    // 크레딧 체크
+    if (credit && credit < 1) {
+      toast.error("크레딧이 부족합니다", {
+        description: "이미지 생성을 위해 크레딧이 필요합니다.",
       });
       return;
     }
@@ -87,6 +103,9 @@ export default function ImageGenPage() {
           </p>
         </div>
 
+        {/* 크레딧 정보 섹션 */}
+        <CreditDisplay credit={credit} isLoading={isCreditLoading} />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
           {/* 입력 섹션 */}
           <Card className="shadow-xl border-0 bg-white/80 backdrop-blur-sm">
@@ -126,7 +145,7 @@ export default function ImageGenPage() {
               <div className="flex gap-3">
                 <Button
                   onClick={handleGenerate}
-                  disabled={isPending || !prompt.trim()}
+                  disabled={isPending || !prompt.trim() || credit < 1}
                   className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:opacity-50"
                 >
                   {isPending ? (
@@ -142,17 +161,6 @@ export default function ImageGenPage() {
                   )}
                 </Button>
               </div>
-
-              {isPending && (
-                <div className="text-center py-4">
-                  <div className="inline-flex items-center gap-2 text-purple-600">
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                    <span className="text-sm">
-                      AI가 이미지를 생성하고 있습니다...
-                    </span>
-                  </div>
-                </div>
-              )}
             </CardContent>
           </Card>
 
@@ -193,7 +201,7 @@ export default function ImageGenPage() {
                       onClick={handleRegenerate}
                       variant="outline"
                       className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50"
-                      disabled={isPending}
+                      disabled={isPending || credit < 1}
                     >
                       <RefreshCw className="mr-2 h-4 w-4" />
                       다시 생성

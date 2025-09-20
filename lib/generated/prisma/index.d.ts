@@ -1080,10 +1080,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateOutputType = {
     id: number | null
+    credits: number | null
   }
 
   export type UserSumAggregateOutputType = {
     id: number | null
+    credits: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -1091,6 +1093,7 @@ export namespace Prisma {
     email: string | null
     password: string | null
     nickname: string | null
+    credits: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1100,6 +1103,7 @@ export namespace Prisma {
     email: string | null
     password: string | null
     nickname: string | null
+    credits: number | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1109,6 +1113,7 @@ export namespace Prisma {
     email: number
     password: number
     nickname: number
+    credits: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1117,10 +1122,12 @@ export namespace Prisma {
 
   export type UserAvgAggregateInputType = {
     id?: true
+    credits?: true
   }
 
   export type UserSumAggregateInputType = {
     id?: true
+    credits?: true
   }
 
   export type UserMinAggregateInputType = {
@@ -1128,6 +1135,7 @@ export namespace Prisma {
     email?: true
     password?: true
     nickname?: true
+    credits?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1137,6 +1145,7 @@ export namespace Prisma {
     email?: true
     password?: true
     nickname?: true
+    credits?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1146,6 +1155,7 @@ export namespace Prisma {
     email?: true
     password?: true
     nickname?: true
+    credits?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1242,6 +1252,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits: number
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1270,6 +1281,7 @@ export namespace Prisma {
     email?: boolean
     password?: boolean
     nickname?: boolean
+    credits?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
@@ -1284,11 +1296,12 @@ export namespace Prisma {
     email?: boolean
     password?: boolean
     nickname?: boolean
+    credits?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
@@ -1306,6 +1319,7 @@ export namespace Prisma {
       email: string
       password: string
       nickname: string
+      credits: number
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1683,6 +1697,7 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
     readonly nickname: FieldRef<"User", 'String'>
+    readonly credits: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -4102,6 +4117,7 @@ export namespace Prisma {
     email: 'email',
     password: 'password',
     nickname: 'nickname',
+    credits: 'credits',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -4223,6 +4239,7 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     password?: StringFilter<"User"> | string
     nickname?: StringFilter<"User"> | string
+    credits?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     loginAttempts?: LoginAttemptListRelationFilter
@@ -4234,6 +4251,7 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     nickname?: SortOrder
+    credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     loginAttempts?: LoginAttemptOrderByRelationAggregateInput
@@ -4249,6 +4267,7 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringFilter<"User"> | string
+    credits?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     loginAttempts?: LoginAttemptListRelationFilter
@@ -4260,6 +4279,7 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     nickname?: SortOrder
+    credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -4277,6 +4297,7 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     password?: StringWithAggregatesFilter<"User"> | string
     nickname?: StringWithAggregatesFilter<"User"> | string
+    credits?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -4426,6 +4447,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
@@ -4437,6 +4459,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
@@ -4447,6 +4470,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
@@ -4458,6 +4482,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
@@ -4469,6 +4494,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4477,6 +4503,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4486,6 +4513,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4697,12 +4725,14 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     nickname?: SortOrder
+    credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
     id?: SortOrder
+    credits?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -4710,6 +4740,7 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     nickname?: SortOrder
+    credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4719,12 +4750,14 @@ export namespace Prisma {
     email?: SortOrder
     password?: SortOrder
     nickname?: SortOrder
+    credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
     id?: SortOrder
+    credits?: SortOrder
   }
 
   export type IntWithAggregatesFilter<$PrismaModel = never> = {
@@ -4945,6 +4978,14 @@ export namespace Prisma {
     set?: string
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -4975,14 +5016,6 @@ export namespace Prisma {
     update?: GeneratedImageUpdateWithWhereUniqueWithoutUserInput | GeneratedImageUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: GeneratedImageUpdateManyWithWhereWithoutUserInput | GeneratedImageUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: GeneratedImageScalarWhereInput | GeneratedImageScalarWhereInput[]
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type LoginAttemptUncheckedUpdateManyWithoutUserNestedInput = {
@@ -5304,6 +5337,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
@@ -5314,6 +5348,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
@@ -5339,6 +5374,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
@@ -5349,6 +5385,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
@@ -5358,6 +5395,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
@@ -5368,6 +5406,7 @@ export namespace Prisma {
     email: string
     password: string
     nickname: string
+    credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
@@ -5393,6 +5432,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
@@ -5403,6 +5443,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: StringFieldUpdateOperationsInput | string
     nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput

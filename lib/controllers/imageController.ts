@@ -37,11 +37,11 @@ export const imageController = {
       }
 
       if (!result.success) {
-        throw new ApiError(
-          result.error || "이미지 생성에 실패했습니다.",
-          400,
-          "IMAGE_GENERATION_FAILED"
-        );
+        let errorMessage = result.error || "이미지 생성에 실패했습니다.";
+        if (result.error?.includes("blocked"))
+          errorMessage =
+            "이미지 생성이 차단되었습니다. 프롬프트를 수정해주세요.";
+        throw new ApiError(errorMessage, 400, "IMAGE_GENERATION_FAILED");
       }
 
       return NextResponse.json(

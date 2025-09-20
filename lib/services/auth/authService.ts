@@ -4,6 +4,8 @@ import { ApiError } from "@/lib/errors/AppError";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { User } from "@/lib/generated/prisma";
+import { writeFile, mkdir } from "fs/promises";
+import { join } from "path";
 
 interface CreateUserData {
   email: string;
@@ -247,5 +249,81 @@ export const authService = {
     // 쿠키에서 토큰 제거
     cookieStore.delete("accessToken");
     cookieStore.delete("refreshToken");
+  },
+
+  async saveProfileImageToFileSystem(
+    file: File,
+    userId: number
+  ): Promise<string> {
+    try {
+      // File 객체에서 ArrayBuffer로 변환
+      const arrayBuffer = await file.arrayBuffer();
+      const imageBuffer = Buffer.from(arrayBuffer);
+
+      // 파일 확장자 추출 (원본 파일의 확장자 사용)
+      const fileExtension = file.name.split(".").pop()?.toLowerCase() || "png";
+
+      // 지원되는 이미지 형식인지 확인
+      const allowedExtensions = ["jpg", "jpeg", "png", "gif", "webp"];
+      if (!allowedExtensions.includes(fileExtension)) {
+        throw new ApiError(
+          "지원되지 않는 이미지 형식입니다. (jpg, jpeg, png, gif, webp만 지원)",
+          400
+        );
+      }
+
+      // 파일 크기 확인 (5MB 제한)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        throw new ApiError("파일 크기는 5MB를 초과할 수 없습니다.", 400);
+      }
+
+      // 프로필 이미지 저장할 디렉토리 생성
+      const uploadDir = join(
+        process.cwd(),
+        "uploads",
+        "profiles",
+        userId.toString()
+      );
+      await mkdir(uploadDir, { recursive: true });
+
+      // 파일명 생성 (timestamp + random string + 원본 확장자)
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileName = `profile_${timestamp}_${randomString}.${fileExtension}`;
+      const filePath = join(uploadDir, fileName);
+
+      // 파일 저장
+      await writeFile(filePath, imageBuffer);
+
+      // API 라우트를 통한 접근 경로 반환
+      return `/api/uploads/profiles/${userId}/${fileName}`;
+    } catch (error) {
+      console.error("Error saving profile image to file system:", error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new ApiError("프로필 이미지 파일 저장에 실패했습니다.", 500);
+    }
+  },
+
+  async getCreditById(userId: number): Promise<{ credits: number }> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        credits: true,
+      },
+    });
+    if (!user) {
+      throw new ApiError("사용자를 찾을 수 없습니다.", 404, "USER_NOT_FOUND");
+    }
+    return user;
+  },
+
+  async updateUserCredit(userId: number, amount: number): Promise<void> {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { credits: { increment: amount } },
+    });
   },
 };

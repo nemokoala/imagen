@@ -8,6 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "../ui/select";
+import { creditConstants } from "@/constants/credit.constants";
 
 export const ModelSelect = ({
   model,
@@ -31,6 +32,26 @@ export const ModelSelect = ({
         return "모델 선택";
     }
   };
+  const getCreditText = (modelValue: string) => {
+    switch (modelValue) {
+      case "stable-diffusion-xl":
+        return (
+          <Badge variant="outline" className="text-xs">
+            <MiniDot />
+            {creditConstants.STABLE_DIFFUSION_XL} 크레딧
+          </Badge>
+        );
+      case "dall-e-3":
+        return (
+          <Badge variant="outline" className="text-xs">
+            <MiniDot />
+            {creditConstants.DALL_E_3} 크레딧
+          </Badge>
+        );
+      default:
+        return null;
+    }
+  };
   console.log(healthCheck);
   return (
     <Select
@@ -38,7 +59,7 @@ export const ModelSelect = ({
       onValueChange={(value) => setModel(value)}
       disabled={isHealthCheckLoading}
     >
-      <SelectTrigger className="border-2 focus:border-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+      <SelectTrigger className="border-2 focus:border-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full">
         <SelectValue placeholder="모델 선택">
           <div className="flex items-center gap-2">
             {isHealthCheckLoading ? (
@@ -47,7 +68,10 @@ export const ModelSelect = ({
                 <span className="text-gray-500">모델 상태 확인 중...</span>
               </>
             ) : (
-              getModelDisplayText(model)
+              <>
+                {getCreditText(model)}
+                {getModelDisplayText(model)}
+              </>
             )}
           </div>
         </SelectValue>
@@ -60,12 +84,9 @@ export const ModelSelect = ({
         >
           <div className="flex items-center gap-2">
             {healthCheck?.healthy === true ? (
-              <Badge variant="secondary" className="text-xs">
-                <MiniDot />
-                추천
-              </Badge>
+              getCreditText("stable-diffusion-xl")
             ) : (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="outline" className="text-xs">
                 <MiniDot color="red" />
                 오프라인
               </Badge>
@@ -73,7 +94,10 @@ export const ModelSelect = ({
             Stable Diffusion XL
           </div>
         </SelectItem>
-        <SelectItem value="dall-e-3">Dall-E 3</SelectItem>
+        <SelectItem value="dall-e-3">
+          {getCreditText("dall-e-3")}
+          Dall-E 3
+        </SelectItem>
       </SelectContent>
     </Select>
   );

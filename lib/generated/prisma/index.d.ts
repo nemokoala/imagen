@@ -1096,6 +1096,7 @@ export namespace Prisma {
     credits: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    profileImageUrl: string | null
   }
 
   export type UserMaxAggregateOutputType = {
@@ -1106,6 +1107,7 @@ export namespace Prisma {
     credits: number | null
     createdAt: Date | null
     updatedAt: Date | null
+    profileImageUrl: string | null
   }
 
   export type UserCountAggregateOutputType = {
@@ -1116,6 +1118,7 @@ export namespace Prisma {
     credits: number
     createdAt: number
     updatedAt: number
+    profileImageUrl: number
     _all: number
   }
 
@@ -1138,6 +1141,7 @@ export namespace Prisma {
     credits?: true
     createdAt?: true
     updatedAt?: true
+    profileImageUrl?: true
   }
 
   export type UserMaxAggregateInputType = {
@@ -1148,6 +1152,7 @@ export namespace Prisma {
     credits?: true
     createdAt?: true
     updatedAt?: true
+    profileImageUrl?: true
   }
 
   export type UserCountAggregateInputType = {
@@ -1158,6 +1163,7 @@ export namespace Prisma {
     credits?: true
     createdAt?: true
     updatedAt?: true
+    profileImageUrl?: true
     _all?: true
   }
 
@@ -1255,6 +1261,7 @@ export namespace Prisma {
     credits: number
     createdAt: Date
     updatedAt: Date
+    profileImageUrl: string | null
     _count: UserCountAggregateOutputType | null
     _avg: UserAvgAggregateOutputType | null
     _sum: UserSumAggregateOutputType | null
@@ -1284,6 +1291,7 @@ export namespace Prisma {
     credits?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    profileImageUrl?: boolean
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -1299,9 +1307,10 @@ export namespace Prisma {
     credits?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    profileImageUrl?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "createdAt" | "updatedAt" | "profileImageUrl", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
@@ -1322,6 +1331,7 @@ export namespace Prisma {
       credits: number
       createdAt: Date
       updatedAt: Date
+      profileImageUrl: string | null
     }, ExtArgs["result"]["user"]>
     composites: {}
   }
@@ -1700,6 +1710,7 @@ export namespace Prisma {
     readonly credits: FieldRef<"User", 'Int'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
+    readonly profileImageUrl: FieldRef<"User", 'String'>
   }
     
 
@@ -3127,6 +3138,8 @@ export namespace Prisma {
     imageUrl: string | null
     model: string | null
     size: string | null
+    editData: string | null
+    editedImageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3138,6 +3151,8 @@ export namespace Prisma {
     imageUrl: string | null
     model: string | null
     size: string | null
+    editData: string | null
+    editedImageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -3149,6 +3164,8 @@ export namespace Prisma {
     imageUrl: number
     model: number
     size: number
+    editData: number
+    editedImageUrl: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -3172,6 +3189,8 @@ export namespace Prisma {
     imageUrl?: true
     model?: true
     size?: true
+    editData?: true
+    editedImageUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3183,6 +3202,8 @@ export namespace Prisma {
     imageUrl?: true
     model?: true
     size?: true
+    editData?: true
+    editedImageUrl?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -3194,6 +3215,8 @@ export namespace Prisma {
     imageUrl?: true
     model?: true
     size?: true
+    editData?: true
+    editedImageUrl?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -3292,6 +3315,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size: string
+    editData: string | null
+    editedImageUrl: string | null
     createdAt: Date
     updatedAt: Date
     _count: GeneratedImageCountAggregateOutputType | null
@@ -3322,6 +3347,8 @@ export namespace Prisma {
     imageUrl?: boolean
     model?: boolean
     size?: boolean
+    editData?: boolean
+    editedImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -3336,11 +3363,13 @@ export namespace Prisma {
     imageUrl?: boolean
     model?: boolean
     size?: boolean
+    editData?: boolean
+    editedImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "imageUrl" | "model" | "size" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
+  export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "imageUrl" | "model" | "size" | "editData" | "editedImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
   export type GeneratedImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -3357,6 +3386,8 @@ export namespace Prisma {
       imageUrl: string
       model: string
       size: string
+      editData: string | null
+      editedImageUrl: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["generatedImage"]>
@@ -3735,6 +3766,8 @@ export namespace Prisma {
     readonly imageUrl: FieldRef<"GeneratedImage", 'String'>
     readonly model: FieldRef<"GeneratedImage", 'String'>
     readonly size: FieldRef<"GeneratedImage", 'String'>
+    readonly editData: FieldRef<"GeneratedImage", 'String'>
+    readonly editedImageUrl: FieldRef<"GeneratedImage", 'String'>
     readonly createdAt: FieldRef<"GeneratedImage", 'DateTime'>
     readonly updatedAt: FieldRef<"GeneratedImage", 'DateTime'>
   }
@@ -4119,7 +4152,8 @@ export namespace Prisma {
     nickname: 'nickname',
     credits: 'credits',
     createdAt: 'createdAt',
-    updatedAt: 'updatedAt'
+    updatedAt: 'updatedAt',
+    profileImageUrl: 'profileImageUrl'
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -4145,6 +4179,8 @@ export namespace Prisma {
     imageUrl: 'imageUrl',
     model: 'model',
     size: 'size',
+    editData: 'editData',
+    editedImageUrl: 'editedImageUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -4160,21 +4196,22 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-  export const UserOrderByRelevanceFieldEnum: {
-    email: 'email',
-    password: 'password',
-    nickname: 'nickname'
-  };
-
-  export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
-
-
   export const NullsOrder: {
     first: 'first',
     last: 'last'
   };
 
   export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+  export const UserOrderByRelevanceFieldEnum: {
+    email: 'email',
+    password: 'password',
+    nickname: 'nickname',
+    profileImageUrl: 'profileImageUrl'
+  };
+
+  export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
 
 
   export const LoginAttemptOrderByRelevanceFieldEnum: {
@@ -4189,7 +4226,9 @@ export namespace Prisma {
     prompt: 'prompt',
     imageUrl: 'imageUrl',
     model: 'model',
-    size: 'size'
+    size: 'size',
+    editData: 'editData',
+    editedImageUrl: 'editedImageUrl'
   };
 
   export type GeneratedImageOrderByRelevanceFieldEnum = (typeof GeneratedImageOrderByRelevanceFieldEnum)[keyof typeof GeneratedImageOrderByRelevanceFieldEnum]
@@ -4242,6 +4281,7 @@ export namespace Prisma {
     credits?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    profileImageUrl?: StringNullableFilter<"User"> | string | null
     loginAttempts?: LoginAttemptListRelationFilter
     generatedImages?: GeneratedImageListRelationFilter
   }
@@ -4254,6 +4294,7 @@ export namespace Prisma {
     credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    profileImageUrl?: SortOrderInput | SortOrder
     loginAttempts?: LoginAttemptOrderByRelationAggregateInput
     generatedImages?: GeneratedImageOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
@@ -4270,6 +4311,7 @@ export namespace Prisma {
     credits?: IntFilter<"User"> | number
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
+    profileImageUrl?: StringNullableFilter<"User"> | string | null
     loginAttempts?: LoginAttemptListRelationFilter
     generatedImages?: GeneratedImageListRelationFilter
   }, "id" | "email" | "nickname">
@@ -4282,6 +4324,7 @@ export namespace Prisma {
     credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    profileImageUrl?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
     _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
@@ -4300,6 +4343,7 @@ export namespace Prisma {
     credits?: IntWithAggregatesFilter<"User"> | number
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
+    profileImageUrl?: StringNullableWithAggregatesFilter<"User"> | string | null
   }
 
   export type LoginAttemptWhereInput = {
@@ -4380,6 +4424,8 @@ export namespace Prisma {
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
+    editData?: StringNullableFilter<"GeneratedImage"> | string | null
+    editedImageUrl?: StringNullableFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -4392,6 +4438,8 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    editData?: SortOrderInput | SortOrder
+    editedImageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -4408,6 +4456,8 @@ export namespace Prisma {
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
+    editData?: StringNullableFilter<"GeneratedImage"> | string | null
+    editedImageUrl?: StringNullableFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -4420,6 +4470,8 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    editData?: SortOrderInput | SortOrder
+    editedImageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: GeneratedImageCountOrderByAggregateInput
@@ -4439,6 +4491,8 @@ export namespace Prisma {
     imageUrl?: StringWithAggregatesFilter<"GeneratedImage"> | string
     model?: StringWithAggregatesFilter<"GeneratedImage"> | string
     size?: StringWithAggregatesFilter<"GeneratedImage"> | string
+    editData?: StringNullableWithAggregatesFilter<"GeneratedImage"> | string | null
+    editedImageUrl?: StringNullableWithAggregatesFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"GeneratedImage"> | Date | string
   }
@@ -4450,6 +4504,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
     loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
   }
@@ -4462,6 +4517,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
     loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
   }
@@ -4473,6 +4529,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
   }
@@ -4485,6 +4542,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
   }
@@ -4497,6 +4555,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
   }
 
   export type UserUpdateManyMutationInput = {
@@ -4506,6 +4565,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type UserUncheckedUpdateManyInput = {
@@ -4516,6 +4576,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type LoginAttemptCreateInput = {
@@ -4589,6 +4650,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutGeneratedImagesInput
@@ -4601,6 +4664,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4610,6 +4675,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutGeneratedImagesNestedInput
@@ -4622,6 +4689,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4633,6 +4702,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -4642,6 +4713,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4653,6 +4726,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4694,6 +4769,21 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type LoginAttemptListRelationFilter = {
     every?: LoginAttemptWhereInput
     some?: LoginAttemptWhereInput
@@ -4704,6 +4794,11 @@ export namespace Prisma {
     every?: GeneratedImageWhereInput
     some?: GeneratedImageWhereInput
     none?: GeneratedImageWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
   }
 
   export type LoginAttemptOrderByRelationAggregateInput = {
@@ -4728,6 +4823,7 @@ export namespace Prisma {
     credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    profileImageUrl?: SortOrder
   }
 
   export type UserAvgOrderByAggregateInput = {
@@ -4743,6 +4839,7 @@ export namespace Prisma {
     credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    profileImageUrl?: SortOrder
   }
 
   export type UserMinOrderByAggregateInput = {
@@ -4753,6 +4850,7 @@ export namespace Prisma {
     credits?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    profileImageUrl?: SortOrder
   }
 
   export type UserSumOrderByAggregateInput = {
@@ -4808,7 +4906,7 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type StringNullableFilter<$PrismaModel = never> = {
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | null
     notIn?: string[] | null
@@ -4820,17 +4918,15 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     search?: string
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
   }
 
   export type UserScalarRelationFilter = {
     is?: UserWhereInput
     isNot?: UserWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type LoginAttemptOrderByRelevanceInput = {
@@ -4879,24 +4975,6 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
   export type GeneratedImageOrderByRelevanceInput = {
     fields: GeneratedImageOrderByRelevanceFieldEnum | GeneratedImageOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -4910,6 +4988,8 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    editData?: SortOrder
+    editedImageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4926,6 +5006,8 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    editData?: SortOrder
+    editedImageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4937,6 +5019,8 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    editData?: SortOrder
+    editedImageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -4988,6 +5072,10 @@ export namespace Prisma {
 
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type LoginAttemptUpdateManyWithoutUserNestedInput = {
@@ -5052,10 +5140,6 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
-  }
-
   export type UserUpdateOneRequiredWithoutLoginAttemptsNestedInput = {
     create?: XOR<UserCreateWithoutLoginAttemptsInput, UserUncheckedCreateWithoutLoginAttemptsInput>
     connectOrCreate?: UserCreateOrConnectWithoutLoginAttemptsInput
@@ -5115,6 +5199,21 @@ export namespace Prisma {
     not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    search?: string
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -5172,21 +5271,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
-  }
-
-  export type NestedStringNullableFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | null
-    notIn?: string[] | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    search?: string
-    not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -5250,6 +5334,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5260,6 +5346,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5329,6 +5417,8 @@ export namespace Prisma {
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
+    editData?: StringNullableFilter<"GeneratedImage"> | string | null
+    editedImageUrl?: StringNullableFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeFilter<"GeneratedImage"> | Date | string
   }
@@ -5340,6 +5430,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
   }
 
@@ -5351,6 +5442,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -5377,6 +5469,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
   }
 
@@ -5388,6 +5481,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -5398,6 +5492,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
     loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
   }
 
@@ -5409,6 +5504,7 @@ export namespace Prisma {
     credits?: number
     createdAt?: Date | string
     updatedAt?: Date | string
+    profileImageUrl?: string | null
     loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -5435,6 +5531,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
   }
 
@@ -5446,6 +5543,7 @@ export namespace Prisma {
     credits?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -5464,6 +5562,8 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5499,6 +5599,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5509,6 +5611,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -5519,6 +5623,8 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

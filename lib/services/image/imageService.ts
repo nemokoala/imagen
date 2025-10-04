@@ -31,6 +31,11 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      const credit = await authService.getCreditById(userId);
+      if (credit.credits < creditConstants.DALL_E_3) {
+        return { success: false, error: "크레딧이 부족합니다." };
+      }
+
       // OpenAI API로 이미지 생성
       const result = await client.images.generate({
         model,
@@ -42,11 +47,7 @@ export const imageService = {
         return { success: false, error: "이미지 생성에 실패했습니다." };
       }
 
-      const credit = await authService.updateUserCredit(
-        userId,
-        -creditConstants.DALL_E_3
-      );
-      console.log("credit", credit);
+      await authService.updateUserCredit(userId, -creditConstants.DALL_E_3);
 
       const imageUrl = result.data[0].url;
 
@@ -90,6 +91,11 @@ export const imageService = {
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
+      }
+
+      const credit = await authService.getCreditById(userId);
+      if (credit.credits < creditConstants.STABLE_DIFFUSION_XL) {
+        return { success: false, error: "크레딧이 부족합니다." };
       }
 
       let translatedPrompt = prompt;
@@ -150,7 +156,7 @@ export const imageService = {
         prompt,
         imageUrl: savedImagePath,
         model,
-        size: "768x768",
+        size: "1024x1024",
       });
 
       return {

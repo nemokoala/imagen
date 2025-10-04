@@ -48,6 +48,8 @@ model GeneratedImage {
   imageUrl  String
   model     String
   size      String   @default("1024x1024")
+  editData  String?   @db.Text
+  editedImageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

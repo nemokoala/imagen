@@ -19,8 +19,10 @@ model User {
   email           String           @unique
   password        String
   nickname        String           @unique
+  credits         Int              @default(100) // 기본 100 크레딧
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+  profileImageUrl String?
   loginAttempts   LoginAttempt[]
   generatedImages GeneratedImage[]
 }
@@ -36,19 +38,20 @@ model LoginAttempt {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
-  @@index([failedAt])
 }
 
 model GeneratedImage {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  prompt    String   @db.Text
-  imageUrl  String
-  model     String
-  size      String   @default("1024x1024")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  prompt         String   @db.Text
+  imageUrl       String
+  model          String
+  size           String   @default("1024x1024")
+  editData       String?  @db.Text
+  editedImageUrl String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([userId])
   @@index([createdAt])

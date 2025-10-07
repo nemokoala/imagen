@@ -52,7 +52,7 @@ export const ModelSelect = ({
         return null;
     }
   };
-  console.log(healthCheck);
+
   return (
     <Select
       value={model}
@@ -80,7 +80,7 @@ export const ModelSelect = ({
       <SelectContent>
         <SelectItem
           value="stable-diffusion-xl"
-          disabled={healthCheck?.healthy === false}
+          disabled={healthCheck?.healthy !== true}
         >
           <div className="flex items-center gap-2">
             {healthCheck?.healthy === true ? (

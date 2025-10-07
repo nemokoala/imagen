@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Layout } from "@/components/layout/Layout";
 import { Sparkles } from "lucide-react";
+import { ImageMarquee } from "@/components/home/ImageMarquee";
 export default function Home() {
   return (
     <Layout.Content className="bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Hero Section */}
-      <main className="mx-auto px-6 py-20">
+      <main className="mx-auto px-6 py-20 w-full">
         <div className="text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6">
             AI로 만드는
@@ -27,11 +28,6 @@ export default function Home() {
                 이미지 생성하기
               </Button>
             </Link>
-            <Link href="/gallery">
-              <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                갤러리 보기
-              </Button>
-            </Link>
             <Link href="/auth/register">
               <Button variant="outline" size="lg" className="text-lg px-8 py-6">
                 무료로 시작하기
@@ -39,9 +35,12 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        <div className="mt-12">
+          <ImageMarquee />
+        </div>
 
         {/* Features */}
-        <div className="mt-32 grid md:grid-cols-3 gap-8">
+        <div className="mt-24 grid md:grid-cols-3 gap-8">
           <div className="text-center p-6">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg

@@ -1,6 +1,6 @@
 import { FetchUtil } from "@/lib/Fetch.util";
 import { GeneratedImage } from "../../types/image.interfaces";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 
 export const useGetUserImagesQuery = (userId: number) => {
   return useQuery({
@@ -51,6 +51,22 @@ export const useGetGalleryImagesQuery = (
   });
 };
 
+export const useGetGalleryImagesInfiniteQuery = (limit: number = 20) => {
+  return useInfiniteQuery({
+    queryKey: ["galleryImagesInfinite", limit],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await FetchUtil.get(
+        `/api/images?page=${pageParam}&limit=${limit}`
+      );
+      return response;
+    },
+    getNextPageParam: (lastPage) => {
+      return lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
+};
+
 export const useHealthCheckQuery = () => {
   return useQuery({
     queryKey: ["healthCheck"],
@@ -58,5 +74,6 @@ export const useHealthCheckQuery = () => {
       const response = await FetchUtil.get("/api/health-check/stable");
       return response;
     },
+    retry: false,
   });
 };

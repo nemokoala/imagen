@@ -2,11 +2,10 @@ import { FetchUtil } from "@/lib/Fetch.util";
 import { LoginFormData, RegisterFormData } from "@/schemas/auth";
 import { useMutation } from "@tanstack/react-query";
 import { ErrorResponse, SuccessResponse } from "@/types/common.interfaces";
+import { User } from "@/types/user.interfaces";
 
 export const useLoginMutation = (
-  onSuccess: (
-    data: SuccessResponse<{ accessToken: string; refreshToken: string }>
-  ) => void,
+  onSuccess: (data: { message: string; user: User }) => void,
   onError: (error: ErrorResponse) => void
 ) => {
   return useMutation({
@@ -19,7 +18,7 @@ export const useLoginMutation = (
   });
 };
 export const useRegisterMutation = (
-  onSuccess: (response: SuccessResponse) => void,
+  onSuccess: (response: { message: string; user: User }) => void,
   onError: (error: ErrorResponse) => void
 ) => {
   return useMutation({

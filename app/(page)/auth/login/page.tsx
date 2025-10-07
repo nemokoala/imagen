@@ -25,16 +25,42 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Link from "next/link";
 import { loginSchema, type LoginFormData } from "@/schemas/auth";
-import { FetchUtil } from "@/lib/Fetch.util";
 import { toast } from "sonner";
 import { useUserStore } from "@/stores/userStore";
 import { Layout } from "@/components/layout/Layout";
+import { useLoginMutation } from "@/queries/auth/mutations";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false);
   const { login } = useUserStore();
+
+  const { mutate: loginMutation, isPending } = useLoginMutation(
+    (data) => {
+      login(data.user);
+      // 로그인 성공 시 토스트 메시지 표시
+      toast.success("로그인이 완료되었습니다!", {
+        description: "환영합니다!",
+      });
+
+      // 잠시 후 메인 페이지로 이동
+      setTimeout(() => {
+        router.push("/");
+      }, 100);
+    },
+    (error) => {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "로그인 중 오류가 발생했습니다.";
+
+      // 에러 토스트 표시
+      toast.error("오류 발생", {
+        description: errorMessage,
+      });
+      setError(errorMessage);
+    }
+  );
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -46,35 +72,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     setError("");
-    setLoading(true);
-
-    try {
-      const response = await FetchUtil.post("/api/auth/login", data);
-      login(response.user);
-
-      // 로그인 성공 시 토스트 메시지 표시
-      toast.success("로그인이 완료되었습니다!", {
-        description: "환영합니다!",
-      });
-
-      // 잠시 후 메인 페이지로 이동
-      setTimeout(() => {
-        router.push("/");
-      }, 100);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "로그인 중 오류가 발생했습니다.";
-
-      // 에러 토스트 표시
-      toast.error("오류 발생", {
-        description: errorMessage,
-      });
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
+    loginMutation(data);
   };
 
   return (
@@ -105,7 +103,7 @@ export default function LoginPage() {
                       <Input
                         type="email"
                         placeholder="example@email.com"
-                        disabled={loading}
+                        disabled={isPending}
                         {...field}
                       />
                     </FormControl>
@@ -124,7 +122,7 @@ export default function LoginPage() {
                       <Input
                         type="password"
                         placeholder="••••••"
-                        disabled={loading}
+                        disabled={isPending}
                         {...field}
                       />
                     </FormControl>
@@ -134,8 +132,8 @@ export default function LoginPage() {
               />
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 mt-8">
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "로그인 중..." : "로그인"}
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "로그인 중..." : "로그인"}
               </Button>
               <div className="text-sm text-muted-foreground text-center">
                 계정이 없으신가요?{" "}

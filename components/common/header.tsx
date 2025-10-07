@@ -5,9 +5,9 @@ import { Button } from "../ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Skeleton } from "../ui/skeleton";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useLogoutMutation } from "@/queries/auth/mutations";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const Header = () => {
   const { isAuthenticated, isLoading, logout } = useUserStore();
@@ -32,9 +32,9 @@ export const Header = () => {
   return (
     <>
       <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-white">
-        <button
+        <Link
           className="relative w-32 h-9 flex-shrink-0 cursor-pointer"
-          onClick={() => router.push("/")}
+          href="/"
         >
           <Image
             src="/images/logo.png"
@@ -43,7 +43,7 @@ export const Header = () => {
             className="object-contain"
             priority
           />
-        </button>
+        </Link>
         <div className="flex gap-4">
           {isLoading ? (
             <Skeleton className="w-10 h-10" />

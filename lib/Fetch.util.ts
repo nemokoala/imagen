@@ -24,6 +24,7 @@ const handleFetch = async (endpoint: string, options: RequestInit) => {
 
     if (!response.ok) {
       console.error(data.message || "데이터를 불러오는데 실패했습니다");
+      throw new Error(data.message || "데이터를 불러오는데 실패했습니다");
     }
 
     return data;

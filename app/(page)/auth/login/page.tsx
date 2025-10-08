@@ -49,12 +49,8 @@ export default function LoginPage() {
       }, 100);
     },
     (error) => {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "로그인 중 오류가 발생했습니다.";
+      const errorMessage = error?.message || "로그인 중 오류가 발생했습니다.";
 
-      // 에러 토스트 표시
       toast.error("오류 발생", {
         description: errorMessage,
       });

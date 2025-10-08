@@ -10,3 +10,13 @@ export const useGetUserCreditQuery = () => {
     },
   });
 };
+
+export const useGetUserInfoQuery = () => {
+  return useQuery({
+    queryKey: ["userInfo"],
+    queryFn: async () => {
+      const response = await FetchUtil.get("/api/auth/user");
+      return response;
+    },
+  });
+};

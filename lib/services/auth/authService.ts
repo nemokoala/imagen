@@ -326,4 +326,16 @@ export const authService = {
       data: { credits: { increment: amount } },
     });
   },
+
+  async getUserInfoById(userId: number): Promise<Omit<User, "password">> {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new ApiError("사용자를 찾을 수 없습니다.", 400, "USER_NOT_FOUND");
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...userWithoutPassword } = user;
+    return userWithoutPassword;
+  },
 };

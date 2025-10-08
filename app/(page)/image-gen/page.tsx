@@ -21,13 +21,9 @@ export default function ImageGenPage() {
   const [model, setModel] = useState("stable-diffusion-xl");
   const queryClient = useQueryClient();
 
-  const {
-    data: healthCheck,
-    isLoading: isHealthCheckLoading,
-    error,
-  } = useHealthCheckQuery();
+  const { data: healthCheck, isLoading: isHealthCheckLoading } =
+    useHealthCheckQuery();
 
-  console.log(error);
   const { data: credit, isLoading: isCreditLoading } = useGetUserCreditQuery();
 
   const { mutate: generateImage, isPending } = useGenerateImageMutation(

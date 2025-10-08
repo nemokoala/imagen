@@ -77,7 +77,7 @@ export default function RegisterPage() {
       // 잠시 후 로그인 페이지로 이동
       setTimeout(() => {
         router.push("/auth/login");
-      }, 1500);
+      }, 100);
     } catch (error) {
       const errorMessage =
         error instanceof Error

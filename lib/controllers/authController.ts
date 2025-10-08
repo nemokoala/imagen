@@ -121,4 +121,11 @@ export const authController = {
       return errorHandler(error);
     }
   },
+
+  async getUserInfo(): Promise<NextResponse> {
+    const cookieStore = await cookies();
+    const userId = await authService.getUserIdFromCookie(cookieStore);
+    const user = await authService.getUserInfoById(userId);
+    return NextResponse.json(user);
+  },
 };

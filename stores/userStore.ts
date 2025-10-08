@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { User } from "@/types/user.interfaces";
 
 interface UserState {
@@ -43,14 +43,15 @@ export const useUserStore = create<UserState>()(
         }),
     }),
     {
-      name: "user-storage", // localStorage 키 이름
+      name: "user-storage", // sessionStorage 키 이름
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // 로컬스토리지 읽기 완료 후 자동으로 false로 설정
+          // 세션 스토리지 읽기 완료 후 자동으로 false로 설정
           state.setLoading(false);
         }
       },

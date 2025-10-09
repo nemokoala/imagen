@@ -28,6 +28,10 @@ export const ModelSelect = ({
         return "Stable Diffusion XL";
       case "dall-e-3":
         return "Dall-E 3";
+      case "google-imagen":
+        return "Google Imagen";
+      case "nano-banana":
+        return "Nano Banana";
       default:
         return "모델 선택";
     }
@@ -46,6 +50,20 @@ export const ModelSelect = ({
           <Badge variant="outline" className="text-xs">
             <MiniDot />
             {creditConstants.DALL_E_3} 크레딧
+          </Badge>
+        );
+      case "google-imagen":
+        return (
+          <Badge variant="outline" className="text-xs">
+            <MiniDot />
+            {creditConstants.GOOGLE_IMAGEN} 크레딧
+          </Badge>
+        );
+      case "nano-banana":
+        return (
+          <Badge variant="outline" className="text-xs">
+            <MiniDot />
+            {creditConstants.NANO_BANANA} 크레딧
           </Badge>
         );
       default:
@@ -97,6 +115,14 @@ export const ModelSelect = ({
         <SelectItem value="dall-e-3">
           {getCreditText("dall-e-3")}
           Dall-E 3
+        </SelectItem>
+        <SelectItem value="google-imagen">
+          {getCreditText("google-imagen")}
+          Google Imagen
+        </SelectItem>
+        <SelectItem value="nano-banana">
+          {getCreditText("nano-banana")}
+          Nano Banana
         </SelectItem>
       </SelectContent>
     </Select>

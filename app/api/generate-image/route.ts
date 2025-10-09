@@ -32,6 +32,18 @@ export async function POST(req: NextRequest) {
         model,
         userId,
       });
+    } else if (model === "google-imagen") {
+      result = await imageService.generateImageByGoogleImagen({
+        prompt,
+        model,
+        userId,
+      });
+    } else if (model === "nano-banana") {
+      result = await imageService.generateImageByNanoBanana({
+        prompt,
+        model,
+        userId,
+      });
     } else {
       result = await imageService.generateImageByStableDiffusion({
         prompt,
@@ -41,6 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!result.success) {
+      console.log("result", result);
       let errorMessage = result.error || "이미지 생성에 실패했습니다.";
       if (result.error?.includes("blocked"))
         errorMessage = "이미지 생성이 차단되었습니다. 프롬프트를 수정해주세요.";

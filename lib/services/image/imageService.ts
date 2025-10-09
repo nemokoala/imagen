@@ -1,12 +1,21 @@
 import OpenAI from "openai";
+import { GoogleGenAI, PersonGeneration } from "@google/genai";
 import { writeFile, mkdir } from "fs/promises";
 import { join } from "path";
+import mime from "mime";
 import { prisma } from "../../prisma";
 import { ollamaService } from "../ollamaService";
 import { authService } from "../auth/authService";
 import { creditConstants } from "@/constants/credit.constants";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+});
+const nanoBananaAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY!,
+});
 
 export interface GenerateImageRequest {
   prompt: string;
@@ -166,6 +175,194 @@ export const imageService = {
     } catch (error) {
       console.error("Error generating image by Stable Diffusion:", error);
       return { success: false, error: "이미지 생성에 실패했습니다." };
+    }
+  },
+
+  async generateImageByGoogleImagen(
+    request: GenerateImageRequest
+  ): Promise<GenerateImageResponse> {
+    try {
+      const { prompt, model, userId } = request;
+
+      if (!prompt) {
+        return { success: false, error: "프롬프트가 필요합니다." };
+      }
+
+      const credit = await authService.getCreditById(userId);
+      if (credit.credits < creditConstants.GOOGLE_IMAGEN) {
+        return { success: false, error: "크레딧이 부족합니다." };
+      }
+
+      // Google Imagen API로 이미지 생성
+      const response = await genAI.models.generateImages({
+        model: "models/imagen-4.0-generate-001",
+        prompt: prompt,
+        config: {
+          numberOfImages: 1,
+          outputMimeType: "image/jpeg",
+          personGeneration: PersonGeneration.ALLOW_ALL,
+          aspectRatio: "1:1",
+          imageSize: "1K",
+        },
+      });
+
+      if (!response?.generatedImages || response.generatedImages.length === 0) {
+        return { success: false, error: "이미지 생성에 실패했습니다." };
+      }
+
+      const imageData = response.generatedImages[0]?.image?.imageBytes;
+      if (!imageData) {
+        return { success: false, error: "이미지 데이터를 가져올 수 없습니다." };
+      }
+
+      await authService.updateUserCredit(
+        userId,
+        -creditConstants.GOOGLE_IMAGEN
+      );
+
+      // 이미지를 파일시스템에 저장
+      const savedImagePath = await imageService.saveImageToFileSystem(
+        `data:image/jpeg;base64,${imageData}`,
+        userId
+      );
+
+      // 데이터베이스에 이미지 정보 저장
+      await imageService.saveImageToDatabase({
+        userId,
+        prompt,
+        imageUrl: savedImagePath,
+        model,
+        size: "1024x1024",
+      });
+
+      return {
+        success: true,
+        imageUrl: savedImagePath,
+      };
+    } catch (error: unknown) {
+      console.error("Error generating image by Google Imagen:", error);
+
+      let errorMessage = "이미지 생성 중 오류가 발생했습니다.";
+
+      if (error instanceof Error) {
+        try {
+          const parsedError = JSON.parse(error.message);
+          console.log("parsedError", parsedError);
+          errorMessage = parsedError?.error?.message || error.message;
+        } catch {
+          errorMessage = error.message;
+        }
+      }
+
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
+  },
+
+  async generateImageByNanoBanana(
+    request: GenerateImageRequest
+  ): Promise<GenerateImageResponse> {
+    try {
+      const { prompt, model, userId } = request;
+
+      if (!prompt) {
+        return { success: false, error: "프롬프트가 필요합니다." };
+      }
+
+      const credit = await authService.getCreditById(userId);
+      if (credit.credits < creditConstants.NANO_BANANA) {
+        return { success: false, error: "크레딧이 부족합니다." };
+      }
+
+      // 나노바나나 API로 이미지 생성
+      const config = {
+        responseModalities: ["IMAGE", "TEXT"],
+      };
+
+      const contents = [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `Create an image based on this prompt: ${prompt}`,
+            },
+          ],
+        },
+      ];
+
+      const response = await nanoBananaAI.models.generateContentStream({
+        model: "gemini-2.5-flash-image",
+        config,
+        contents,
+      });
+
+      let imageData: string | null = null;
+      let fileExtension = "png";
+
+      for await (const chunk of response) {
+        if (
+          !chunk.candidates ||
+          !chunk.candidates[0].content ||
+          !chunk.candidates[0].content.parts
+        ) {
+          continue;
+        }
+
+        if (chunk.candidates?.[0]?.content?.parts?.[0]?.inlineData) {
+          const inlineData = chunk.candidates[0].content.parts[0].inlineData;
+          fileExtension =
+            mime.getExtension(inlineData.mimeType || "image/png") || "png";
+          imageData = inlineData.data || "";
+          break; // 첫 번째 이미지만 사용
+        }
+      }
+
+      if (!imageData) {
+        return { success: false, error: "이미지 생성에 실패했습니다." };
+      }
+
+      await authService.updateUserCredit(userId, -creditConstants.NANO_BANANA);
+
+      // 이미지를 파일시스템에 저장
+      const savedImagePath = await imageService.saveImageToFileSystem(
+        `data:image/${fileExtension};base64,${imageData}`,
+        userId
+      );
+
+      // 데이터베이스에 이미지 정보 저장
+      await imageService.saveImageToDatabase({
+        userId,
+        prompt,
+        imageUrl: savedImagePath,
+        model,
+        size: "1024x1024",
+      });
+
+      return {
+        success: true,
+        imageUrl: savedImagePath,
+      };
+    } catch (error: unknown) {
+      console.error("Error generating image by Nano Banana:", error);
+
+      let errorMessage = "이미지 생성 중 오류가 발생했습니다.";
+
+      if (error instanceof Error) {
+        try {
+          const parsedError = JSON.parse(error.message);
+          console.log("parsedError", parsedError);
+          errorMessage = parsedError?.error?.message || error.message;
+        } catch {
+          errorMessage = error.message;
+        }
+      }
+
+      return {
+        success: false,
+        error: errorMessage,
+      };
     }
   },
 

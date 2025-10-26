@@ -40,5 +40,9 @@ jobs:
 
       - name: Restart PM2 process
         run: |
-          pm2 startOrReload ecosystem.config.js --env production
+          set -a
+          . ~/.env.next
+          set +a
+          pm2 delete next-app || true
+          pm2 startOrReload $GITHUB_WORKSPACE/ecosystem.config.js --env production --update-env
           pm2 save

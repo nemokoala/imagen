@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Imagen",
-  description: "Generated AI image",
+  description: "이미지를 생성하는 서비스",
 };
 
 export default function RootLayout({

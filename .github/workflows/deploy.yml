@@ -2,8 +2,8 @@ name: Deploy Next.js to WSL
 
 on:
   push:
-    branches: ["main"] # main 브랜치에 push 시 자동 실행
-  workflow_dispatch: # 수동 실행도 허용
+    branches: ["main"]
+  workflow_dispatch:
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -11,8 +11,12 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: [self-hosted, linux] # WSL 러너 라벨
+    runs-on: [self-hosted, linux]
     timeout-minutes: 20
+
+    # ✅ Secrets → env로 승급 (if에서 사용 가능)
+    env:
+      NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
 
     steps:
       - name: Checkout repository
@@ -24,24 +28,28 @@ jobs:
           node-version: "lts/*"
           cache: "npm"
 
-      # (선택) 빌드 시 클라이언트에서 필요한 환경변수 주입
+      # ✅ 클라이언트용 env가 있을 때만 생성
       - name: Create .env.production
-        if: ${{ secrets.NEXT_PUBLIC_API_URL != '' }}
+        if: ${{ env.NEXT_PUBLIC_API_URL != '' }}
+        working-directory: ${{ github.workspace }}
         run: |
           cat > .env.production << 'EOF'
-          NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
           EOF
 
       - name: Install dependencies
+        working-directory: ${{ github.workspace }}
         run: npm ci
 
       - name: Build Next.js project
+        working-directory: ${{ github.workspace }}
         run: npm run build
 
       - name: Restart PM2 process
+        working-directory: ${{ github.workspace }}
         run: |
           set -a
-          . ~/.env.next
+          . ~/.env.next || true   # 서버 런타임 비밀 로드(없어도 계속 진행)
           set +a
           pm2 delete next-app || true
           pm2 startOrReload $GITHUB_WORKSPACE/ecosystem.config.js --env production --update-env

@@ -56,6 +56,6 @@ jobs:
           set -a
           . ~/.env.next || true   # 서버 런타임 비밀 로드(없어도 계속 진행)
           set +a
-          pm2 delete next-app || true
+          pm2 delete imagen-app || true
           pm2 startOrReload $GITHUB_WORKSPACE/ecosystem.config.js --env production --update-env
           pm2 save

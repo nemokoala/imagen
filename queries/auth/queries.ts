@@ -11,12 +11,13 @@ export const useGetUserCreditQuery = () => {
   });
 };
 
-export const useGetUserInfoQuery = () => {
+export const useGetUserInfoQuery = ({ enabled }: { enabled: boolean }) => {
   return useQuery({
     queryKey: ["userInfo"],
     queryFn: async () => {
       const response = await FetchUtil.get("/api/auth/user");
       return response;
     },
+    enabled,
   });
 };

@@ -15,7 +15,7 @@ const handleFetch = async (endpoint: string, options: RequestInit) => {
 
     const data = await response.json();
 
-    if (response.status === 401) {
+    if (response.status === 401 && endpoint !== "/api/auth/user") {
       const tokenRefreshed = await getNewAccessToken();
       if (tokenRefreshed) {
         return await handleFetch(endpoint, options);
@@ -29,8 +29,8 @@ const handleFetch = async (endpoint: string, options: RequestInit) => {
 
     return data;
   } catch (error) {
-    if (error instanceof Error) {
-      throw new Error(error.message || "서버와의 통신에 실패했습니다");
+    if (error instanceof Error && error.message) {
+      throw error;
     }
     throw new Error("알 수 없는 오류가 발생했습니다");
   }

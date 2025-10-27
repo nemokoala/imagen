@@ -9,13 +9,15 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isAuthenticated, isLoading, setUser } = useUserStore();
-  const { data: userInfo } = useGetUserInfoQuery();
+  const { user, isLoading, setUser } = useUserStore();
+  const { data: userInfo } = useGetUserInfoQuery({
+    enabled: !user && !isLoading,
+  });
 
   useEffect(() => {
-    if (userInfo && !isAuthenticated) {
+    if (userInfo) {
       setUser(userInfo);
     }
-  }, [isAuthenticated, isLoading, user, userInfo, setUser]);
+  }, [userInfo, user]);
   return <>{children}</>;
 }

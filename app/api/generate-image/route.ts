@@ -1,3 +1,4 @@
+// app/api/generate-image/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { imageService } from "@/lib/services/image/imageService";
 import { authService } from "@/lib/services/auth/authService";
@@ -10,14 +11,29 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 export const maxDuration = 60;
 
+// 계정 생성 검증 전까지 서버 전체 요청 횟수 제한 (Stable Diffusion 제외)
+let totalRequestCount = 0;
+const MAX_TOTAL_REQUESTS = 5;
+
 export async function POST(req: NextRequest) {
   try {
     const { prompt, model } = await req.json();
 
     if (!prompt) {
-      return NextResponse.json(
-        { error: "프롬프트가 필요합니다." },
-        { status: 400 }
+      throw new ApiError("프롬프트가 필요합니다.", 400, "PROMPT_REQUIRED");
+    }
+
+    // 🆕 Stable Diffusion 제외하고 전체 요청 횟수 체크
+    const isStableDiffusion =
+      model.includes("stable-diffusion") ||
+      model.startsWith("sd-") ||
+      !["dall-e-3", "google-imagen", "nano-banana"].includes(model);
+
+    if (!isStableDiffusion && totalRequestCount >= MAX_TOTAL_REQUESTS) {
+      throw new ApiError(
+        `테스트 요청 한도에 도달했습니다. (전체 ${MAX_TOTAL_REQUESTS}회)`,
+        429,
+        "RATE_LIMIT_EXCEEDED"
       );
     }
 
@@ -60,10 +76,19 @@ export async function POST(req: NextRequest) {
       throw new ApiError(errorMessage, 400, "IMAGE_GENERATION_FAILED");
     }
 
+    // 🆕 성공 시 Stable Diffusion 제외하고 카운트 증가
+    if (!isStableDiffusion) {
+      totalRequestCount++;
+      console.log(`[Request Count] ${totalRequestCount}/${MAX_TOTAL_REQUESTS}`);
+    }
+
     return NextResponse.json(
       {
         success: true,
         imageUrl: result.imageUrl,
+        remaining: isStableDiffusion
+          ? "unlimited"
+          : MAX_TOTAL_REQUESTS - totalRequestCount,
       },
       { status: 200 }
     );

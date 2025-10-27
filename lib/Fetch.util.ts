@@ -15,7 +15,7 @@ const handleFetch = async (endpoint: string, options: RequestInit) => {
 
     const data = await response.json();
 
-    if (response.status === 401 && endpoint !== "/api/auth/user") {
+    if (response.status === 401) {
       const tokenRefreshed = await getNewAccessToken();
       if (tokenRefreshed) {
         return await handleFetch(endpoint, options);

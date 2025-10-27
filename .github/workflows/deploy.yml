@@ -50,6 +50,12 @@ jobs:
           set +a
           npm run build
 
+      - name: Copy static for standalone
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p .next/standalone/.next
+          rsync -a .next/static .next/standalone/.next/
+
       - name: Restart PM2 process
         working-directory: ${{ github.workspace }}
         run: |

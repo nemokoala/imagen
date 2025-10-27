@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "local-dev": "env-cmd -f .env.local next dev --turbopack",
+    "local-prd": "env-cmd -f .env.production next dev --turbopack",
     "dev": "env-cmd -f .env.development next dev --turbopack",
     "build": "next build",
     "start": "next start",

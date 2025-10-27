@@ -41,6 +41,15 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: npm ci
 
+      # 🔸 Prisma 마이그레이션 (스키마 변경시에만 실행됨)
+      - name: Run Prisma Migrations
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -a
+          . ~/.env.next || true   # DATABASE_URL 로드
+          set +a
+          npx prisma migrate deploy
+
       # Build Next.js project (수정)
       - name: Build Next.js project
         working-directory: ${{ github.workspace }}

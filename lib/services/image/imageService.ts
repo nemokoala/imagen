@@ -384,7 +384,12 @@ export const imageService = {
       // 저장할 디렉토리 생성 (환경 변수 우선, 기본값 process.cwd()/uploads)
       const uploadBaseDir =
         process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+      console.log("🔍 [DEBUG] UPLOAD_PATH:", process.env.UPLOAD_PATH);
+      console.log("🔍 [DEBUG] uploadBaseDir:", uploadBaseDir);
+      console.log("🔍 [DEBUG] process.cwd():", process.cwd());
+
       const uploadDir = join(uploadBaseDir, "images", userId.toString());
+      console.log("🔍 [DEBUG] Final uploadDir:", uploadDir);
       await mkdir(uploadDir, { recursive: true });
 
       // 파일명 생성 (timestamp + random string)
@@ -395,7 +400,7 @@ export const imageService = {
 
       // 파일 저장
       await writeFile(filePath, Buffer.from(imageBuffer));
-
+      console.log("🔍 [DEBUG] Saved file to:", filePath);
       // API 라우트를 통한 접근 경로 반환
       return `/api/uploads/images/${userId}/${fileName}`;
     } catch (error) {

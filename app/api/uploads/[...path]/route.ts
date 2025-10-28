@@ -9,7 +9,10 @@ export async function GET(
 ) {
   try {
     const resolvedParams = await params;
-    const filePath = join(process.cwd(), "uploads", ...resolvedParams.path);
+    // 환경 변수로 설정된 업로드 경로 사용 (기본값: process.cwd()/uploads)
+    const uploadBaseDir =
+      process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+    const filePath = join(uploadBaseDir, ...resolvedParams.path);
 
     if (!existsSync(filePath)) {
       return new NextResponse("File not found", { status: 404 });
@@ -38,7 +41,7 @@ export async function GET(
         break;
     }
 
-    return new NextResponse(fileBuffer, {
+    return new NextResponse(Buffer.from(fileBuffer), {
       headers: {
         "Content-Type": contentType,
         "Cache-Control": "public, max-age=31536000, immutable",

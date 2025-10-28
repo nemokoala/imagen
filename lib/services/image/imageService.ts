@@ -381,13 +381,10 @@ export const imageService = {
         imageBuffer = Buffer.from(base64Image, "base64");
       }
 
-      // 저장할 디렉토리 생성
-      const uploadDir = join(
-        process.cwd(),
-        "uploads",
-        "images",
-        userId.toString()
-      );
+      // 저장할 디렉토리 생성 (환경 변수 우선, 기본값 process.cwd()/uploads)
+      const uploadBaseDir =
+        process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+      const uploadDir = join(uploadBaseDir, "images", userId.toString());
       await mkdir(uploadDir, { recursive: true });
 
       // 파일명 생성 (timestamp + random string)

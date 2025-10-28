@@ -65,6 +65,17 @@ jobs:
           mkdir -p .next/standalone/.next
           rsync -a .next/static .next/standalone/.next/
 
+      # 🔸 외부 uploads 디렉토리 생성 (없을 경우)
+      - name: Ensure uploads directory exists
+        run: |
+          set -a
+          . ~/.env.next || true
+          set +a
+          # UPLOAD_PATH가 설정되어 있으면 해당 경로 사용, 없으면 기본 경로
+          UPLOAD_DIR="${UPLOAD_PATH:-$HOME/uploads}"
+          mkdir -p "$UPLOAD_DIR"
+          echo "✅ Uploads directory: $UPLOAD_DIR"
+
       - name: Restart PM2 process
         working-directory: ${{ github.workspace }}
         run: |

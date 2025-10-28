@@ -278,13 +278,10 @@ export const authService = {
         throw new ApiError("파일 크기는 5MB를 초과할 수 없습니다.", 400);
       }
 
-      // 프로필 이미지 저장할 디렉토리 생성
-      const uploadDir = join(
-        process.cwd(),
-        "uploads",
-        "profiles",
-        userId.toString()
-      );
+      // 프로필 이미지 저장할 디렉토리 생성 (환경 변수 우선, 기본값 process.cwd()/uploads)
+      const uploadBaseDir =
+        process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+      const uploadDir = join(uploadBaseDir, "profiles", userId.toString());
       await mkdir(uploadDir, { recursive: true });
 
       // 파일명 생성 (timestamp + random string + 원본 확장자)

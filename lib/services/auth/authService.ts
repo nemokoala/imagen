@@ -227,7 +227,7 @@ export const authService = {
   async login(
     email: string,
     password: string
-  ): Promise<Omit<User, "password">> {
+  ): Promise<Omit<User, "password"> & { refreshExpiresAt: Date }> {
     // 로그인 데이터 검증
     await this.validateLoginData({ email, password });
 
@@ -237,10 +237,11 @@ export const authService = {
     // 액세스 토큰 생성 및 쿠키 설정
     await this.createAccessToken(user);
 
+    const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     // 비밀번호를 제외한 사용자 정보 반환
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return { ...userWithoutPassword, refreshExpiresAt };
   },
 
   async logout(): Promise<void> {

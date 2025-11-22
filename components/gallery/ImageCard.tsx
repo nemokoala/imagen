@@ -38,17 +38,18 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
 
   return (
     <Card
-      className="overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-xl hover:scale-105 gap-1 p-0"
+      className="overflow-hidden hover:shadow-2xl aspect-square transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-xl gap-1 p-0"
       onClick={() => onImageClick(image)}
     >
-      <div className="relative h-64">
+      <div className="relative h-full">
         <Image
           src={image.imageUrl}
           alt={image.prompt}
           fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          className="object-cover transition-transform duration-300 aspect-square"
           loading="lazy"
           unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
         />
         <div className="absolute top-3 right-3">
           <Badge
@@ -73,13 +74,13 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
         </div>
       </div>
 
-      <CardHeader className="p-4 pb-2">
+      {/* <CardHeader className="p-4 pb-2">
         <CardTitle className="text-sm line-clamp-2 mb-2 text-gray-800">
           {image.prompt}
         </CardTitle>
-      </CardHeader>
+      </CardHeader> */}
 
-      <CardContent className="p-4 pt-0">
+      {/* <CardContent className="p-4 pt-0">
         <div className="flex items-center justify-between text-xs text-gray-500">
           <div className="flex items-center gap-1">
             <User className="w-3 h-3" />
@@ -90,7 +91,7 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
             <span>{formatDate(image.createdAt)}</span>
           </div>
         </div>
-      </CardContent>
+      </CardContent> */}
     </Card>
   );
 }

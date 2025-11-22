@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useLogoutMutation } from "@/queries/auth/mutations";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { ThemeToggle } from "./ThemeToggle";
 
 export const Header = () => {
   const { isAuthenticated, isLoading, logout } = useUserStore();
@@ -31,7 +32,7 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-white">
+      <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-purple-50 dark:bg-gray-800 border-b border-border">
         <Link
           className="relative w-32 h-9 flex-shrink-0 cursor-pointer"
           href="/"
@@ -44,7 +45,8 @@ export const Header = () => {
             priority
           />
         </Link>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
           {isLoading ? (
             <Skeleton className="w-10 h-10" />
           ) : !isAuthenticated ? (

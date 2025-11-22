@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProviders from "../providers/QueryProviders";
 import { Header } from "@/components/common/CommonHeader";
 import AuthProvider from "@/providers/AuthProviders";
+import { ThemeProvider } from "@/providers/ThemeProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const pretendard = localFont({
+  src: "../public/fonts/Pretendard.woff2",
+  variable: "--font-pretendard",
+  weight: "100 900",
 });
 
 export const metadata: Metadata = {
@@ -26,16 +24,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${pretendard.className} ${pretendard.variable} antialiased`}
       >
-        <QueryProviders>
-          <AuthProvider>
-            <Header />
-            {children}
-          </AuthProvider>
-        </QueryProviders>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryProviders>
+            <AuthProvider>
+              <Header />
+              {children}
+            </AuthProvider>
+          </QueryProviders>
+        </ThemeProvider>
       </body>
     </html>
   );

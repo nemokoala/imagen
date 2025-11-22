@@ -7,3 +7,10 @@ export interface SuccessResponse<T = unkown> {
   data?: T;
   message?: string;
 }
+
+export interface HealthCheckResponse {
+  target: string;
+  status: "healthy" | "unhealthy" | "error";
+  healthy: boolean;
+  error?: string;
+}

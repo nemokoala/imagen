@@ -18,6 +18,6 @@ export default function AuthProvider({
     if (userInfo) {
       setUser(userInfo);
     }
-  }, [userInfo, user]);
+  }, [userInfo, user, setUser]);
   return <>{children}</>;
 }

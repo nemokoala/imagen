@@ -1,12 +1,20 @@
 import { FetchUtil } from "@/lib/Fetch.util";
-import { GeneratedImage } from "../../types/image.interfaces";
+import {
+  GeneratedImage,
+  GetUserImagesResponse,
+  GetImageByIdResponse,
+} from "../../types/image.interfaces";
+import { HealthCheckResponse } from "../../types/common.interfaces";
+import { GalleryResponse } from "../../components/gallery/types";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 
 export const useGetUserImagesQuery = (userId: number) => {
   return useQuery({
     queryKey: ["userImages", userId],
     queryFn: async (): Promise<GeneratedImage[]> => {
-      const response = await FetchUtil.get(`/api/images/user?userId=${userId}`);
+      const response = (await FetchUtil.get(
+        `/api/images/user?userId=${userId}`
+      )) as GetUserImagesResponse;
       return response.images || [];
     },
     enabled: !!userId,
@@ -18,7 +26,9 @@ export const useGetImageByIdQuery = (id: number) => {
     queryKey: ["image", id],
     queryFn: async (): Promise<GeneratedImage | null> => {
       try {
-        const response = await FetchUtil.get(`/api/images/${id}`);
+        const response = (await FetchUtil.get(
+          `/api/images/${id}`
+        )) as GetImageByIdResponse;
         return response.image || null;
       } catch (error: unknown) {
         if (
@@ -55,12 +65,12 @@ export const useGetGalleryImagesInfiniteQuery = (limit: number = 20) => {
   return useInfiniteQuery({
     queryKey: ["galleryImagesInfinite", limit],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await FetchUtil.get(
+      const response = (await FetchUtil.get(
         `/api/images?page=${pageParam}&limit=${limit}`
-      );
+      )) as GalleryResponse;
       return response;
     },
-    getNextPageParam: (lastPage) => {
+    getNextPageParam: (lastPage: GalleryResponse) => {
       return lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined;
     },
     initialPageParam: 1,
@@ -70,9 +80,9 @@ export const useGetGalleryImagesInfiniteQuery = (limit: number = 20) => {
 export const useHealthCheckQuery = () => {
   return useQuery({
     queryKey: ["healthCheck"],
-    queryFn: async () => {
+    queryFn: async (): Promise<HealthCheckResponse> => {
       const response = await FetchUtil.get("/api/health-check/stable");
-      return response;
+      return response as HealthCheckResponse;
     },
     retry: false,
   });

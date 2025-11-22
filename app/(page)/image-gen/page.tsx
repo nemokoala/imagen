@@ -111,7 +111,7 @@ export default function ImageGenPage() {
         </div>
 
         {/* 크레딧 정보 섹션 */}
-        <CreditDisplay credit={credit} isLoading={isCreditLoading} />
+        <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
           {/* 입력 섹션 */}
@@ -152,7 +152,7 @@ export default function ImageGenPage() {
               <div className="flex gap-3">
                 <Button
                   onClick={handleGenerate}
-                  disabled={isPending || !prompt.trim() || credit < 1}
+                  disabled={isPending || !prompt.trim() || (credit ?? 0) < 1}
                   className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:opacity-50"
                 >
                   {isPending ? (
@@ -208,7 +208,7 @@ export default function ImageGenPage() {
                       onClick={handleRegenerate}
                       variant="outline"
                       className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50"
-                      disabled={isPending || credit < 1}
+                      disabled={isPending || (credit ?? 0) < 1}
                     >
                       <RefreshCw className="mr-2 h-4 w-4" />
                       다시 생성

@@ -31,7 +31,7 @@ export function InfiniteImageGallery({
     () => data?.pages.flatMap((page) => page.images) || [],
     [data?.pages]
   );
-  const totalImages = data?.pages[0]?.totalImages || 0;
+  const totalImages = data?.pages[0]?.totalCount || 0;
 
   // 반응형 컬럼 수 계산
   const getColumnCount = () => {

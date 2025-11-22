@@ -2,7 +2,7 @@ import { FetchUtil } from "@/lib/Fetch.util";
 import {
   GenerateImageRequest,
   GenerateImageResponse,
-} from "../../types/image.interfaces";
+} from "@/types/image.interfaces";
 import { useMutation } from "@tanstack/react-query";
 import { ErrorResponse } from "@/types/common.interfaces";
 
@@ -11,11 +11,16 @@ export const useGenerateImageMutation = (
   onError: (error: ErrorResponse) => void
 ) => {
   return useMutation({
-    mutationFn: async (data: GenerateImageRequest) => {
-      const response = await FetchUtil.post("/api/generate-image", data);
-      return response;
+    mutationFn: async (
+      data: GenerateImageRequest
+    ): Promise<GenerateImageResponse> => {
+      const response = await FetchUtil.post<GenerateImageRequest>(
+        "/api/generate-image",
+        data
+      );
+      return response as GenerateImageResponse;
     },
     onSuccess: (response) => onSuccess(response),
-    onError: (error) => onError(error),
+    onError: (error) => onError(error as ErrorResponse),
   });
 };

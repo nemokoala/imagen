@@ -9,6 +9,7 @@ import {
   SelectItem,
 } from "../ui/select";
 import { creditConstants } from "@/constants/credit.constants";
+import { HealthCheckResponse } from "@/types/common.interfaces";
 
 export const ModelSelect = ({
   model,
@@ -18,7 +19,7 @@ export const ModelSelect = ({
 }: {
   model: string;
   setModel: (value: string) => void;
-  healthCheck: { healthy: boolean };
+  healthCheck: HealthCheckResponse | undefined;
   isHealthCheckLoading: boolean;
 }) => {
   // 모델에 따른 표시 텍스트 매핑

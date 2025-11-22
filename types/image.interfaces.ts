@@ -19,8 +19,8 @@ export interface GenerateImageRequest {
 
 export interface GenerateImageResponse {
   success: boolean;
-  imageUrl?: string;
-  error?: string;
+  imageUrl: string;
+  remaining: number | "unlimited";
 }
 
 export interface GetUserImagesResponse {

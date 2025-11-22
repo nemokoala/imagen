@@ -8,7 +8,7 @@ const handleFetch = async (
   endpoint: string,
   options: RequestInit,
   isRetry = false
-): Promise<any> => {
+): Promise<unknown> => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
     {

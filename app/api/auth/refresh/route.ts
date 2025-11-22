@@ -3,7 +3,7 @@ import { authService } from "@/lib/services/auth/authService";
 import { errorHandler } from "@/lib/errors/errorHandler";
 import { cookies } from "next/headers";
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   try {
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get("refreshToken")?.value;

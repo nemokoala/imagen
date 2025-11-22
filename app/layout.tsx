@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProviders from "../providers/QueryProviders";
 import { Header } from "@/components/common/CommonHeader";

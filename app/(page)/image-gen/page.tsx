@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -18,13 +18,28 @@ import { useQueryClient } from "@tanstack/react-query";
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [model, setModel] = useState("stable-diffusion-xl");
   const queryClient = useQueryClient();
 
   const { data: healthCheck, isLoading: isHealthCheckLoading } =
     useHealthCheckQuery();
 
   const { data: credit, isLoading: isCreditLoading } = useGetUserCreditQuery();
+
+  // healthCheck에 따라 기본 모델 계산
+  const defaultModel = useMemo(
+    () => (healthCheck?.healthy ? "stable-diffusion-xl" : "dall-e-3"),
+    [healthCheck?.healthy]
+  );
+
+  // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
+  const [manualModel, setManualModel] = useState<string | null>(null);
+
+  // 실제 사용할 모델 (수동 선택이 있으면 그것을, 없으면 기본 모델 사용)
+  const model = manualModel ?? defaultModel;
+
+  const handleModelChange = (value: string) => {
+    setManualModel(value);
+  };
 
   const { mutate: generateImage, isPending } = useGenerateImageMutation(
     (data) => {
@@ -39,14 +54,6 @@ export default function ImageGenPage() {
       queryClient.invalidateQueries({ queryKey: ["credit"] });
     }
   );
-
-  useEffect(() => {
-    if (healthCheck?.healthy) {
-      setModel("stable-diffusion-xl");
-    } else {
-      setModel("dall-e-3");
-    }
-  }, [healthCheck]);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -135,7 +142,7 @@ export default function ImageGenPage() {
                   </label>
                   <ModelSelect
                     model={model}
-                    setModel={setModel}
+                    setModel={handleModelChange}
                     healthCheck={healthCheck}
                     isHealthCheckLoading={isHealthCheckLoading}
                   />

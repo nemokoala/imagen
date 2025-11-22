@@ -44,11 +44,15 @@ export function ImageModal({
   image,
   onDownload,
 }: ImageModalProps) {
+  // 모달이 닫힐 때 content 내용 유지하기 위한 state
   const [imageData, setImageData] = useState<Image | null>(image);
 
-  // 모달이 닫힐 때 content 내용 유지
+  // image prop이 변경될 때만 업데이트 (모달이 닫혀도 이전 값 유지)
   useEffect(() => {
-    if (image) setImageData(image);
+    if (image) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setImageData(image);
+    }
   }, [image]);
 
   const formatDate = (dateString: string) => {

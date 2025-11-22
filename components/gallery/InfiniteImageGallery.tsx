@@ -27,7 +27,10 @@ export function InfiniteImageGallery({
   } = useGetGalleryImagesInfiniteQuery(20);
 
   // 모든 페이지의 이미지를 하나의 배열로 합치기
-  const images = data?.pages.flatMap((page) => page.images) || [];
+  const images = useMemo(
+    () => data?.pages.flatMap((page) => page.images) || [],
+    [data?.pages]
+  );
   const totalImages = data?.pages[0]?.totalImages || 0;
 
   // 반응형 컬럼 수 계산
@@ -75,7 +78,8 @@ export function InfiniteImageGallery({
 
   // 스크롤이 끝에 가까워지면 다음 페이지 로드
   useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
+    const virtualItems = rowVirtualizer.getVirtualItems();
+    const [lastItem] = [...virtualItems].reverse();
     if (!lastItem) return;
 
     if (
@@ -89,7 +93,7 @@ export function InfiniteImageGallery({
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    rowVirtualizer.getVirtualItems(),
+    rowVirtualizer,
     rows.length,
   ]);
 

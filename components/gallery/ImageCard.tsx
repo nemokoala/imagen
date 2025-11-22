@@ -1,9 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Download } from "lucide-react";
+import { Download } from "lucide-react";
 import Image from "next/image";
 
 interface Image {
@@ -26,16 +26,6 @@ interface ImageCardProps {
 }
 
 export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   return (
     <Card
       className="overflow-hidden hover:shadow-2xl aspect-square transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-xl gap-1 p-0"

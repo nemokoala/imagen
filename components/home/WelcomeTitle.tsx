@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useUserStore } from "@/stores/userStore";
 import { X } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export function WelcomeTitle() {
-  const { user } = useUserStore();
+  const { user, isLoading } = useUserStore();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const isLoggedIn = !!user;
 
@@ -16,7 +17,12 @@ export function WelcomeTitle() {
   }
 
   return (
-    <main className="mx-auto px-6 py-8 w-full p-4 rounded-3xl mb-4 relative shadow-lg">
+    <main
+      className={cn(
+        "mx-auto px-6 py-8 w-full p-4 rounded-3xl mb-4 relative shadow-lg",
+        isLoading ? "opacity-0" : ""
+      )}
+    >
       <X
         className="absolute top-4 right-4 size-6 cursor-pointer"
         onClick={() => setIsCollapsed(true)}
@@ -33,7 +39,11 @@ export function WelcomeTitle() {
         </p>
         <div className="flex gap-4 justify-center">
           <Link href="/auth/register">
-            <Button variant="gradient" size="lg" className="font-bold">
+            <Button
+              variant="gradient"
+              size="lg"
+              className="font-bold w-full sm:w-auto"
+            >
               무료로 시작하기
             </Button>
           </Link>

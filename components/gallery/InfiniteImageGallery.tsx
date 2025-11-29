@@ -6,20 +6,25 @@ import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
 import { Button } from "@/components/ui/button";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useEffect, useMemo, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { useScrollObserver } from "@/hooks/use-scroll-observer";
 
 interface InfiniteImageGalleryProps {
   onImageClick?: (image: Image) => void;
   onDownload?: (imageUrl: string, prompt: string) => void;
+  onScrollChange?: (scrollTop: number) => void;
 }
 
 export function InfiniteImageGallery({
   onImageClick,
   onDownload,
+  onScrollChange,
 }: InfiniteImageGalleryProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const {
     data,
     error,
+    isLoading,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
@@ -77,6 +82,11 @@ export function InfiniteImageGallery({
         : undefined, // Firefox는 자동 측정 사용
   });
 
+  // 스크롤 이벤트 감지
+  useScrollObserver(parentRef, {
+    onScrollChange,
+  });
+
   // 스크롤이 끝에 가까워지면 다음 페이지 로드
   useEffect(() => {
     const virtualItems = rowVirtualizer.getVirtualItems();
@@ -97,6 +107,14 @@ export function InfiniteImageGallery({
     rowVirtualizer,
     rows.length,
   ]);
+
+  if (isLoading) {
+    return (
+      <div className="h-[100dvh] fixed inset-0 flex justify-center items-center">
+        <Loader2 className="w-10 h-10 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col flex-1 min-h-0 rounded-lg">

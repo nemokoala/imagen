@@ -10,9 +10,7 @@ interface UseScrollVisibilityOptions {
  * @param options 옵션 설정
  * @returns isVisible: 버튼 표시 여부, handleScrollChange: 스크롤 변경 핸들러
  */
-export function useScrollVisibility(
-  options: UseScrollVisibilityOptions = {}
-) {
+export function useScrollVisibility(options: UseScrollVisibilityOptions = {}) {
   const { threshold = 100 } = options;
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollTopRef = useRef(0);
@@ -40,4 +38,3 @@ export function useScrollVisibility(
     handleScrollChange,
   };
 }
-

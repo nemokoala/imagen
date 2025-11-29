@@ -20,7 +20,7 @@ export function ImageCreatButton({ isVisible = true }: ImageCreatButtonProps) {
 
   return (
     <motion.div
-      className="fixed bottom-7 left-1/2 -translate-x-1/2 z-50"
+      className="fixed bottom-9 left-1/2 -translate-x-1/2 z-50"
       initial={{ y: 0, opacity: 1 }}
       animate={{
         y: isVisible ? 0 : 100,
@@ -33,7 +33,7 @@ export function ImageCreatButton({ isVisible = true }: ImageCreatButtonProps) {
       }}
     >
       <Link href="/image-gen">
-        <Button variant="gradient" className="rounded-full">
+        <Button variant="gradient" className="rounded-full" size="lg">
           <Sparkles className="h-4 w-4" />
           이미지 생성하기
         </Button>

@@ -50,7 +50,6 @@ export function ImageModal({
   // image prop이 변경될 때만 업데이트 (모달이 닫혀도 이전 값 유지)
   useEffect(() => {
     if (image) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setImageData(image);
     }
   }, [image]);

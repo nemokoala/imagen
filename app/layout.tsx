@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import QueryProviders from "../providers/QueryProviders";
 import { Header } from "@/components/common/CommonHeader";
-import AuthProvider from "@/providers/AuthProviders";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 
 const pretendard = localFont({

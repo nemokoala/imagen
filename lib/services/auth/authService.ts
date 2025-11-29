@@ -239,7 +239,6 @@ export const authService = {
 
     const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     // 비밀번호를 제외한 사용자 정보 반환
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
     return { ...userWithoutPassword, refreshExpiresAt };
   },
@@ -332,7 +331,6 @@ export const authService = {
     if (!user) {
       throw new ApiError("사용자를 찾을 수 없습니다.", 400, "USER_NOT_FOUND");
     }
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
   },

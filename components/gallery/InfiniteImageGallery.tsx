@@ -63,6 +63,7 @@ export function InfiniteImageGallery({
   }, [images, columnCount]);
 
   // 가상 스크롤 설정 - 동적 높이 측정
+  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,

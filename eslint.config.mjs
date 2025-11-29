@@ -39,10 +39,12 @@ export default [
     rules: {
       // React rules
       ...Object.fromEntries(
-        Object.entries(react.configs.recommended.rules || {}).map(([key, value]) => [
-          key.startsWith("react/") ? key : `react/${key}`,
-          value,
-        ])
+        Object.entries(react.configs.recommended.rules || {}).map(
+          ([key, value]) => [
+            key.startsWith("react/") ? key : `react/${key}`,
+            value,
+          ]
+        )
       ),
       // React Hooks rules
       ...reactHooks.configs.recommended.rules,
@@ -52,6 +54,7 @@ export default [
       // Overrides
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
+      "react-hooks/set-state-in-effect": "off",
     },
   },
   {

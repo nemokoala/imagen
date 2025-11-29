@@ -165,7 +165,12 @@ export default function RegisterPage() {
               />
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 mt-8">
-              <Button type="submit" className="w-full" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+                variant="gradient"
+              >
                 {loading ? "처리중..." : "회원가입"}
               </Button>
               <div className="text-sm text-muted-foreground text-center">

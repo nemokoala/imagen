@@ -128,7 +128,12 @@ export default function LoginPage() {
               />
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 mt-8">
-              <Button type="submit" className="w-full" disabled={isPending}>
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={isPending}
+                variant="gradient"
+              >
                 {isPending ? "로그인 중..." : "로그인"}
               </Button>
               <div className="text-sm text-muted-foreground text-center">

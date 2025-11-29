@@ -32,7 +32,7 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="flex items-center justify-between h-[60px] p-2 sticky top-0 z-50 bg-purple-50 dark:bg-gray-800 border-b border-border">
+      <nav className="flex items-center justify-between h-15 px-2 sticky top-0 z-50 bg-purple-50 dark:bg-gray-800 border-b border-border">
         <Link
           className="relative w-32 h-9 flex-shrink-0 cursor-pointer"
           href="/"
@@ -45,22 +45,22 @@ export const Header = () => {
             priority
           />
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2.5 mr-1 h-full">
           <ThemeToggle />
           {isLoading ? (
             <Skeleton className="w-10 h-10" />
           ) : !isAuthenticated ? (
             <>
               <Link href="/auth/login">
-                <Button variant="ghost">로그인</Button>
+                <Button variant="outline">로그인</Button>
               </Link>
               <Link href="/auth/register">
-                <Button>회원가입</Button>
+                <Button variant="gradient">회원가입</Button>
               </Link>
             </>
           ) : (
             <Button
-              variant="ghost"
+              variant="outline"
               onClick={handleLogout}
               disabled={logoutMutation.isPending}
             >

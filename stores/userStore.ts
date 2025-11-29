@@ -44,7 +44,7 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: "user-storage", // sessionStorage 키 이름
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,

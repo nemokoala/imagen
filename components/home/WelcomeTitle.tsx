@@ -1,11 +1,28 @@
+"use client";
+
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { useUserStore } from "@/stores/userStore";
+import { X } from "lucide-react";
+import { useState } from "react";
 
 export function WelcomeTitle() {
+  const { user } = useUserStore();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isLoggedIn = !!user;
+
+  if (isLoggedIn || isCollapsed) {
+    return null;
+  }
+
   return (
-    <main className="mx-auto px-6 py-8 w-full">
+    <main className="mx-auto px-6 py-8 w-full p-4 rounded-3xl mb-4 relative shadow-lg">
+      <X
+        className="absolute top-4 right-4 size-6 cursor-pointer"
+        onClick={() => setIsCollapsed(true)}
+      />
       <div className="text-center">
-        <h1 className="text-5xl md:text-5xl font-bold text-foreground mb-6">
+        <h1 className="text-5xl font-bold text-foreground mb-6">
           AI로 만드는
           <br />
           <span className="gradient-purple-text">특별한 사진</span>

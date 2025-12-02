@@ -98,6 +98,15 @@ export const authService = {
       throw new ApiError("존재하지 않는 이메일입니다.", 400);
     }
 
+    // 카카오 로그인 사용자는 비밀번호가 없음
+    if (!user.password) {
+      throw new ApiError(
+        "카카오 로그인으로 가입된 계정입니다. 카카오 로그인을 사용해주세요.",
+        400,
+        "KAKAO_ACCOUNT"
+      );
+    }
+
     const isPasswordValid = await compare(password, user.password);
 
     if (!isPasswordValid) {
@@ -333,5 +342,95 @@ export const authService = {
     }
     const { password: _, ...userWithoutPassword } = user;
     return userWithoutPassword;
+  },
+
+  async loginWithKakao(data: {
+    kakaoId: string;
+    email: string;
+    nickname: string;
+    profileImageUrl: string | null;
+  }): Promise<Omit<User, "password"> & { refreshExpiresAt: Date }> {
+    const { kakaoId, email, nickname, profileImageUrl } = data;
+
+    // 입력 데이터 검증
+    if (!kakaoId || !email || !nickname) {
+      throw new ApiError(
+        "카카오 로그인 정보가 올바르지 않습니다.",
+        400,
+        "INVALID_KAKAO_DATA"
+      );
+    }
+
+    // 기존 카카오 사용자 확인
+    let user = await prisma.user.findUnique({
+      where: { kakaoId },
+    });
+
+    if (user) {
+      // 기존 사용자: 프로필 정보 업데이트
+      user = await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          email,
+          nickname,
+          profileImageUrl,
+        },
+      });
+    } else {
+      // 새 사용자: 이메일 중복 확인
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        // 이미 같은 이메일로 가입된 사용자가 있으면 카카오 ID 연결
+        user = await prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            kakaoId,
+            provider: "kakao",
+            profileImageUrl: profileImageUrl || existingUser.profileImageUrl,
+          },
+        });
+      } else {
+        // 닉네임 중복 확인 및 처리
+        let finalNickname = nickname;
+        let nicknameExists = await prisma.user.findFirst({
+          where: { nickname: finalNickname },
+        });
+
+        if (nicknameExists) {
+          // 닉네임이 중복되면 숫자 추가
+          let counter = 1;
+          while (nicknameExists) {
+            finalNickname = `${nickname}_${counter}`;
+            nicknameExists = await prisma.user.findFirst({
+              where: { nickname: finalNickname },
+            });
+            counter++;
+          }
+        }
+
+        // 새 사용자 생성
+        user = await prisma.user.create({
+          data: {
+            email,
+            nickname: finalNickname,
+            kakaoId,
+            provider: "kakao",
+            password: null, // 카카오 로그인은 비밀번호 없음
+            profileImageUrl,
+          },
+        });
+      }
+    }
+
+    // 액세스 토큰 생성 및 쿠키 설정
+    await this.createAccessToken(user);
+
+    const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    // 비밀번호를 제외한 사용자 정보 반환
+    const { password: _, ...userWithoutPassword } = user;
+    return { ...userWithoutPassword, refreshExpiresAt };
   },
 };

@@ -6,7 +6,11 @@ export function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken");
   const refreshToken = request.cookies.get("refreshToken");
 
-  if (pathname.startsWith("/auth") && (accessToken || refreshToken)) {
+  if (
+    pathname.startsWith("/auth") &&
+    !pathname.includes("callback") &&
+    (accessToken || refreshToken)
+  ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
   return NextResponse.next();

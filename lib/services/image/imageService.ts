@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { GoogleGenAI, PersonGeneration } from "@google/genai";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, readFile } from "fs/promises";
 import { join } from "path";
 import mime from "mime";
 import { prisma } from "../../prisma";
@@ -21,6 +21,12 @@ export interface GenerateImageRequest {
   prompt: string;
   model: string;
   userId: number;
+  negativePrompt?: string;
+  width?: number;
+  height?: number;
+  steps?: number;
+  cfg?: number;
+  seed?: number;
 }
 
 export interface GenerateImageResponse {
@@ -261,6 +267,269 @@ export const imageService = {
     }
   },
 
+  async generateImageByZImage(
+    request: GenerateImageRequest
+  ): Promise<GenerateImageResponse> {
+    try {
+      const {
+        prompt,
+        model,
+        userId,
+        negativePrompt,
+        width = 1024,
+        height = 1024,
+        steps,
+        cfg,
+        seed,
+      } = request;
+
+      if (!prompt) {
+        return { success: false, error: "프롬프트가 필요합니다." };
+      }
+
+      const credit = await authService.getCreditById(userId);
+      if (credit.credits < creditConstants.ZIMAGE) {
+        return { success: false, error: "크레딧이 부족합니다." };
+      }
+
+      const COMFY_URL = process.env.COMFYUI_URL;
+
+      console.log("[1/6] 요청 받음:", {
+        prompt,
+        negativePrompt,
+        width,
+        height,
+        steps,
+        cfg,
+        seed,
+      });
+
+      // workflow.json 파일 읽기
+      const workflowPath = join(
+        process.cwd(),
+        "lib",
+        "services",
+        "image",
+        "zimage-workflow.json"
+      );
+      const workflowContent = await readFile(workflowPath, "utf-8");
+      const wf = JSON.parse(JSON.stringify(JSON.parse(workflowContent)));
+
+      // 기본값 설정
+      const defaultNegativePrompt = wf["7"]?.inputs?.text || "blurry ugly bad";
+      const defaultWidth = width || wf["13"]?.inputs?.width;
+      const defaultHeight = height || wf["13"]?.inputs?.height;
+      const defaultSteps = steps || wf["3"]?.inputs?.steps;
+      const defaultCfg = cfg || wf["3"]?.inputs?.cfg;
+
+      // 1) 프롬프트 교체
+      wf["6"].inputs.text = prompt || wf["6"].inputs.text;
+      wf["7"].inputs.text = negativePrompt || defaultNegativePrompt;
+
+      // 2) 해상도 옵션 (노드 13: EmptySD3LatentImage)
+      wf["13"].inputs.width = width || defaultWidth;
+      wf["13"].inputs.height = height || defaultHeight;
+
+      // 3) 샘플러 옵션 (노드 3: KSampler)
+      wf["3"].inputs.steps = steps || defaultSteps;
+      wf["3"].inputs.cfg = cfg || defaultCfg;
+      // seed가 -1이거나 제공되지 않으면 랜덤으로 설정
+      if (typeof seed === "number" && seed !== -1) {
+        wf["3"].inputs.seed = seed;
+      } else {
+        // 랜덤 seed 생성 (0 ~ 2^48 - 1 범위)
+        wf["3"].inputs.seed = Math.floor(Math.random() * 2 ** 48);
+      }
+
+      console.log("[2/6] 워크플로우 설정 완료:", {
+        prompt: wf["6"].inputs.text.substring(0, 50) + "...",
+        negativePrompt: wf["7"].inputs.text.substring(0, 50) + "...",
+        width: wf["13"].inputs.width,
+        height: wf["13"].inputs.height,
+        steps: wf["3"].inputs.steps,
+        cfg: wf["3"].inputs.cfg,
+        seed: wf["3"].inputs.seed,
+        unet: wf["16"]?.inputs?.unet_name,
+        vae: wf["17"]?.inputs?.vae_name,
+      });
+
+      // 4) ComfyUI에 작업 등록
+      console.log("[3/6] ComfyUI에 작업 등록 중...");
+      const promptRes = await fetch(`${COMFY_URL}/api/prompt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: "external-api",
+          prompt: wf,
+        }),
+      });
+
+      const responseData = await promptRes.json();
+      console.log("[3/6] ComfyUI 응답:", JSON.stringify(responseData, null, 2));
+      console.log("[3/6] 응답 상태:", promptRes.status, promptRes.statusText);
+
+      if (!promptRes.ok) {
+        // 노드 에러 정보 출력
+        if (responseData.node_errors) {
+          console.error(
+            "[3/6] 노드 에러 상세:",
+            JSON.stringify(responseData.node_errors, null, 2)
+          );
+          const errorNodes = Object.keys(responseData.node_errors);
+          const errorMessages = errorNodes.map((nodeId) => {
+            const errors = responseData.node_errors[nodeId].errors;
+            return `노드 ${nodeId}: ${errors
+              .map(
+                (e: { message?: string; type?: string }) => e.message || e.type
+              )
+              .join(", ")}`;
+          });
+          throw new Error(
+            `ComfyUI API 오류: ${promptRes.status}\n` +
+              `에러 노드: ${errorMessages.join("\n")}\n` +
+              `상세: ${JSON.stringify(responseData.node_errors, null, 2)}`
+          );
+        }
+        throw new Error(
+          `ComfyUI API 오류: ${promptRes.status} - ${JSON.stringify(
+            responseData
+          )}`
+        );
+      }
+
+      // ComfyUI 응답 구조 확인: prompt_id는 배열의 첫 번째 요소일 수도 있음
+      const prompt_id =
+        responseData.prompt_id ||
+        (Array.isArray(responseData) ? responseData[0]?.prompt_id : null);
+
+      if (!prompt_id) {
+        console.error("[3/6] 응답 데이터:", responseData);
+        throw new Error(
+          `prompt_id를 찾을 수 없습니다. 응답: ${JSON.stringify(responseData)}`
+        );
+      }
+
+      console.log("[4/6] 작업 등록 완료, prompt_id:", prompt_id);
+
+      // 5) 결과 나올 때까지 폴링
+      console.log("[5/6] 결과 대기 중 (폴링 시작)...");
+      type HistoryResponse = Record<
+        string,
+        {
+          outputs?: Record<
+            string,
+            {
+              images: Array<{
+                filename: string;
+                subfolder: string;
+                type: string;
+              }>;
+            }
+          >;
+        }
+      >;
+      let history: HistoryResponse | undefined;
+      let pollCount = 0;
+      const maxPolls = 300; // 최대 5분 대기 (300초)
+
+      while (pollCount < maxPolls) {
+        pollCount++;
+        const hRes = await fetch(`${COMFY_URL}/api/history/${prompt_id}`, {
+          method: "GET",
+        });
+
+        if (!hRes.ok) {
+          console.error(
+            `[5/6] History API 오류: ${hRes.status} ${hRes.statusText}`
+          );
+          await new Promise((r) => setTimeout(r, 1000));
+          continue;
+        }
+
+        const historyData = (await hRes.json()) as HistoryResponse;
+        history = historyData;
+
+        // 응답 구조 확인
+        if (pollCount === 1) {
+          console.log("[5/6] History 응답 구조:", Object.keys(historyData));
+        }
+        if (historyData[prompt_id]?.outputs) {
+          console.log(`[5/6] 결과 수신 완료 (${pollCount}번째 폴링)`);
+          break;
+        }
+
+        if (pollCount % 5 === 0) {
+          console.log(`[5/6] 진행 중... (${pollCount}번째 확인)`);
+        }
+
+        // 너무 자주 때리는 거 방지
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+
+      if (pollCount >= maxPolls || !history) {
+        throw new Error(`타임아웃: ${maxPolls}초 동안 결과를 받지 못했습니다.`);
+      }
+
+      // 6) SaveImage 노드(9) 출력에서 이미지 정보 추출
+      const output = history[prompt_id]?.outputs?.["9"];
+      if (!output) {
+        throw new Error("이미지 출력을 찾을 수 없습니다.");
+      }
+      const images = output.images;
+      const first = images[0];
+      console.log("[6/6] 이미지 정보 추출 완료:", {
+        imageCount: images.length,
+        firstImage: {
+          filename: first.filename,
+          subfolder: first.subfolder,
+          type: first.type,
+        },
+      });
+
+      // ComfyUI 이미지 URL에서 이미지 다운로드
+      const imageUrl = `${COMFY_URL}/view?filename=${encodeURIComponent(
+        first.filename
+      )}&subfolder=${encodeURIComponent(
+        first.subfolder
+      )}&type=${encodeURIComponent(first.type)}`;
+
+      // 이미지를 파일시스템에 저장
+      const savedImagePath = await imageService.saveImageToFileSystem(
+        imageUrl,
+        userId
+      );
+
+      // 크레딧 차감
+      await authService.updateUserCredit(userId, -creditConstants.ZIMAGE);
+
+      // 데이터베이스에 이미지 정보 저장
+      await imageService.saveImageToDatabase({
+        userId,
+        prompt,
+        imageUrl: savedImagePath,
+        model,
+        size: `${width || 1024}x${height || 1024}`,
+      });
+
+      console.log("✅ 응답 전송 완료");
+
+      return {
+        success: true,
+        imageUrl: savedImagePath,
+      };
+    } catch (error: unknown) {
+      console.error("❌ 에러 발생:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "이미지 생성 중 오류가 발생했습니다.";
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    }
+  },
+
   async generateImageByNanoBanana(
     request: GenerateImageRequest
   ): Promise<GenerateImageResponse> {
@@ -373,12 +642,19 @@ export const imageService = {
     try {
       let imageBuffer: Buffer;
       // 이미지 URL에서 이미지 데이터 가져오기
-      if (imageUrl.includes("https://")) {
+      if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
         const response = await fetch(imageUrl);
+        if (!response.ok) {
+          throw new Error(
+            `이미지 다운로드 실패: ${response.status} ${response.statusText}`
+          );
+        }
         imageBuffer = Buffer.from(await response.arrayBuffer());
-      } else {
+      } else if (imageUrl.startsWith("data:image/")) {
         const base64Image = imageUrl.replace(/^data:image\/[a-z]+;base64,/, "");
         imageBuffer = Buffer.from(base64Image, "base64");
+      } else {
+        throw new Error(`지원하지 않는 이미지 URL 형식: ${imageUrl}`);
       }
 
       // 저장할 디렉토리 생성 (환경 변수 우선, 기본값 process.cwd()/uploads)

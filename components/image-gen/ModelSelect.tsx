@@ -33,6 +33,8 @@ export const ModelSelect = ({
         return "Google Imagen";
       case "nano-banana":
         return "Nano Banana";
+      case "Z-Image":
+        return "Z-Image";
       default:
         return "모델 선택";
     }
@@ -65,6 +67,13 @@ export const ModelSelect = ({
           <Badge variant="outline" className="text-xs">
             <MiniDot />
             {creditConstants.NANO_BANANA} 크레딧
+          </Badge>
+        );
+      case "Z-Image":
+        return (
+          <Badge variant="outline" className="text-xs">
+            <MiniDot />
+            {creditConstants.ZIMAGE} 크레딧
           </Badge>
         );
       default:
@@ -112,6 +121,10 @@ export const ModelSelect = ({
             )}
             Stable Diffusion XL
           </div>
+        </SelectItem>
+        <SelectItem value="Z-Image">
+          {getCreditText("Z-Image")}
+          Z-Image
         </SelectItem>
         <SelectItem value="dall-e-3">
           {getCreditText("dall-e-3")}

@@ -23,13 +23,18 @@ export async function POST(req: NextRequest) {
       throw new ApiError("프롬프트가 필요합니다.", 400, "PROMPT_REQUIRED");
     }
 
-    // 🆕 Stable Diffusion 제외하고 전체 요청 횟수 체크
+    // 🆕 Stable Diffusion과 Z-Image 제외하고 전체 요청 횟수 체크
+    const isZImage = model === "Z-Image";
     const isStableDiffusion =
       model.includes("stable-diffusion") ||
       model.startsWith("sd-") ||
-      !["dall-e-3", "google-imagen", "nano-banana"].includes(model);
+      !["dall-e-3", "google-imagen", "nano-banana", "Z-Image"].includes(model);
 
-    if (!isStableDiffusion && totalRequestCount >= MAX_TOTAL_REQUESTS) {
+    if (
+      !isStableDiffusion &&
+      !isZImage &&
+      totalRequestCount >= MAX_TOTAL_REQUESTS
+    ) {
       throw new ApiError(
         `테스트 요청 한도에 도달했습니다. (전체 ${MAX_TOTAL_REQUESTS}회)`,
         429,
@@ -60,6 +65,12 @@ export async function POST(req: NextRequest) {
         model,
         userId,
       });
+    } else if (model === "Z-Image") {
+      result = await imageService.generateImageByZImage({
+        prompt,
+        model,
+        userId,
+      });
     } else {
       result = await imageService.generateImageByStableDiffusion({
         prompt,
@@ -76,8 +87,8 @@ export async function POST(req: NextRequest) {
       throw new ApiError(errorMessage, 400, "IMAGE_GENERATION_FAILED");
     }
 
-    // 🆕 성공 시 Stable Diffusion 제외하고 카운트 증가
-    if (!isStableDiffusion) {
+    // 🆕 성공 시 Stable Diffusion과 Z-Image 제외하고 카운트 증가
+    if (!isStableDiffusion && !isZImage) {
       totalRequestCount++;
       console.log(`[Request Count] ${totalRequestCount}/${MAX_TOTAL_REQUESTS}`);
     }
@@ -86,9 +97,10 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         imageUrl: result.imageUrl,
-        remaining: isStableDiffusion
-          ? "unlimited"
-          : MAX_TOTAL_REQUESTS - totalRequestCount,
+        remaining:
+          isStableDiffusion || isZImage
+            ? "unlimited"
+            : MAX_TOTAL_REQUESTS - totalRequestCount,
       },
       { status: 200 }
     );

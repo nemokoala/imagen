@@ -77,11 +77,11 @@ export const useGetGalleryImagesInfiniteQuery = (limit: number = 20) => {
   });
 };
 
-export const useHealthCheckQuery = () => {
+export const useHealthCheckQuery = ({ target }: { target: string }) => {
   return useQuery({
-    queryKey: ["healthCheck"],
+    queryKey: ["healthCheck", target],
     queryFn: async (): Promise<HealthCheckResponse> => {
-      const response = await FetchUtil.get("/api/health-check/stable");
+      const response = await FetchUtil.get(`/api/health-check/${target}`);
       return response as HealthCheckResponse;
     },
     retry: false,

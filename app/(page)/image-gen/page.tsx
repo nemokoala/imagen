@@ -20,15 +20,23 @@ export default function ImageGenPage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: healthCheck, isLoading: isHealthCheckLoading } =
-    useHealthCheckQuery();
+  const { data: stableHealthCheck, isLoading: isStableHealthCheckLoading } =
+    useHealthCheckQuery({ target: "stable" });
+
+  const { data: zimageHealthCheck, isLoading: isZimageHealthCheckLoading } =
+    useHealthCheckQuery({ target: "zimage" });
 
   const { data: credit, isLoading: isCreditLoading } = useGetUserCreditQuery();
 
   // healthCheck에 따라 기본 모델 계산
   const defaultModel = useMemo(
-    () => (healthCheck?.healthy ? "stable-diffusion-xl" : "dall-e-3"),
-    [healthCheck?.healthy]
+    () =>
+      stableHealthCheck?.healthy
+        ? "stable-diffusion-xl"
+        : zimageHealthCheck?.healthy
+        ? "Z-Image"
+        : "dall-e-3",
+    [stableHealthCheck?.healthy, zimageHealthCheck?.healthy]
   );
 
   // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
@@ -128,8 +136,10 @@ export default function ImageGenPage() {
                 <ModelSelect
                   model={model}
                   setModel={handleModelChange}
-                  healthCheck={healthCheck}
-                  isHealthCheckLoading={isHealthCheckLoading}
+                  stableHealthCheck={stableHealthCheck}
+                  zimageHealthCheck={zimageHealthCheck}
+                  isStableHealthCheckLoading={isStableHealthCheckLoading}
+                  isZimageHealthCheckLoading={isZimageHealthCheckLoading}
                 />
               </div>
             </div>

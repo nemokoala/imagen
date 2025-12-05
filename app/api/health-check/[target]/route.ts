@@ -19,9 +19,16 @@ export async function GET(
       case "stable":
         response = await imageService.stableHealthCheck();
         break;
+      case "comfyui":
+      case "zimage":
+        response = await imageService.comfyUIHealthCheck();
+        break;
       default:
         return NextResponse.json(
-          { error: 'Invalid target. Use "ollama" or "stable"' },
+          {
+            error:
+              'Invalid target. Use "ollama", "stable", "comfyui", or "zimage"',
+          },
           { status: 400 }
         );
     }

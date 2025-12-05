@@ -776,4 +776,24 @@ export const imageService = {
       throw new Error("Failed to check stable health");
     }
   },
+
+  async comfyUIHealthCheck(): Promise<boolean> {
+    try {
+      const COMFY_URL = process.env.COMFYUI_URL || "http://127.0.0.1:8188";
+      // ComfyUI의 system_stats 엔드포인트로 헬스체크
+      const response = await fetch(`${COMFY_URL}/system_stats`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`ComfyUI health check failed: ${response.status}`);
+      }
+
+      return response.ok;
+    } catch (error) {
+      console.error("Error checking ComfyUI health:", error);
+      throw new Error("Failed to check ComfyUI health");
+    }
+  },
 };

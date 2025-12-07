@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageCard } from "@/components/gallery/ImageCard";
-import { Image } from "@/types/types";
+import { Image } from "@/types/image.interfaces";
 import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
 import { Button } from "@/components/ui/button";
 import { useVirtualizer } from "@tanstack/react-virtual";

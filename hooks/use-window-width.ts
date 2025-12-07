@@ -31,3 +31,4 @@ export function useWindowWidth(): number {
 
   return width;
 }
+

@@ -70,7 +70,7 @@ export const commentService = {
       },
     });
 
-    return comments;
+    return comments as CommentWithUser[];
   },
 
   /**
@@ -122,11 +122,21 @@ export const commentService = {
             profileImageUrl: true,
           },
         },
-        replies: true,
+        replies: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                nickname: true,
+                profileImageUrl: true,
+              },
+            },
+          },
+        },
       },
     });
 
-    return comment;
+    return comment as CommentWithUser;
   },
 
   /**
@@ -185,7 +195,7 @@ export const commentService = {
       },
     });
 
-    return updatedComment;
+    return updatedComment as CommentWithUser;
   },
 
   /**

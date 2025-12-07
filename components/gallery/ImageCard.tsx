@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download } from "lucide-react";
 import Image from "next/image";
-import { Image as ImageType } from "@/types/types";
+import { Image as ImageType } from "@/types/image.interfaces";
 
 interface ImageCardProps {
   image: ImageType;

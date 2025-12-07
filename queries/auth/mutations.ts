@@ -1,6 +1,6 @@
 import { FetchUtil } from "@/lib/Fetch.util";
 import { LoginFormData, RegisterFormData } from "@/schemas/auth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ErrorResponse } from "@/types/common.interfaces";
 import {
   LoginResponse,
@@ -46,6 +46,7 @@ export const useLogoutMutation = (
   onSuccess: (response: LogoutResponse) => void,
   onError: (error: ErrorResponse) => void
 ) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (): Promise<LogoutResponse> => {
       const response = await FetchUtil.post<Record<string, never>>(
@@ -54,7 +55,10 @@ export const useLogoutMutation = (
       );
       return response as LogoutResponse;
     },
-    onSuccess: (response) => onSuccess(response),
+    onSuccess: (response) => {
+      onSuccess(response);
+      queryClient.removeQueries({ queryKey: ["userInfo"] });
+    },
     onError: (error) => onError(error as ErrorResponse),
   });
 };

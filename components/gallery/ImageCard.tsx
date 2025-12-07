@@ -5,23 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Download } from "lucide-react";
 import Image from "next/image";
-
-interface Image {
-  id: number;
-  prompt: string;
-  imageUrl: string;
-  model: string;
-  size: string;
-  createdAt: string;
-  user: {
-    id: number;
-    nickname: string;
-  };
-}
+import { Image as ImageType } from "@/types/types";
 
 interface ImageCardProps {
-  image: Image;
-  onImageClick: (image: Image) => void;
+  image: ImageType;
+  onImageClick: (image: ImageType) => void;
   onDownload: (imageUrl: string, prompt: string) => void;
 }
 
@@ -63,25 +51,6 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
           </Button>
         </div>
       </div>
-
-      {/* <CardHeader className="p-4 pb-2">
-        <CardTitle className="text-sm line-clamp-2 mb-2 text-gray-800">
-          {image.prompt}
-        </CardTitle>
-      </CardHeader> */}
-
-      {/* <CardContent className="p-4 pt-0">
-        <div className="flex items-center justify-between text-xs text-gray-500">
-          <div className="flex items-center gap-1">
-            <User className="w-3 h-3" />
-            <span>{image.user.nickname}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Calendar className="w-3 h-3" />
-            <span>{formatDate(image.createdAt)}</span>
-          </div>
-        </div>
-      </CardContent> */}
     </Card>
   );
 }

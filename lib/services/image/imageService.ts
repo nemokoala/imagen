@@ -739,6 +739,12 @@ export const imageService = {
                 nickname: true,
               },
             },
+            _count: {
+              select: {
+                likes: true,
+                comments: true,
+              },
+            },
           },
           orderBy: { createdAt: "desc" },
           skip,
@@ -747,8 +753,15 @@ export const imageService = {
         prisma.generatedImage.count(),
       ]);
 
+      // 평탄화: _count 객체를 likeCount, commentCount로 변환
+      const flattenedImages = images.map(({ _count, ...image }) => ({
+        ...image,
+        likeCount: _count.likes,
+        commentCount: _count.comments,
+      }));
+
       return {
-        images,
+        images: flattenedImages,
         totalCount,
         currentPage: page,
         totalPages: Math.ceil(totalCount / limit),

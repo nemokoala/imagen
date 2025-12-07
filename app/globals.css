@@ -13,6 +13,7 @@ body {
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-plus: var(--background-plus);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-pretendard);
   --font-mono: var(--font-geist-mono);
@@ -55,6 +56,7 @@ body {
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
+  --background-plus: oklch(0.95 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -89,9 +91,10 @@ body {
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: var(--color-gray-800);
+  --background-plus: var(--color-gray-700);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: var(--color-gray-900);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);

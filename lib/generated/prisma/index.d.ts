@@ -28,6 +28,16 @@ export type LoginAttempt = $Result.DefaultSelection<Prisma.$LoginAttemptPayload>
  * 
  */
 export type GeneratedImage = $Result.DefaultSelection<Prisma.$GeneratedImagePayload>
+/**
+ * Model ImageLike
+ * 
+ */
+export type ImageLike = $Result.DefaultSelection<Prisma.$ImageLikePayload>
+/**
+ * Model ImageComment
+ * 
+ */
+export type ImageComment = $Result.DefaultSelection<Prisma.$ImageCommentPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -183,6 +193,26 @@ export class PrismaClient<
     * ```
     */
   get generatedImage(): Prisma.GeneratedImageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.imageLike`: Exposes CRUD operations for the **ImageLike** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ImageLikes
+    * const imageLikes = await prisma.imageLike.findMany()
+    * ```
+    */
+  get imageLike(): Prisma.ImageLikeDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.imageComment`: Exposes CRUD operations for the **ImageComment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ImageComments
+    * const imageComments = await prisma.imageComment.findMany()
+    * ```
+    */
+  get imageComment(): Prisma.ImageCommentDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -625,7 +655,9 @@ export namespace Prisma {
   export const ModelName: {
     User: 'User',
     LoginAttempt: 'LoginAttempt',
-    GeneratedImage: 'GeneratedImage'
+    GeneratedImage: 'GeneratedImage',
+    ImageLike: 'ImageLike',
+    ImageComment: 'ImageComment'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -644,7 +676,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "loginAttempt" | "generatedImage"
+      modelProps: "user" | "loginAttempt" | "generatedImage" | "imageLike" | "imageComment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -846,6 +878,138 @@ export namespace Prisma {
           }
         }
       }
+      ImageLike: {
+        payload: Prisma.$ImageLikePayload<ExtArgs>
+        fields: Prisma.ImageLikeFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ImageLikeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ImageLikeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>
+          }
+          findFirst: {
+            args: Prisma.ImageLikeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ImageLikeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>
+          }
+          findMany: {
+            args: Prisma.ImageLikeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>[]
+          }
+          create: {
+            args: Prisma.ImageLikeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>
+          }
+          createMany: {
+            args: Prisma.ImageLikeCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ImageLikeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>
+          }
+          update: {
+            args: Prisma.ImageLikeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>
+          }
+          deleteMany: {
+            args: Prisma.ImageLikeDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ImageLikeUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ImageLikeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageLikePayload>
+          }
+          aggregate: {
+            args: Prisma.ImageLikeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateImageLike>
+          }
+          groupBy: {
+            args: Prisma.ImageLikeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ImageLikeGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ImageLikeCountArgs<ExtArgs>
+            result: $Utils.Optional<ImageLikeCountAggregateOutputType> | number
+          }
+        }
+      }
+      ImageComment: {
+        payload: Prisma.$ImageCommentPayload<ExtArgs>
+        fields: Prisma.ImageCommentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ImageCommentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ImageCommentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>
+          }
+          findFirst: {
+            args: Prisma.ImageCommentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ImageCommentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>
+          }
+          findMany: {
+            args: Prisma.ImageCommentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>[]
+          }
+          create: {
+            args: Prisma.ImageCommentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>
+          }
+          createMany: {
+            args: Prisma.ImageCommentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ImageCommentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>
+          }
+          update: {
+            args: Prisma.ImageCommentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>
+          }
+          deleteMany: {
+            args: Prisma.ImageCommentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ImageCommentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ImageCommentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageCommentPayload>
+          }
+          aggregate: {
+            args: Prisma.ImageCommentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateImageComment>
+          }
+          groupBy: {
+            args: Prisma.ImageCommentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ImageCommentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ImageCommentCountArgs<ExtArgs>
+            result: $Utils.Optional<ImageCommentCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -933,6 +1097,8 @@ export namespace Prisma {
     user?: UserOmit
     loginAttempt?: LoginAttemptOmit
     generatedImage?: GeneratedImageOmit
+    imageLike?: ImageLikeOmit
+    imageComment?: ImageCommentOmit
   }
 
   /* Types for Logging */
@@ -1029,11 +1195,15 @@ export namespace Prisma {
   export type UserCountOutputType = {
     loginAttempts: number
     generatedImages: number
+    imageLikes: number
+    imageComments: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     loginAttempts?: boolean | UserCountOutputTypeCountLoginAttemptsArgs
     generatedImages?: boolean | UserCountOutputTypeCountGeneratedImagesArgs
+    imageLikes?: boolean | UserCountOutputTypeCountImageLikesArgs
+    imageComments?: boolean | UserCountOutputTypeCountImageCommentsArgs
   }
 
   // Custom InputTypes
@@ -1059,6 +1229,91 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountGeneratedImagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: GeneratedImageWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountImageLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageLikeWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountImageCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageCommentWhereInput
+  }
+
+
+  /**
+   * Count Type GeneratedImageCountOutputType
+   */
+
+  export type GeneratedImageCountOutputType = {
+    likes: number
+    comments: number
+  }
+
+  export type GeneratedImageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    likes?: boolean | GeneratedImageCountOutputTypeCountLikesArgs
+    comments?: boolean | GeneratedImageCountOutputTypeCountCommentsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * GeneratedImageCountOutputType without action
+   */
+  export type GeneratedImageCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GeneratedImageCountOutputType
+     */
+    select?: GeneratedImageCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * GeneratedImageCountOutputType without action
+   */
+  export type GeneratedImageCountOutputTypeCountLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageLikeWhereInput
+  }
+
+  /**
+   * GeneratedImageCountOutputType without action
+   */
+  export type GeneratedImageCountOutputTypeCountCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageCommentWhereInput
+  }
+
+
+  /**
+   * Count Type ImageCommentCountOutputType
+   */
+
+  export type ImageCommentCountOutputType = {
+    replies: number
+  }
+
+  export type ImageCommentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    replies?: boolean | ImageCommentCountOutputTypeCountRepliesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * ImageCommentCountOutputType without action
+   */
+  export type ImageCommentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageCommentCountOutputType
+     */
+    select?: ImageCommentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * ImageCommentCountOutputType without action
+   */
+  export type ImageCommentCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageCommentWhereInput
   }
 
 
@@ -1310,6 +1565,8 @@ export namespace Prisma {
     profileImageUrl?: boolean
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
+    imageLikes?: boolean | User$imageLikesArgs<ExtArgs>
+    imageComments?: boolean | User$imageCommentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1332,6 +1589,8 @@ export namespace Prisma {
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
+    imageLikes?: boolean | User$imageLikesArgs<ExtArgs>
+    imageComments?: boolean | User$imageCommentsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -1340,6 +1599,8 @@ export namespace Prisma {
     objects: {
       loginAttempts: Prisma.$LoginAttemptPayload<ExtArgs>[]
       generatedImages: Prisma.$GeneratedImagePayload<ExtArgs>[]
+      imageLikes: Prisma.$ImageLikePayload<ExtArgs>[]
+      imageComments: Prisma.$ImageCommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -1694,6 +1955,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     loginAttempts<T extends User$loginAttemptsArgs<ExtArgs> = {}>(args?: Subset<T, User$loginAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoginAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     generatedImages<T extends User$generatedImagesArgs<ExtArgs> = {}>(args?: Subset<T, User$generatedImagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GeneratedImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    imageLikes<T extends User$imageLikesArgs<ExtArgs> = {}>(args?: Subset<T, User$imageLikesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    imageComments<T extends User$imageCommentsArgs<ExtArgs> = {}>(args?: Subset<T, User$imageCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2121,6 +2384,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GeneratedImageScalarFieldEnum | GeneratedImageScalarFieldEnum[]
+  }
+
+  /**
+   * User.imageLikes
+   */
+  export type User$imageLikesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    where?: ImageLikeWhereInput
+    orderBy?: ImageLikeOrderByWithRelationInput | ImageLikeOrderByWithRelationInput[]
+    cursor?: ImageLikeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageLikeScalarFieldEnum | ImageLikeScalarFieldEnum[]
+  }
+
+  /**
+   * User.imageComments
+   */
+  export type User$imageCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    where?: ImageCommentWhereInput
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    cursor?: ImageCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
   }
 
   /**
@@ -3374,6 +3685,9 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
+    likes?: boolean | GeneratedImage$likesArgs<ExtArgs>
+    comments?: boolean | GeneratedImage$commentsArgs<ExtArgs>
+    _count?: boolean | GeneratedImageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["generatedImage"]>
 
 
@@ -3394,12 +3708,17 @@ export namespace Prisma {
   export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "imageUrl" | "model" | "size" | "editData" | "editedImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
   export type GeneratedImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
+    likes?: boolean | GeneratedImage$likesArgs<ExtArgs>
+    comments?: boolean | GeneratedImage$commentsArgs<ExtArgs>
+    _count?: boolean | GeneratedImageCountOutputTypeDefaultArgs<ExtArgs>
   }
 
   export type $GeneratedImagePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "GeneratedImage"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
+      likes: Prisma.$ImageLikePayload<ExtArgs>[]
+      comments: Prisma.$ImageCommentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -3753,6 +4072,8 @@ export namespace Prisma {
   export interface Prisma__GeneratedImageClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    likes<T extends GeneratedImage$likesArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImage$likesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    comments<T extends GeneratedImage$commentsArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImage$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4135,6 +4456,54 @@ export namespace Prisma {
   }
 
   /**
+   * GeneratedImage.likes
+   */
+  export type GeneratedImage$likesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    where?: ImageLikeWhereInput
+    orderBy?: ImageLikeOrderByWithRelationInput | ImageLikeOrderByWithRelationInput[]
+    cursor?: ImageLikeWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageLikeScalarFieldEnum | ImageLikeScalarFieldEnum[]
+  }
+
+  /**
+   * GeneratedImage.comments
+   */
+  export type GeneratedImage$commentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    where?: ImageCommentWhereInput
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    cursor?: ImageCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
+  }
+
+  /**
    * GeneratedImage without action
    */
   export type GeneratedImageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4150,6 +4519,2024 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: GeneratedImageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ImageLike
+   */
+
+  export type AggregateImageLike = {
+    _count: ImageLikeCountAggregateOutputType | null
+    _avg: ImageLikeAvgAggregateOutputType | null
+    _sum: ImageLikeSumAggregateOutputType | null
+    _min: ImageLikeMinAggregateOutputType | null
+    _max: ImageLikeMaxAggregateOutputType | null
+  }
+
+  export type ImageLikeAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+  }
+
+  export type ImageLikeSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+  }
+
+  export type ImageLikeMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+    createdAt: Date | null
+  }
+
+  export type ImageLikeMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+    createdAt: Date | null
+  }
+
+  export type ImageLikeCountAggregateOutputType = {
+    id: number
+    userId: number
+    imageId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ImageLikeAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+  }
+
+  export type ImageLikeSumAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+  }
+
+  export type ImageLikeMinAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    createdAt?: true
+  }
+
+  export type ImageLikeMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    createdAt?: true
+  }
+
+  export type ImageLikeCountAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ImageLikeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ImageLike to aggregate.
+     */
+    where?: ImageLikeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageLikes to fetch.
+     */
+    orderBy?: ImageLikeOrderByWithRelationInput | ImageLikeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ImageLikeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageLikes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageLikes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ImageLikes
+    **/
+    _count?: true | ImageLikeCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ImageLikeAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ImageLikeSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ImageLikeMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ImageLikeMaxAggregateInputType
+  }
+
+  export type GetImageLikeAggregateType<T extends ImageLikeAggregateArgs> = {
+        [P in keyof T & keyof AggregateImageLike]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateImageLike[P]>
+      : GetScalarType<T[P], AggregateImageLike[P]>
+  }
+
+
+
+
+  export type ImageLikeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageLikeWhereInput
+    orderBy?: ImageLikeOrderByWithAggregationInput | ImageLikeOrderByWithAggregationInput[]
+    by: ImageLikeScalarFieldEnum[] | ImageLikeScalarFieldEnum
+    having?: ImageLikeScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ImageLikeCountAggregateInputType | true
+    _avg?: ImageLikeAvgAggregateInputType
+    _sum?: ImageLikeSumAggregateInputType
+    _min?: ImageLikeMinAggregateInputType
+    _max?: ImageLikeMaxAggregateInputType
+  }
+
+  export type ImageLikeGroupByOutputType = {
+    id: number
+    userId: number
+    imageId: number
+    createdAt: Date
+    _count: ImageLikeCountAggregateOutputType | null
+    _avg: ImageLikeAvgAggregateOutputType | null
+    _sum: ImageLikeSumAggregateOutputType | null
+    _min: ImageLikeMinAggregateOutputType | null
+    _max: ImageLikeMaxAggregateOutputType | null
+  }
+
+  type GetImageLikeGroupByPayload<T extends ImageLikeGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ImageLikeGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ImageLikeGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ImageLikeGroupByOutputType[P]>
+            : GetScalarType<T[P], ImageLikeGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ImageLikeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    imageId?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    image?: boolean | GeneratedImageDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["imageLike"]>
+
+
+
+  export type ImageLikeSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    imageId?: boolean
+    createdAt?: boolean
+  }
+
+  export type ImageLikeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "imageId" | "createdAt", ExtArgs["result"]["imageLike"]>
+  export type ImageLikeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    image?: boolean | GeneratedImageDefaultArgs<ExtArgs>
+  }
+
+  export type $ImageLikePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ImageLike"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      image: Prisma.$GeneratedImagePayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      imageId: number
+      createdAt: Date
+    }, ExtArgs["result"]["imageLike"]>
+    composites: {}
+  }
+
+  type ImageLikeGetPayload<S extends boolean | null | undefined | ImageLikeDefaultArgs> = $Result.GetResult<Prisma.$ImageLikePayload, S>
+
+  type ImageLikeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ImageLikeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ImageLikeCountAggregateInputType | true
+    }
+
+  export interface ImageLikeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ImageLike'], meta: { name: 'ImageLike' } }
+    /**
+     * Find zero or one ImageLike that matches the filter.
+     * @param {ImageLikeFindUniqueArgs} args - Arguments to find a ImageLike
+     * @example
+     * // Get one ImageLike
+     * const imageLike = await prisma.imageLike.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ImageLikeFindUniqueArgs>(args: SelectSubset<T, ImageLikeFindUniqueArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ImageLike that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ImageLikeFindUniqueOrThrowArgs} args - Arguments to find a ImageLike
+     * @example
+     * // Get one ImageLike
+     * const imageLike = await prisma.imageLike.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ImageLikeFindUniqueOrThrowArgs>(args: SelectSubset<T, ImageLikeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ImageLike that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeFindFirstArgs} args - Arguments to find a ImageLike
+     * @example
+     * // Get one ImageLike
+     * const imageLike = await prisma.imageLike.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ImageLikeFindFirstArgs>(args?: SelectSubset<T, ImageLikeFindFirstArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ImageLike that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeFindFirstOrThrowArgs} args - Arguments to find a ImageLike
+     * @example
+     * // Get one ImageLike
+     * const imageLike = await prisma.imageLike.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ImageLikeFindFirstOrThrowArgs>(args?: SelectSubset<T, ImageLikeFindFirstOrThrowArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ImageLikes that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ImageLikes
+     * const imageLikes = await prisma.imageLike.findMany()
+     * 
+     * // Get first 10 ImageLikes
+     * const imageLikes = await prisma.imageLike.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const imageLikeWithIdOnly = await prisma.imageLike.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ImageLikeFindManyArgs>(args?: SelectSubset<T, ImageLikeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ImageLike.
+     * @param {ImageLikeCreateArgs} args - Arguments to create a ImageLike.
+     * @example
+     * // Create one ImageLike
+     * const ImageLike = await prisma.imageLike.create({
+     *   data: {
+     *     // ... data to create a ImageLike
+     *   }
+     * })
+     * 
+     */
+    create<T extends ImageLikeCreateArgs>(args: SelectSubset<T, ImageLikeCreateArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ImageLikes.
+     * @param {ImageLikeCreateManyArgs} args - Arguments to create many ImageLikes.
+     * @example
+     * // Create many ImageLikes
+     * const imageLike = await prisma.imageLike.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ImageLikeCreateManyArgs>(args?: SelectSubset<T, ImageLikeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ImageLike.
+     * @param {ImageLikeDeleteArgs} args - Arguments to delete one ImageLike.
+     * @example
+     * // Delete one ImageLike
+     * const ImageLike = await prisma.imageLike.delete({
+     *   where: {
+     *     // ... filter to delete one ImageLike
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ImageLikeDeleteArgs>(args: SelectSubset<T, ImageLikeDeleteArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ImageLike.
+     * @param {ImageLikeUpdateArgs} args - Arguments to update one ImageLike.
+     * @example
+     * // Update one ImageLike
+     * const imageLike = await prisma.imageLike.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ImageLikeUpdateArgs>(args: SelectSubset<T, ImageLikeUpdateArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ImageLikes.
+     * @param {ImageLikeDeleteManyArgs} args - Arguments to filter ImageLikes to delete.
+     * @example
+     * // Delete a few ImageLikes
+     * const { count } = await prisma.imageLike.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ImageLikeDeleteManyArgs>(args?: SelectSubset<T, ImageLikeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ImageLikes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ImageLikes
+     * const imageLike = await prisma.imageLike.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ImageLikeUpdateManyArgs>(args: SelectSubset<T, ImageLikeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ImageLike.
+     * @param {ImageLikeUpsertArgs} args - Arguments to update or create a ImageLike.
+     * @example
+     * // Update or create a ImageLike
+     * const imageLike = await prisma.imageLike.upsert({
+     *   create: {
+     *     // ... data to create a ImageLike
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ImageLike we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ImageLikeUpsertArgs>(args: SelectSubset<T, ImageLikeUpsertArgs<ExtArgs>>): Prisma__ImageLikeClient<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ImageLikes.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeCountArgs} args - Arguments to filter ImageLikes to count.
+     * @example
+     * // Count the number of ImageLikes
+     * const count = await prisma.imageLike.count({
+     *   where: {
+     *     // ... the filter for the ImageLikes we want to count
+     *   }
+     * })
+    **/
+    count<T extends ImageLikeCountArgs>(
+      args?: Subset<T, ImageLikeCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ImageLikeCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ImageLike.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ImageLikeAggregateArgs>(args: Subset<T, ImageLikeAggregateArgs>): Prisma.PrismaPromise<GetImageLikeAggregateType<T>>
+
+    /**
+     * Group by ImageLike.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageLikeGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ImageLikeGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ImageLikeGroupByArgs['orderBy'] }
+        : { orderBy?: ImageLikeGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ImageLikeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetImageLikeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ImageLike model
+   */
+  readonly fields: ImageLikeFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ImageLike.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ImageLikeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    image<T extends GeneratedImageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImageDefaultArgs<ExtArgs>>): Prisma__GeneratedImageClient<$Result.GetResult<Prisma.$GeneratedImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ImageLike model
+   */
+  interface ImageLikeFieldRefs {
+    readonly id: FieldRef<"ImageLike", 'Int'>
+    readonly userId: FieldRef<"ImageLike", 'Int'>
+    readonly imageId: FieldRef<"ImageLike", 'Int'>
+    readonly createdAt: FieldRef<"ImageLike", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ImageLike findUnique
+   */
+  export type ImageLikeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageLike to fetch.
+     */
+    where: ImageLikeWhereUniqueInput
+  }
+
+  /**
+   * ImageLike findUniqueOrThrow
+   */
+  export type ImageLikeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageLike to fetch.
+     */
+    where: ImageLikeWhereUniqueInput
+  }
+
+  /**
+   * ImageLike findFirst
+   */
+  export type ImageLikeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageLike to fetch.
+     */
+    where?: ImageLikeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageLikes to fetch.
+     */
+    orderBy?: ImageLikeOrderByWithRelationInput | ImageLikeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ImageLikes.
+     */
+    cursor?: ImageLikeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageLikes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageLikes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ImageLikes.
+     */
+    distinct?: ImageLikeScalarFieldEnum | ImageLikeScalarFieldEnum[]
+  }
+
+  /**
+   * ImageLike findFirstOrThrow
+   */
+  export type ImageLikeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageLike to fetch.
+     */
+    where?: ImageLikeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageLikes to fetch.
+     */
+    orderBy?: ImageLikeOrderByWithRelationInput | ImageLikeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ImageLikes.
+     */
+    cursor?: ImageLikeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageLikes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageLikes.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ImageLikes.
+     */
+    distinct?: ImageLikeScalarFieldEnum | ImageLikeScalarFieldEnum[]
+  }
+
+  /**
+   * ImageLike findMany
+   */
+  export type ImageLikeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageLikes to fetch.
+     */
+    where?: ImageLikeWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageLikes to fetch.
+     */
+    orderBy?: ImageLikeOrderByWithRelationInput | ImageLikeOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ImageLikes.
+     */
+    cursor?: ImageLikeWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageLikes from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageLikes.
+     */
+    skip?: number
+    distinct?: ImageLikeScalarFieldEnum | ImageLikeScalarFieldEnum[]
+  }
+
+  /**
+   * ImageLike create
+   */
+  export type ImageLikeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ImageLike.
+     */
+    data: XOR<ImageLikeCreateInput, ImageLikeUncheckedCreateInput>
+  }
+
+  /**
+   * ImageLike createMany
+   */
+  export type ImageLikeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ImageLikes.
+     */
+    data: ImageLikeCreateManyInput | ImageLikeCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ImageLike update
+   */
+  export type ImageLikeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ImageLike.
+     */
+    data: XOR<ImageLikeUpdateInput, ImageLikeUncheckedUpdateInput>
+    /**
+     * Choose, which ImageLike to update.
+     */
+    where: ImageLikeWhereUniqueInput
+  }
+
+  /**
+   * ImageLike updateMany
+   */
+  export type ImageLikeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ImageLikes.
+     */
+    data: XOR<ImageLikeUpdateManyMutationInput, ImageLikeUncheckedUpdateManyInput>
+    /**
+     * Filter which ImageLikes to update
+     */
+    where?: ImageLikeWhereInput
+    /**
+     * Limit how many ImageLikes to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ImageLike upsert
+   */
+  export type ImageLikeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ImageLike to update in case it exists.
+     */
+    where: ImageLikeWhereUniqueInput
+    /**
+     * In case the ImageLike found by the `where` argument doesn't exist, create a new ImageLike with this data.
+     */
+    create: XOR<ImageLikeCreateInput, ImageLikeUncheckedCreateInput>
+    /**
+     * In case the ImageLike was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ImageLikeUpdateInput, ImageLikeUncheckedUpdateInput>
+  }
+
+  /**
+   * ImageLike delete
+   */
+  export type ImageLikeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+    /**
+     * Filter which ImageLike to delete.
+     */
+    where: ImageLikeWhereUniqueInput
+  }
+
+  /**
+   * ImageLike deleteMany
+   */
+  export type ImageLikeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ImageLikes to delete
+     */
+    where?: ImageLikeWhereInput
+    /**
+     * Limit how many ImageLikes to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ImageLike without action
+   */
+  export type ImageLikeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageLike
+     */
+    select?: ImageLikeSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageLike
+     */
+    omit?: ImageLikeOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageLikeInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ImageComment
+   */
+
+  export type AggregateImageComment = {
+    _count: ImageCommentCountAggregateOutputType | null
+    _avg: ImageCommentAvgAggregateOutputType | null
+    _sum: ImageCommentSumAggregateOutputType | null
+    _min: ImageCommentMinAggregateOutputType | null
+    _max: ImageCommentMaxAggregateOutputType | null
+  }
+
+  export type ImageCommentAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+    parentId: number | null
+  }
+
+  export type ImageCommentSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+    parentId: number | null
+  }
+
+  export type ImageCommentMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+    content: string | null
+    parentId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ImageCommentMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    imageId: number | null
+    content: string | null
+    parentId: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ImageCommentCountAggregateOutputType = {
+    id: number
+    userId: number
+    imageId: number
+    content: number
+    parentId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ImageCommentAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    parentId?: true
+  }
+
+  export type ImageCommentSumAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    parentId?: true
+  }
+
+  export type ImageCommentMinAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    content?: true
+    parentId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ImageCommentMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    content?: true
+    parentId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ImageCommentCountAggregateInputType = {
+    id?: true
+    userId?: true
+    imageId?: true
+    content?: true
+    parentId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ImageCommentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ImageComment to aggregate.
+     */
+    where?: ImageCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageComments to fetch.
+     */
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ImageCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ImageComments
+    **/
+    _count?: true | ImageCommentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ImageCommentAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ImageCommentSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ImageCommentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ImageCommentMaxAggregateInputType
+  }
+
+  export type GetImageCommentAggregateType<T extends ImageCommentAggregateArgs> = {
+        [P in keyof T & keyof AggregateImageComment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateImageComment[P]>
+      : GetScalarType<T[P], AggregateImageComment[P]>
+  }
+
+
+
+
+  export type ImageCommentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageCommentWhereInput
+    orderBy?: ImageCommentOrderByWithAggregationInput | ImageCommentOrderByWithAggregationInput[]
+    by: ImageCommentScalarFieldEnum[] | ImageCommentScalarFieldEnum
+    having?: ImageCommentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ImageCommentCountAggregateInputType | true
+    _avg?: ImageCommentAvgAggregateInputType
+    _sum?: ImageCommentSumAggregateInputType
+    _min?: ImageCommentMinAggregateInputType
+    _max?: ImageCommentMaxAggregateInputType
+  }
+
+  export type ImageCommentGroupByOutputType = {
+    id: number
+    userId: number
+    imageId: number
+    content: string
+    parentId: number | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ImageCommentCountAggregateOutputType | null
+    _avg: ImageCommentAvgAggregateOutputType | null
+    _sum: ImageCommentSumAggregateOutputType | null
+    _min: ImageCommentMinAggregateOutputType | null
+    _max: ImageCommentMaxAggregateOutputType | null
+  }
+
+  type GetImageCommentGroupByPayload<T extends ImageCommentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ImageCommentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ImageCommentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ImageCommentGroupByOutputType[P]>
+            : GetScalarType<T[P], ImageCommentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ImageCommentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    imageId?: boolean
+    content?: boolean
+    parentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    image?: boolean | GeneratedImageDefaultArgs<ExtArgs>
+    parent?: boolean | ImageComment$parentArgs<ExtArgs>
+    replies?: boolean | ImageComment$repliesArgs<ExtArgs>
+    _count?: boolean | ImageCommentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["imageComment"]>
+
+
+
+  export type ImageCommentSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    imageId?: boolean
+    content?: boolean
+    parentId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ImageCommentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "imageId" | "content" | "parentId" | "createdAt" | "updatedAt", ExtArgs["result"]["imageComment"]>
+  export type ImageCommentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    image?: boolean | GeneratedImageDefaultArgs<ExtArgs>
+    parent?: boolean | ImageComment$parentArgs<ExtArgs>
+    replies?: boolean | ImageComment$repliesArgs<ExtArgs>
+    _count?: boolean | ImageCommentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $ImageCommentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ImageComment"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      image: Prisma.$GeneratedImagePayload<ExtArgs>
+      parent: Prisma.$ImageCommentPayload<ExtArgs> | null
+      replies: Prisma.$ImageCommentPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      imageId: number
+      content: string
+      parentId: number | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["imageComment"]>
+    composites: {}
+  }
+
+  type ImageCommentGetPayload<S extends boolean | null | undefined | ImageCommentDefaultArgs> = $Result.GetResult<Prisma.$ImageCommentPayload, S>
+
+  type ImageCommentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ImageCommentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ImageCommentCountAggregateInputType | true
+    }
+
+  export interface ImageCommentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ImageComment'], meta: { name: 'ImageComment' } }
+    /**
+     * Find zero or one ImageComment that matches the filter.
+     * @param {ImageCommentFindUniqueArgs} args - Arguments to find a ImageComment
+     * @example
+     * // Get one ImageComment
+     * const imageComment = await prisma.imageComment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ImageCommentFindUniqueArgs>(args: SelectSubset<T, ImageCommentFindUniqueArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ImageComment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ImageCommentFindUniqueOrThrowArgs} args - Arguments to find a ImageComment
+     * @example
+     * // Get one ImageComment
+     * const imageComment = await prisma.imageComment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ImageCommentFindUniqueOrThrowArgs>(args: SelectSubset<T, ImageCommentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ImageComment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentFindFirstArgs} args - Arguments to find a ImageComment
+     * @example
+     * // Get one ImageComment
+     * const imageComment = await prisma.imageComment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ImageCommentFindFirstArgs>(args?: SelectSubset<T, ImageCommentFindFirstArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ImageComment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentFindFirstOrThrowArgs} args - Arguments to find a ImageComment
+     * @example
+     * // Get one ImageComment
+     * const imageComment = await prisma.imageComment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ImageCommentFindFirstOrThrowArgs>(args?: SelectSubset<T, ImageCommentFindFirstOrThrowArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ImageComments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ImageComments
+     * const imageComments = await prisma.imageComment.findMany()
+     * 
+     * // Get first 10 ImageComments
+     * const imageComments = await prisma.imageComment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const imageCommentWithIdOnly = await prisma.imageComment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ImageCommentFindManyArgs>(args?: SelectSubset<T, ImageCommentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ImageComment.
+     * @param {ImageCommentCreateArgs} args - Arguments to create a ImageComment.
+     * @example
+     * // Create one ImageComment
+     * const ImageComment = await prisma.imageComment.create({
+     *   data: {
+     *     // ... data to create a ImageComment
+     *   }
+     * })
+     * 
+     */
+    create<T extends ImageCommentCreateArgs>(args: SelectSubset<T, ImageCommentCreateArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ImageComments.
+     * @param {ImageCommentCreateManyArgs} args - Arguments to create many ImageComments.
+     * @example
+     * // Create many ImageComments
+     * const imageComment = await prisma.imageComment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ImageCommentCreateManyArgs>(args?: SelectSubset<T, ImageCommentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ImageComment.
+     * @param {ImageCommentDeleteArgs} args - Arguments to delete one ImageComment.
+     * @example
+     * // Delete one ImageComment
+     * const ImageComment = await prisma.imageComment.delete({
+     *   where: {
+     *     // ... filter to delete one ImageComment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ImageCommentDeleteArgs>(args: SelectSubset<T, ImageCommentDeleteArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ImageComment.
+     * @param {ImageCommentUpdateArgs} args - Arguments to update one ImageComment.
+     * @example
+     * // Update one ImageComment
+     * const imageComment = await prisma.imageComment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ImageCommentUpdateArgs>(args: SelectSubset<T, ImageCommentUpdateArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ImageComments.
+     * @param {ImageCommentDeleteManyArgs} args - Arguments to filter ImageComments to delete.
+     * @example
+     * // Delete a few ImageComments
+     * const { count } = await prisma.imageComment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ImageCommentDeleteManyArgs>(args?: SelectSubset<T, ImageCommentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ImageComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ImageComments
+     * const imageComment = await prisma.imageComment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ImageCommentUpdateManyArgs>(args: SelectSubset<T, ImageCommentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ImageComment.
+     * @param {ImageCommentUpsertArgs} args - Arguments to update or create a ImageComment.
+     * @example
+     * // Update or create a ImageComment
+     * const imageComment = await prisma.imageComment.upsert({
+     *   create: {
+     *     // ... data to create a ImageComment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ImageComment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ImageCommentUpsertArgs>(args: SelectSubset<T, ImageCommentUpsertArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ImageComments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentCountArgs} args - Arguments to filter ImageComments to count.
+     * @example
+     * // Count the number of ImageComments
+     * const count = await prisma.imageComment.count({
+     *   where: {
+     *     // ... the filter for the ImageComments we want to count
+     *   }
+     * })
+    **/
+    count<T extends ImageCommentCountArgs>(
+      args?: Subset<T, ImageCommentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ImageCommentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ImageComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ImageCommentAggregateArgs>(args: Subset<T, ImageCommentAggregateArgs>): Prisma.PrismaPromise<GetImageCommentAggregateType<T>>
+
+    /**
+     * Group by ImageComment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageCommentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ImageCommentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ImageCommentGroupByArgs['orderBy'] }
+        : { orderBy?: ImageCommentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ImageCommentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetImageCommentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ImageComment model
+   */
+  readonly fields: ImageCommentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ImageComment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ImageCommentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    image<T extends GeneratedImageDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImageDefaultArgs<ExtArgs>>): Prisma__GeneratedImageClient<$Result.GetResult<Prisma.$GeneratedImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    parent<T extends ImageComment$parentArgs<ExtArgs> = {}>(args?: Subset<T, ImageComment$parentArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    replies<T extends ImageComment$repliesArgs<ExtArgs> = {}>(args?: Subset<T, ImageComment$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ImageComment model
+   */
+  interface ImageCommentFieldRefs {
+    readonly id: FieldRef<"ImageComment", 'Int'>
+    readonly userId: FieldRef<"ImageComment", 'Int'>
+    readonly imageId: FieldRef<"ImageComment", 'Int'>
+    readonly content: FieldRef<"ImageComment", 'String'>
+    readonly parentId: FieldRef<"ImageComment", 'Int'>
+    readonly createdAt: FieldRef<"ImageComment", 'DateTime'>
+    readonly updatedAt: FieldRef<"ImageComment", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ImageComment findUnique
+   */
+  export type ImageCommentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageComment to fetch.
+     */
+    where: ImageCommentWhereUniqueInput
+  }
+
+  /**
+   * ImageComment findUniqueOrThrow
+   */
+  export type ImageCommentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageComment to fetch.
+     */
+    where: ImageCommentWhereUniqueInput
+  }
+
+  /**
+   * ImageComment findFirst
+   */
+  export type ImageCommentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageComment to fetch.
+     */
+    where?: ImageCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageComments to fetch.
+     */
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ImageComments.
+     */
+    cursor?: ImageCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ImageComments.
+     */
+    distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
+  }
+
+  /**
+   * ImageComment findFirstOrThrow
+   */
+  export type ImageCommentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageComment to fetch.
+     */
+    where?: ImageCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageComments to fetch.
+     */
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ImageComments.
+     */
+    cursor?: ImageCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageComments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ImageComments.
+     */
+    distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
+  }
+
+  /**
+   * ImageComment findMany
+   */
+  export type ImageCommentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageComments to fetch.
+     */
+    where?: ImageCommentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageComments to fetch.
+     */
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ImageComments.
+     */
+    cursor?: ImageCommentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageComments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageComments.
+     */
+    skip?: number
+    distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
+  }
+
+  /**
+   * ImageComment create
+   */
+  export type ImageCommentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ImageComment.
+     */
+    data: XOR<ImageCommentCreateInput, ImageCommentUncheckedCreateInput>
+  }
+
+  /**
+   * ImageComment createMany
+   */
+  export type ImageCommentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ImageComments.
+     */
+    data: ImageCommentCreateManyInput | ImageCommentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ImageComment update
+   */
+  export type ImageCommentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ImageComment.
+     */
+    data: XOR<ImageCommentUpdateInput, ImageCommentUncheckedUpdateInput>
+    /**
+     * Choose, which ImageComment to update.
+     */
+    where: ImageCommentWhereUniqueInput
+  }
+
+  /**
+   * ImageComment updateMany
+   */
+  export type ImageCommentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ImageComments.
+     */
+    data: XOR<ImageCommentUpdateManyMutationInput, ImageCommentUncheckedUpdateManyInput>
+    /**
+     * Filter which ImageComments to update
+     */
+    where?: ImageCommentWhereInput
+    /**
+     * Limit how many ImageComments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ImageComment upsert
+   */
+  export type ImageCommentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ImageComment to update in case it exists.
+     */
+    where: ImageCommentWhereUniqueInput
+    /**
+     * In case the ImageComment found by the `where` argument doesn't exist, create a new ImageComment with this data.
+     */
+    create: XOR<ImageCommentCreateInput, ImageCommentUncheckedCreateInput>
+    /**
+     * In case the ImageComment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ImageCommentUpdateInput, ImageCommentUncheckedUpdateInput>
+  }
+
+  /**
+   * ImageComment delete
+   */
+  export type ImageCommentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    /**
+     * Filter which ImageComment to delete.
+     */
+    where: ImageCommentWhereUniqueInput
+  }
+
+  /**
+   * ImageComment deleteMany
+   */
+  export type ImageCommentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ImageComments to delete
+     */
+    where?: ImageCommentWhereInput
+    /**
+     * Limit how many ImageComments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ImageComment.parent
+   */
+  export type ImageComment$parentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    where?: ImageCommentWhereInput
+  }
+
+  /**
+   * ImageComment.replies
+   */
+  export type ImageComment$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
+    where?: ImageCommentWhereInput
+    orderBy?: ImageCommentOrderByWithRelationInput | ImageCommentOrderByWithRelationInput[]
+    cursor?: ImageCommentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
+  }
+
+  /**
+   * ImageComment without action
+   */
+  export type ImageCommentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageComment
+     */
+    select?: ImageCommentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageComment
+     */
+    omit?: ImageCommentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageCommentInclude<ExtArgs> | null
   }
 
 
@@ -4212,6 +6599,29 @@ export namespace Prisma {
   export type GeneratedImageScalarFieldEnum = (typeof GeneratedImageScalarFieldEnum)[keyof typeof GeneratedImageScalarFieldEnum]
 
 
+  export const ImageLikeScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    imageId: 'imageId',
+    createdAt: 'createdAt'
+  };
+
+  export type ImageLikeScalarFieldEnum = (typeof ImageLikeScalarFieldEnum)[keyof typeof ImageLikeScalarFieldEnum]
+
+
+  export const ImageCommentScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    imageId: 'imageId',
+    content: 'content',
+    parentId: 'parentId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ImageCommentScalarFieldEnum = (typeof ImageCommentScalarFieldEnum)[keyof typeof ImageCommentScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -4258,6 +6668,13 @@ export namespace Prisma {
   };
 
   export type GeneratedImageOrderByRelevanceFieldEnum = (typeof GeneratedImageOrderByRelevanceFieldEnum)[keyof typeof GeneratedImageOrderByRelevanceFieldEnum]
+
+
+  export const ImageCommentOrderByRelevanceFieldEnum: {
+    content: 'content'
+  };
+
+  export type ImageCommentOrderByRelevanceFieldEnum = (typeof ImageCommentOrderByRelevanceFieldEnum)[keyof typeof ImageCommentOrderByRelevanceFieldEnum]
 
 
   /**
@@ -4312,6 +6729,8 @@ export namespace Prisma {
     profileImageUrl?: StringNullableFilter<"User"> | string | null
     loginAttempts?: LoginAttemptListRelationFilter
     generatedImages?: GeneratedImageListRelationFilter
+    imageLikes?: ImageLikeListRelationFilter
+    imageComments?: ImageCommentListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -4327,6 +6746,8 @@ export namespace Prisma {
     profileImageUrl?: SortOrderInput | SortOrder
     loginAttempts?: LoginAttemptOrderByRelationAggregateInput
     generatedImages?: GeneratedImageOrderByRelationAggregateInput
+    imageLikes?: ImageLikeOrderByRelationAggregateInput
+    imageComments?: ImageCommentOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
   }
 
@@ -4346,6 +6767,8 @@ export namespace Prisma {
     profileImageUrl?: StringNullableFilter<"User"> | string | null
     loginAttempts?: LoginAttemptListRelationFilter
     generatedImages?: GeneratedImageListRelationFilter
+    imageLikes?: ImageLikeListRelationFilter
+    imageComments?: ImageCommentListRelationFilter
   }, "id" | "email" | "nickname" | "kakaoId">
 
   export type UserOrderByWithAggregationInput = {
@@ -4465,6 +6888,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    likes?: ImageLikeListRelationFilter
+    comments?: ImageCommentListRelationFilter
   }
 
   export type GeneratedImageOrderByWithRelationInput = {
@@ -4479,6 +6904,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    likes?: ImageLikeOrderByRelationAggregateInput
+    comments?: ImageCommentOrderByRelationAggregateInput
     _relevance?: GeneratedImageOrderByRelevanceInput
   }
 
@@ -4497,6 +6924,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeFilter<"GeneratedImage"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    likes?: ImageLikeListRelationFilter
+    comments?: ImageCommentListRelationFilter
   }, "id">
 
   export type GeneratedImageOrderByWithAggregationInput = {
@@ -4533,6 +6962,139 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"GeneratedImage"> | Date | string
   }
 
+  export type ImageLikeWhereInput = {
+    AND?: ImageLikeWhereInput | ImageLikeWhereInput[]
+    OR?: ImageLikeWhereInput[]
+    NOT?: ImageLikeWhereInput | ImageLikeWhereInput[]
+    id?: IntFilter<"ImageLike"> | number
+    userId?: IntFilter<"ImageLike"> | number
+    imageId?: IntFilter<"ImageLike"> | number
+    createdAt?: DateTimeFilter<"ImageLike"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    image?: XOR<GeneratedImageScalarRelationFilter, GeneratedImageWhereInput>
+  }
+
+  export type ImageLikeOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    image?: GeneratedImageOrderByWithRelationInput
+  }
+
+  export type ImageLikeWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    userId_imageId?: ImageLikeUserIdImageIdCompoundUniqueInput
+    AND?: ImageLikeWhereInput | ImageLikeWhereInput[]
+    OR?: ImageLikeWhereInput[]
+    NOT?: ImageLikeWhereInput | ImageLikeWhereInput[]
+    userId?: IntFilter<"ImageLike"> | number
+    imageId?: IntFilter<"ImageLike"> | number
+    createdAt?: DateTimeFilter<"ImageLike"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    image?: XOR<GeneratedImageScalarRelationFilter, GeneratedImageWhereInput>
+  }, "id" | "userId_imageId">
+
+  export type ImageLikeOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    createdAt?: SortOrder
+    _count?: ImageLikeCountOrderByAggregateInput
+    _avg?: ImageLikeAvgOrderByAggregateInput
+    _max?: ImageLikeMaxOrderByAggregateInput
+    _min?: ImageLikeMinOrderByAggregateInput
+    _sum?: ImageLikeSumOrderByAggregateInput
+  }
+
+  export type ImageLikeScalarWhereWithAggregatesInput = {
+    AND?: ImageLikeScalarWhereWithAggregatesInput | ImageLikeScalarWhereWithAggregatesInput[]
+    OR?: ImageLikeScalarWhereWithAggregatesInput[]
+    NOT?: ImageLikeScalarWhereWithAggregatesInput | ImageLikeScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ImageLike"> | number
+    userId?: IntWithAggregatesFilter<"ImageLike"> | number
+    imageId?: IntWithAggregatesFilter<"ImageLike"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"ImageLike"> | Date | string
+  }
+
+  export type ImageCommentWhereInput = {
+    AND?: ImageCommentWhereInput | ImageCommentWhereInput[]
+    OR?: ImageCommentWhereInput[]
+    NOT?: ImageCommentWhereInput | ImageCommentWhereInput[]
+    id?: IntFilter<"ImageComment"> | number
+    userId?: IntFilter<"ImageComment"> | number
+    imageId?: IntFilter<"ImageComment"> | number
+    content?: StringFilter<"ImageComment"> | string
+    parentId?: IntNullableFilter<"ImageComment"> | number | null
+    createdAt?: DateTimeFilter<"ImageComment"> | Date | string
+    updatedAt?: DateTimeFilter<"ImageComment"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    image?: XOR<GeneratedImageScalarRelationFilter, GeneratedImageWhereInput>
+    parent?: XOR<ImageCommentNullableScalarRelationFilter, ImageCommentWhereInput> | null
+    replies?: ImageCommentListRelationFilter
+  }
+
+  export type ImageCommentOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    content?: SortOrder
+    parentId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    image?: GeneratedImageOrderByWithRelationInput
+    parent?: ImageCommentOrderByWithRelationInput
+    replies?: ImageCommentOrderByRelationAggregateInput
+    _relevance?: ImageCommentOrderByRelevanceInput
+  }
+
+  export type ImageCommentWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: ImageCommentWhereInput | ImageCommentWhereInput[]
+    OR?: ImageCommentWhereInput[]
+    NOT?: ImageCommentWhereInput | ImageCommentWhereInput[]
+    userId?: IntFilter<"ImageComment"> | number
+    imageId?: IntFilter<"ImageComment"> | number
+    content?: StringFilter<"ImageComment"> | string
+    parentId?: IntNullableFilter<"ImageComment"> | number | null
+    createdAt?: DateTimeFilter<"ImageComment"> | Date | string
+    updatedAt?: DateTimeFilter<"ImageComment"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    image?: XOR<GeneratedImageScalarRelationFilter, GeneratedImageWhereInput>
+    parent?: XOR<ImageCommentNullableScalarRelationFilter, ImageCommentWhereInput> | null
+    replies?: ImageCommentListRelationFilter
+  }, "id">
+
+  export type ImageCommentOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    content?: SortOrder
+    parentId?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ImageCommentCountOrderByAggregateInput
+    _avg?: ImageCommentAvgOrderByAggregateInput
+    _max?: ImageCommentMaxOrderByAggregateInput
+    _min?: ImageCommentMinOrderByAggregateInput
+    _sum?: ImageCommentSumOrderByAggregateInput
+  }
+
+  export type ImageCommentScalarWhereWithAggregatesInput = {
+    AND?: ImageCommentScalarWhereWithAggregatesInput | ImageCommentScalarWhereWithAggregatesInput[]
+    OR?: ImageCommentScalarWhereWithAggregatesInput[]
+    NOT?: ImageCommentScalarWhereWithAggregatesInput | ImageCommentScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ImageComment"> | number
+    userId?: IntWithAggregatesFilter<"ImageComment"> | number
+    imageId?: IntWithAggregatesFilter<"ImageComment"> | number
+    content?: StringWithAggregatesFilter<"ImageComment"> | string
+    parentId?: IntNullableWithAggregatesFilter<"ImageComment"> | number | null
+    createdAt?: DateTimeWithAggregatesFilter<"ImageComment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ImageComment"> | Date | string
+  }
+
   export type UserCreateInput = {
     email: string
     password?: string | null
@@ -4545,6 +7107,8 @@ export namespace Prisma {
     profileImageUrl?: string | null
     loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -4560,6 +7124,8 @@ export namespace Prisma {
     profileImageUrl?: string | null
     loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -4574,6 +7140,8 @@ export namespace Prisma {
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -4589,6 +7157,8 @@ export namespace Prisma {
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -4705,6 +7275,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutGeneratedImagesInput
+    likes?: ImageLikeCreateNestedManyWithoutImageInput
+    comments?: ImageCommentCreateNestedManyWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateInput = {
@@ -4718,6 +7290,8 @@ export namespace Prisma {
     editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
+    comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
   }
 
   export type GeneratedImageUpdateInput = {
@@ -4730,6 +7304,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutGeneratedImagesNestedInput
+    likes?: ImageLikeUpdateManyWithoutImageNestedInput
+    comments?: ImageCommentUpdateManyWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateInput = {
@@ -4743,6 +7319,8 @@ export namespace Prisma {
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
+    comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
   }
 
   export type GeneratedImageCreateManyInput = {
@@ -4778,6 +7356,118 @@ export namespace Prisma {
     size?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeCreateInput = {
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutImageLikesInput
+    image: GeneratedImageCreateNestedOneWithoutLikesInput
+  }
+
+  export type ImageLikeUncheckedCreateInput = {
+    id?: number
+    userId: number
+    imageId: number
+    createdAt?: Date | string
+  }
+
+  export type ImageLikeUpdateInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageLikesNestedInput
+    image?: GeneratedImageUpdateOneRequiredWithoutLikesNestedInput
+  }
+
+  export type ImageLikeUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeCreateManyInput = {
+    id?: number
+    userId: number
+    imageId: number
+    createdAt?: Date | string
+  }
+
+  export type ImageLikeUpdateManyMutationInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCommentCreateInput = {
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutImageCommentsInput
+    image: GeneratedImageCreateNestedOneWithoutCommentsInput
+    parent?: ImageCommentCreateNestedOneWithoutRepliesInput
+    replies?: ImageCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentUncheckedCreateInput = {
+    id?: number
+    userId: number
+    imageId: number
+    content: string
+    parentId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    replies?: ImageCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentUpdateInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageCommentsNestedInput
+    image?: GeneratedImageUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: ImageCommentUpdateOneWithoutRepliesNestedInput
+    replies?: ImageCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: ImageCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentCreateManyInput = {
+    id?: number
+    userId: number
+    imageId: number
+    content: string
+    parentId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageCommentUpdateManyMutationInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCommentUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -4846,6 +7536,18 @@ export namespace Prisma {
     none?: GeneratedImageWhereInput
   }
 
+  export type ImageLikeListRelationFilter = {
+    every?: ImageLikeWhereInput
+    some?: ImageLikeWhereInput
+    none?: ImageLikeWhereInput
+  }
+
+  export type ImageCommentListRelationFilter = {
+    every?: ImageCommentWhereInput
+    some?: ImageCommentWhereInput
+    none?: ImageCommentWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -4856,6 +7558,14 @@ export namespace Prisma {
   }
 
   export type GeneratedImageOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ImageLikeOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ImageCommentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -5086,6 +7796,131 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
+  export type GeneratedImageScalarRelationFilter = {
+    is?: GeneratedImageWhereInput
+    isNot?: GeneratedImageWhereInput
+  }
+
+  export type ImageLikeUserIdImageIdCompoundUniqueInput = {
+    userId: number
+    imageId: number
+  }
+
+  export type ImageLikeCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ImageLikeAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+  }
+
+  export type ImageLikeMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ImageLikeMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ImageLikeSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type ImageCommentNullableScalarRelationFilter = {
+    is?: ImageCommentWhereInput | null
+    isNot?: ImageCommentWhereInput | null
+  }
+
+  export type ImageCommentOrderByRelevanceInput = {
+    fields: ImageCommentOrderByRelevanceFieldEnum | ImageCommentOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type ImageCommentCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    content?: SortOrder
+    parentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ImageCommentAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    parentId?: SortOrder
+  }
+
+  export type ImageCommentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    content?: SortOrder
+    parentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ImageCommentMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    content?: SortOrder
+    parentId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ImageCommentSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    imageId?: SortOrder
+    parentId?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
   export type LoginAttemptCreateNestedManyWithoutUserInput = {
     create?: XOR<LoginAttemptCreateWithoutUserInput, LoginAttemptUncheckedCreateWithoutUserInput> | LoginAttemptCreateWithoutUserInput[] | LoginAttemptUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LoginAttemptCreateOrConnectWithoutUserInput | LoginAttemptCreateOrConnectWithoutUserInput[]
@@ -5100,6 +7935,20 @@ export namespace Prisma {
     connect?: GeneratedImageWhereUniqueInput | GeneratedImageWhereUniqueInput[]
   }
 
+  export type ImageLikeCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageLikeCreateWithoutUserInput, ImageLikeUncheckedCreateWithoutUserInput> | ImageLikeCreateWithoutUserInput[] | ImageLikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutUserInput | ImageLikeCreateOrConnectWithoutUserInput[]
+    createMany?: ImageLikeCreateManyUserInputEnvelope
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+  }
+
+  export type ImageCommentCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageCommentCreateWithoutUserInput, ImageCommentUncheckedCreateWithoutUserInput> | ImageCommentCreateWithoutUserInput[] | ImageCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutUserInput | ImageCommentCreateOrConnectWithoutUserInput[]
+    createMany?: ImageCommentCreateManyUserInputEnvelope
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+  }
+
   export type LoginAttemptUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<LoginAttemptCreateWithoutUserInput, LoginAttemptUncheckedCreateWithoutUserInput> | LoginAttemptCreateWithoutUserInput[] | LoginAttemptUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LoginAttemptCreateOrConnectWithoutUserInput | LoginAttemptCreateOrConnectWithoutUserInput[]
@@ -5112,6 +7961,20 @@ export namespace Prisma {
     connectOrCreate?: GeneratedImageCreateOrConnectWithoutUserInput | GeneratedImageCreateOrConnectWithoutUserInput[]
     createMany?: GeneratedImageCreateManyUserInputEnvelope
     connect?: GeneratedImageWhereUniqueInput | GeneratedImageWhereUniqueInput[]
+  }
+
+  export type ImageLikeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageLikeCreateWithoutUserInput, ImageLikeUncheckedCreateWithoutUserInput> | ImageLikeCreateWithoutUserInput[] | ImageLikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutUserInput | ImageLikeCreateOrConnectWithoutUserInput[]
+    createMany?: ImageLikeCreateManyUserInputEnvelope
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+  }
+
+  export type ImageCommentUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageCommentCreateWithoutUserInput, ImageCommentUncheckedCreateWithoutUserInput> | ImageCommentCreateWithoutUserInput[] | ImageCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutUserInput | ImageCommentCreateOrConnectWithoutUserInput[]
+    createMany?: ImageCommentCreateManyUserInputEnvelope
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -5162,6 +8025,34 @@ export namespace Prisma {
     deleteMany?: GeneratedImageScalarWhereInput | GeneratedImageScalarWhereInput[]
   }
 
+  export type ImageLikeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageLikeCreateWithoutUserInput, ImageLikeUncheckedCreateWithoutUserInput> | ImageLikeCreateWithoutUserInput[] | ImageLikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutUserInput | ImageLikeCreateOrConnectWithoutUserInput[]
+    upsert?: ImageLikeUpsertWithWhereUniqueWithoutUserInput | ImageLikeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageLikeCreateManyUserInputEnvelope
+    set?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    disconnect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    delete?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    update?: ImageLikeUpdateWithWhereUniqueWithoutUserInput | ImageLikeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageLikeUpdateManyWithWhereWithoutUserInput | ImageLikeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageLikeScalarWhereInput | ImageLikeScalarWhereInput[]
+  }
+
+  export type ImageCommentUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutUserInput, ImageCommentUncheckedCreateWithoutUserInput> | ImageCommentCreateWithoutUserInput[] | ImageCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutUserInput | ImageCommentCreateOrConnectWithoutUserInput[]
+    upsert?: ImageCommentUpsertWithWhereUniqueWithoutUserInput | ImageCommentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageCommentCreateManyUserInputEnvelope
+    set?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    disconnect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    delete?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    update?: ImageCommentUpdateWithWhereUniqueWithoutUserInput | ImageCommentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageCommentUpdateManyWithWhereWithoutUserInput | ImageCommentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+  }
+
   export type LoginAttemptUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<LoginAttemptCreateWithoutUserInput, LoginAttemptUncheckedCreateWithoutUserInput> | LoginAttemptCreateWithoutUserInput[] | LoginAttemptUncheckedCreateWithoutUserInput[]
     connectOrCreate?: LoginAttemptCreateOrConnectWithoutUserInput | LoginAttemptCreateOrConnectWithoutUserInput[]
@@ -5190,6 +8081,34 @@ export namespace Prisma {
     deleteMany?: GeneratedImageScalarWhereInput | GeneratedImageScalarWhereInput[]
   }
 
+  export type ImageLikeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageLikeCreateWithoutUserInput, ImageLikeUncheckedCreateWithoutUserInput> | ImageLikeCreateWithoutUserInput[] | ImageLikeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutUserInput | ImageLikeCreateOrConnectWithoutUserInput[]
+    upsert?: ImageLikeUpsertWithWhereUniqueWithoutUserInput | ImageLikeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageLikeCreateManyUserInputEnvelope
+    set?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    disconnect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    delete?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    update?: ImageLikeUpdateWithWhereUniqueWithoutUserInput | ImageLikeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageLikeUpdateManyWithWhereWithoutUserInput | ImageLikeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageLikeScalarWhereInput | ImageLikeScalarWhereInput[]
+  }
+
+  export type ImageCommentUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutUserInput, ImageCommentUncheckedCreateWithoutUserInput> | ImageCommentCreateWithoutUserInput[] | ImageCommentUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutUserInput | ImageCommentCreateOrConnectWithoutUserInput[]
+    upsert?: ImageCommentUpsertWithWhereUniqueWithoutUserInput | ImageCommentUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageCommentCreateManyUserInputEnvelope
+    set?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    disconnect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    delete?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    update?: ImageCommentUpdateWithWhereUniqueWithoutUserInput | ImageCommentUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageCommentUpdateManyWithWhereWithoutUserInput | ImageCommentUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutLoginAttemptsInput = {
     create?: XOR<UserCreateWithoutLoginAttemptsInput, UserUncheckedCreateWithoutLoginAttemptsInput>
     connectOrCreate?: UserCreateOrConnectWithoutLoginAttemptsInput
@@ -5210,12 +8129,218 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type ImageLikeCreateNestedManyWithoutImageInput = {
+    create?: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput> | ImageLikeCreateWithoutImageInput[] | ImageLikeUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutImageInput | ImageLikeCreateOrConnectWithoutImageInput[]
+    createMany?: ImageLikeCreateManyImageInputEnvelope
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+  }
+
+  export type ImageCommentCreateNestedManyWithoutImageInput = {
+    create?: XOR<ImageCommentCreateWithoutImageInput, ImageCommentUncheckedCreateWithoutImageInput> | ImageCommentCreateWithoutImageInput[] | ImageCommentUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutImageInput | ImageCommentCreateOrConnectWithoutImageInput[]
+    createMany?: ImageCommentCreateManyImageInputEnvelope
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+  }
+
+  export type ImageLikeUncheckedCreateNestedManyWithoutImageInput = {
+    create?: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput> | ImageLikeCreateWithoutImageInput[] | ImageLikeUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutImageInput | ImageLikeCreateOrConnectWithoutImageInput[]
+    createMany?: ImageLikeCreateManyImageInputEnvelope
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+  }
+
+  export type ImageCommentUncheckedCreateNestedManyWithoutImageInput = {
+    create?: XOR<ImageCommentCreateWithoutImageInput, ImageCommentUncheckedCreateWithoutImageInput> | ImageCommentCreateWithoutImageInput[] | ImageCommentUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutImageInput | ImageCommentCreateOrConnectWithoutImageInput[]
+    createMany?: ImageCommentCreateManyImageInputEnvelope
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+  }
+
   export type UserUpdateOneRequiredWithoutGeneratedImagesNestedInput = {
     create?: XOR<UserCreateWithoutGeneratedImagesInput, UserUncheckedCreateWithoutGeneratedImagesInput>
     connectOrCreate?: UserCreateOrConnectWithoutGeneratedImagesInput
     upsert?: UserUpsertWithoutGeneratedImagesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGeneratedImagesInput, UserUpdateWithoutGeneratedImagesInput>, UserUncheckedUpdateWithoutGeneratedImagesInput>
+  }
+
+  export type ImageLikeUpdateManyWithoutImageNestedInput = {
+    create?: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput> | ImageLikeCreateWithoutImageInput[] | ImageLikeUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutImageInput | ImageLikeCreateOrConnectWithoutImageInput[]
+    upsert?: ImageLikeUpsertWithWhereUniqueWithoutImageInput | ImageLikeUpsertWithWhereUniqueWithoutImageInput[]
+    createMany?: ImageLikeCreateManyImageInputEnvelope
+    set?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    disconnect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    delete?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    update?: ImageLikeUpdateWithWhereUniqueWithoutImageInput | ImageLikeUpdateWithWhereUniqueWithoutImageInput[]
+    updateMany?: ImageLikeUpdateManyWithWhereWithoutImageInput | ImageLikeUpdateManyWithWhereWithoutImageInput[]
+    deleteMany?: ImageLikeScalarWhereInput | ImageLikeScalarWhereInput[]
+  }
+
+  export type ImageCommentUpdateManyWithoutImageNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutImageInput, ImageCommentUncheckedCreateWithoutImageInput> | ImageCommentCreateWithoutImageInput[] | ImageCommentUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutImageInput | ImageCommentCreateOrConnectWithoutImageInput[]
+    upsert?: ImageCommentUpsertWithWhereUniqueWithoutImageInput | ImageCommentUpsertWithWhereUniqueWithoutImageInput[]
+    createMany?: ImageCommentCreateManyImageInputEnvelope
+    set?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    disconnect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    delete?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    update?: ImageCommentUpdateWithWhereUniqueWithoutImageInput | ImageCommentUpdateWithWhereUniqueWithoutImageInput[]
+    updateMany?: ImageCommentUpdateManyWithWhereWithoutImageInput | ImageCommentUpdateManyWithWhereWithoutImageInput[]
+    deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+  }
+
+  export type ImageLikeUncheckedUpdateManyWithoutImageNestedInput = {
+    create?: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput> | ImageLikeCreateWithoutImageInput[] | ImageLikeUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageLikeCreateOrConnectWithoutImageInput | ImageLikeCreateOrConnectWithoutImageInput[]
+    upsert?: ImageLikeUpsertWithWhereUniqueWithoutImageInput | ImageLikeUpsertWithWhereUniqueWithoutImageInput[]
+    createMany?: ImageLikeCreateManyImageInputEnvelope
+    set?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    disconnect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    delete?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    connect?: ImageLikeWhereUniqueInput | ImageLikeWhereUniqueInput[]
+    update?: ImageLikeUpdateWithWhereUniqueWithoutImageInput | ImageLikeUpdateWithWhereUniqueWithoutImageInput[]
+    updateMany?: ImageLikeUpdateManyWithWhereWithoutImageInput | ImageLikeUpdateManyWithWhereWithoutImageInput[]
+    deleteMany?: ImageLikeScalarWhereInput | ImageLikeScalarWhereInput[]
+  }
+
+  export type ImageCommentUncheckedUpdateManyWithoutImageNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutImageInput, ImageCommentUncheckedCreateWithoutImageInput> | ImageCommentCreateWithoutImageInput[] | ImageCommentUncheckedCreateWithoutImageInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutImageInput | ImageCommentCreateOrConnectWithoutImageInput[]
+    upsert?: ImageCommentUpsertWithWhereUniqueWithoutImageInput | ImageCommentUpsertWithWhereUniqueWithoutImageInput[]
+    createMany?: ImageCommentCreateManyImageInputEnvelope
+    set?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    disconnect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    delete?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    update?: ImageCommentUpdateWithWhereUniqueWithoutImageInput | ImageCommentUpdateWithWhereUniqueWithoutImageInput[]
+    updateMany?: ImageCommentUpdateManyWithWhereWithoutImageInput | ImageCommentUpdateManyWithWhereWithoutImageInput[]
+    deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutImageLikesInput = {
+    create?: XOR<UserCreateWithoutImageLikesInput, UserUncheckedCreateWithoutImageLikesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageLikesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GeneratedImageCreateNestedOneWithoutLikesInput = {
+    create?: XOR<GeneratedImageCreateWithoutLikesInput, GeneratedImageUncheckedCreateWithoutLikesInput>
+    connectOrCreate?: GeneratedImageCreateOrConnectWithoutLikesInput
+    connect?: GeneratedImageWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutImageLikesNestedInput = {
+    create?: XOR<UserCreateWithoutImageLikesInput, UserUncheckedCreateWithoutImageLikesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageLikesInput
+    upsert?: UserUpsertWithoutImageLikesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutImageLikesInput, UserUpdateWithoutImageLikesInput>, UserUncheckedUpdateWithoutImageLikesInput>
+  }
+
+  export type GeneratedImageUpdateOneRequiredWithoutLikesNestedInput = {
+    create?: XOR<GeneratedImageCreateWithoutLikesInput, GeneratedImageUncheckedCreateWithoutLikesInput>
+    connectOrCreate?: GeneratedImageCreateOrConnectWithoutLikesInput
+    upsert?: GeneratedImageUpsertWithoutLikesInput
+    connect?: GeneratedImageWhereUniqueInput
+    update?: XOR<XOR<GeneratedImageUpdateToOneWithWhereWithoutLikesInput, GeneratedImageUpdateWithoutLikesInput>, GeneratedImageUncheckedUpdateWithoutLikesInput>
+  }
+
+  export type UserCreateNestedOneWithoutImageCommentsInput = {
+    create?: XOR<UserCreateWithoutImageCommentsInput, UserUncheckedCreateWithoutImageCommentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageCommentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GeneratedImageCreateNestedOneWithoutCommentsInput = {
+    create?: XOR<GeneratedImageCreateWithoutCommentsInput, GeneratedImageUncheckedCreateWithoutCommentsInput>
+    connectOrCreate?: GeneratedImageCreateOrConnectWithoutCommentsInput
+    connect?: GeneratedImageWhereUniqueInput
+  }
+
+  export type ImageCommentCreateNestedOneWithoutRepliesInput = {
+    create?: XOR<ImageCommentCreateWithoutRepliesInput, ImageCommentUncheckedCreateWithoutRepliesInput>
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutRepliesInput
+    connect?: ImageCommentWhereUniqueInput
+  }
+
+  export type ImageCommentCreateNestedManyWithoutParentInput = {
+    create?: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput> | ImageCommentCreateWithoutParentInput[] | ImageCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutParentInput | ImageCommentCreateOrConnectWithoutParentInput[]
+    createMany?: ImageCommentCreateManyParentInputEnvelope
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+  }
+
+  export type ImageCommentUncheckedCreateNestedManyWithoutParentInput = {
+    create?: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput> | ImageCommentCreateWithoutParentInput[] | ImageCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutParentInput | ImageCommentCreateOrConnectWithoutParentInput[]
+    createMany?: ImageCommentCreateManyParentInputEnvelope
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+  }
+
+  export type UserUpdateOneRequiredWithoutImageCommentsNestedInput = {
+    create?: XOR<UserCreateWithoutImageCommentsInput, UserUncheckedCreateWithoutImageCommentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageCommentsInput
+    upsert?: UserUpsertWithoutImageCommentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutImageCommentsInput, UserUpdateWithoutImageCommentsInput>, UserUncheckedUpdateWithoutImageCommentsInput>
+  }
+
+  export type GeneratedImageUpdateOneRequiredWithoutCommentsNestedInput = {
+    create?: XOR<GeneratedImageCreateWithoutCommentsInput, GeneratedImageUncheckedCreateWithoutCommentsInput>
+    connectOrCreate?: GeneratedImageCreateOrConnectWithoutCommentsInput
+    upsert?: GeneratedImageUpsertWithoutCommentsInput
+    connect?: GeneratedImageWhereUniqueInput
+    update?: XOR<XOR<GeneratedImageUpdateToOneWithWhereWithoutCommentsInput, GeneratedImageUpdateWithoutCommentsInput>, GeneratedImageUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type ImageCommentUpdateOneWithoutRepliesNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutRepliesInput, ImageCommentUncheckedCreateWithoutRepliesInput>
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutRepliesInput
+    upsert?: ImageCommentUpsertWithoutRepliesInput
+    disconnect?: ImageCommentWhereInput | boolean
+    delete?: ImageCommentWhereInput | boolean
+    connect?: ImageCommentWhereUniqueInput
+    update?: XOR<XOR<ImageCommentUpdateToOneWithWhereWithoutRepliesInput, ImageCommentUpdateWithoutRepliesInput>, ImageCommentUncheckedUpdateWithoutRepliesInput>
+  }
+
+  export type ImageCommentUpdateManyWithoutParentNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput> | ImageCommentCreateWithoutParentInput[] | ImageCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutParentInput | ImageCommentCreateOrConnectWithoutParentInput[]
+    upsert?: ImageCommentUpsertWithWhereUniqueWithoutParentInput | ImageCommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: ImageCommentCreateManyParentInputEnvelope
+    set?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    disconnect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    delete?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    update?: ImageCommentUpdateWithWhereUniqueWithoutParentInput | ImageCommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: ImageCommentUpdateManyWithWhereWithoutParentInput | ImageCommentUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type ImageCommentUncheckedUpdateManyWithoutParentNestedInput = {
+    create?: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput> | ImageCommentCreateWithoutParentInput[] | ImageCommentUncheckedCreateWithoutParentInput[]
+    connectOrCreate?: ImageCommentCreateOrConnectWithoutParentInput | ImageCommentCreateOrConnectWithoutParentInput[]
+    upsert?: ImageCommentUpsertWithWhereUniqueWithoutParentInput | ImageCommentUpsertWithWhereUniqueWithoutParentInput[]
+    createMany?: ImageCommentCreateManyParentInputEnvelope
+    set?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    disconnect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    delete?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+    update?: ImageCommentUpdateWithWhereUniqueWithoutParentInput | ImageCommentUpdateWithWhereUniqueWithoutParentInput[]
+    updateMany?: ImageCommentUpdateManyWithWhereWithoutParentInput | ImageCommentUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -5358,6 +8483,33 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type LoginAttemptCreateWithoutUserInput = {
     failedAt?: Date | string
     ipAddress?: string | null
@@ -5394,6 +8546,8 @@ export namespace Prisma {
     editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    likes?: ImageLikeCreateNestedManyWithoutImageInput
+    comments?: ImageCommentCreateNestedManyWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateWithoutUserInput = {
@@ -5406,6 +8560,8 @@ export namespace Prisma {
     editedImageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
+    comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
   }
 
   export type GeneratedImageCreateOrConnectWithoutUserInput = {
@@ -5415,6 +8571,56 @@ export namespace Prisma {
 
   export type GeneratedImageCreateManyUserInputEnvelope = {
     data: GeneratedImageCreateManyUserInput | GeneratedImageCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ImageLikeCreateWithoutUserInput = {
+    createdAt?: Date | string
+    image: GeneratedImageCreateNestedOneWithoutLikesInput
+  }
+
+  export type ImageLikeUncheckedCreateWithoutUserInput = {
+    id?: number
+    imageId: number
+    createdAt?: Date | string
+  }
+
+  export type ImageLikeCreateOrConnectWithoutUserInput = {
+    where: ImageLikeWhereUniqueInput
+    create: XOR<ImageLikeCreateWithoutUserInput, ImageLikeUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageLikeCreateManyUserInputEnvelope = {
+    data: ImageLikeCreateManyUserInput | ImageLikeCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ImageCommentCreateWithoutUserInput = {
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    image: GeneratedImageCreateNestedOneWithoutCommentsInput
+    parent?: ImageCommentCreateNestedOneWithoutRepliesInput
+    replies?: ImageCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentUncheckedCreateWithoutUserInput = {
+    id?: number
+    imageId: number
+    content: string
+    parentId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    replies?: ImageCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentCreateOrConnectWithoutUserInput = {
+    where: ImageCommentWhereUniqueInput
+    create: XOR<ImageCommentCreateWithoutUserInput, ImageCommentUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageCommentCreateManyUserInputEnvelope = {
+    data: ImageCommentCreateManyUserInput | ImageCommentCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -5479,6 +8685,61 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"GeneratedImage"> | Date | string
   }
 
+  export type ImageLikeUpsertWithWhereUniqueWithoutUserInput = {
+    where: ImageLikeWhereUniqueInput
+    update: XOR<ImageLikeUpdateWithoutUserInput, ImageLikeUncheckedUpdateWithoutUserInput>
+    create: XOR<ImageLikeCreateWithoutUserInput, ImageLikeUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageLikeUpdateWithWhereUniqueWithoutUserInput = {
+    where: ImageLikeWhereUniqueInput
+    data: XOR<ImageLikeUpdateWithoutUserInput, ImageLikeUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ImageLikeUpdateManyWithWhereWithoutUserInput = {
+    where: ImageLikeScalarWhereInput
+    data: XOR<ImageLikeUpdateManyMutationInput, ImageLikeUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ImageLikeScalarWhereInput = {
+    AND?: ImageLikeScalarWhereInput | ImageLikeScalarWhereInput[]
+    OR?: ImageLikeScalarWhereInput[]
+    NOT?: ImageLikeScalarWhereInput | ImageLikeScalarWhereInput[]
+    id?: IntFilter<"ImageLike"> | number
+    userId?: IntFilter<"ImageLike"> | number
+    imageId?: IntFilter<"ImageLike"> | number
+    createdAt?: DateTimeFilter<"ImageLike"> | Date | string
+  }
+
+  export type ImageCommentUpsertWithWhereUniqueWithoutUserInput = {
+    where: ImageCommentWhereUniqueInput
+    update: XOR<ImageCommentUpdateWithoutUserInput, ImageCommentUncheckedUpdateWithoutUserInput>
+    create: XOR<ImageCommentCreateWithoutUserInput, ImageCommentUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageCommentUpdateWithWhereUniqueWithoutUserInput = {
+    where: ImageCommentWhereUniqueInput
+    data: XOR<ImageCommentUpdateWithoutUserInput, ImageCommentUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ImageCommentUpdateManyWithWhereWithoutUserInput = {
+    where: ImageCommentScalarWhereInput
+    data: XOR<ImageCommentUpdateManyMutationInput, ImageCommentUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ImageCommentScalarWhereInput = {
+    AND?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+    OR?: ImageCommentScalarWhereInput[]
+    NOT?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
+    id?: IntFilter<"ImageComment"> | number
+    userId?: IntFilter<"ImageComment"> | number
+    imageId?: IntFilter<"ImageComment"> | number
+    content?: StringFilter<"ImageComment"> | string
+    parentId?: IntNullableFilter<"ImageComment"> | number | null
+    createdAt?: DateTimeFilter<"ImageComment"> | Date | string
+    updatedAt?: DateTimeFilter<"ImageComment"> | Date | string
+  }
+
   export type UserCreateWithoutLoginAttemptsInput = {
     email: string
     password?: string | null
@@ -5490,6 +8751,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     profileImageUrl?: string | null
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutLoginAttemptsInput = {
@@ -5504,6 +8767,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     profileImageUrl?: string | null
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutLoginAttemptsInput = {
@@ -5533,6 +8798,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutLoginAttemptsInput = {
@@ -5547,6 +8814,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutGeneratedImagesInput = {
@@ -5560,6 +8829,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     profileImageUrl?: string | null
     loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGeneratedImagesInput = {
@@ -5574,11 +8845,63 @@ export namespace Prisma {
     updatedAt?: Date | string
     profileImageUrl?: string | null
     loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGeneratedImagesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutGeneratedImagesInput, UserUncheckedCreateWithoutGeneratedImagesInput>
+  }
+
+  export type ImageLikeCreateWithoutImageInput = {
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutImageLikesInput
+  }
+
+  export type ImageLikeUncheckedCreateWithoutImageInput = {
+    id?: number
+    userId: number
+    createdAt?: Date | string
+  }
+
+  export type ImageLikeCreateOrConnectWithoutImageInput = {
+    where: ImageLikeWhereUniqueInput
+    create: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput>
+  }
+
+  export type ImageLikeCreateManyImageInputEnvelope = {
+    data: ImageLikeCreateManyImageInput | ImageLikeCreateManyImageInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ImageCommentCreateWithoutImageInput = {
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutImageCommentsInput
+    parent?: ImageCommentCreateNestedOneWithoutRepliesInput
+    replies?: ImageCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentUncheckedCreateWithoutImageInput = {
+    id?: number
+    userId: number
+    content: string
+    parentId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    replies?: ImageCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentCreateOrConnectWithoutImageInput = {
+    where: ImageCommentWhereUniqueInput
+    create: XOR<ImageCommentCreateWithoutImageInput, ImageCommentUncheckedCreateWithoutImageInput>
+  }
+
+  export type ImageCommentCreateManyImageInputEnvelope = {
+    data: ImageCommentCreateManyImageInput | ImageCommentCreateManyImageInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutGeneratedImagesInput = {
@@ -5603,6 +8926,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGeneratedImagesInput = {
@@ -5617,6 +8942,435 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ImageLikeUpsertWithWhereUniqueWithoutImageInput = {
+    where: ImageLikeWhereUniqueInput
+    update: XOR<ImageLikeUpdateWithoutImageInput, ImageLikeUncheckedUpdateWithoutImageInput>
+    create: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput>
+  }
+
+  export type ImageLikeUpdateWithWhereUniqueWithoutImageInput = {
+    where: ImageLikeWhereUniqueInput
+    data: XOR<ImageLikeUpdateWithoutImageInput, ImageLikeUncheckedUpdateWithoutImageInput>
+  }
+
+  export type ImageLikeUpdateManyWithWhereWithoutImageInput = {
+    where: ImageLikeScalarWhereInput
+    data: XOR<ImageLikeUpdateManyMutationInput, ImageLikeUncheckedUpdateManyWithoutImageInput>
+  }
+
+  export type ImageCommentUpsertWithWhereUniqueWithoutImageInput = {
+    where: ImageCommentWhereUniqueInput
+    update: XOR<ImageCommentUpdateWithoutImageInput, ImageCommentUncheckedUpdateWithoutImageInput>
+    create: XOR<ImageCommentCreateWithoutImageInput, ImageCommentUncheckedCreateWithoutImageInput>
+  }
+
+  export type ImageCommentUpdateWithWhereUniqueWithoutImageInput = {
+    where: ImageCommentWhereUniqueInput
+    data: XOR<ImageCommentUpdateWithoutImageInput, ImageCommentUncheckedUpdateWithoutImageInput>
+  }
+
+  export type ImageCommentUpdateManyWithWhereWithoutImageInput = {
+    where: ImageCommentScalarWhereInput
+    data: XOR<ImageCommentUpdateManyMutationInput, ImageCommentUncheckedUpdateManyWithoutImageInput>
+  }
+
+  export type UserCreateWithoutImageLikesInput = {
+    email: string
+    password?: string | null
+    nickname: string
+    credits?: number
+    provider?: string
+    kakaoId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profileImageUrl?: string | null
+    loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
+    generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutImageLikesInput = {
+    id?: number
+    email: string
+    password?: string | null
+    nickname: string
+    credits?: number
+    provider?: string
+    kakaoId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profileImageUrl?: string | null
+    loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
+    generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutImageLikesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutImageLikesInput, UserUncheckedCreateWithoutImageLikesInput>
+  }
+
+  export type GeneratedImageCreateWithoutLikesInput = {
+    prompt: string
+    imageUrl: string
+    model: string
+    size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutGeneratedImagesInput
+    comments?: ImageCommentCreateNestedManyWithoutImageInput
+  }
+
+  export type GeneratedImageUncheckedCreateWithoutLikesInput = {
+    id?: number
+    userId: number
+    prompt: string
+    imageUrl: string
+    model: string
+    size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
+  }
+
+  export type GeneratedImageCreateOrConnectWithoutLikesInput = {
+    where: GeneratedImageWhereUniqueInput
+    create: XOR<GeneratedImageCreateWithoutLikesInput, GeneratedImageUncheckedCreateWithoutLikesInput>
+  }
+
+  export type UserUpsertWithoutImageLikesInput = {
+    update: XOR<UserUpdateWithoutImageLikesInput, UserUncheckedUpdateWithoutImageLikesInput>
+    create: XOR<UserCreateWithoutImageLikesInput, UserUncheckedCreateWithoutImageLikesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutImageLikesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutImageLikesInput, UserUncheckedUpdateWithoutImageLikesInput>
+  }
+
+  export type UserUpdateWithoutImageLikesInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
+    provider?: StringFieldUpdateOperationsInput | string
+    kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
+    generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutImageLikesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
+    provider?: StringFieldUpdateOperationsInput | string
+    kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
+    generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type GeneratedImageUpsertWithoutLikesInput = {
+    update: XOR<GeneratedImageUpdateWithoutLikesInput, GeneratedImageUncheckedUpdateWithoutLikesInput>
+    create: XOR<GeneratedImageCreateWithoutLikesInput, GeneratedImageUncheckedCreateWithoutLikesInput>
+    where?: GeneratedImageWhereInput
+  }
+
+  export type GeneratedImageUpdateToOneWithWhereWithoutLikesInput = {
+    where?: GeneratedImageWhereInput
+    data: XOR<GeneratedImageUpdateWithoutLikesInput, GeneratedImageUncheckedUpdateWithoutLikesInput>
+  }
+
+  export type GeneratedImageUpdateWithoutLikesInput = {
+    prompt?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGeneratedImagesNestedInput
+    comments?: ImageCommentUpdateManyWithoutImageNestedInput
+  }
+
+  export type GeneratedImageUncheckedUpdateWithoutLikesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    prompt?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
+  }
+
+  export type UserCreateWithoutImageCommentsInput = {
+    email: string
+    password?: string | null
+    nickname: string
+    credits?: number
+    provider?: string
+    kakaoId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profileImageUrl?: string | null
+    loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
+    generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutImageCommentsInput = {
+    id?: number
+    email: string
+    password?: string | null
+    nickname: string
+    credits?: number
+    provider?: string
+    kakaoId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profileImageUrl?: string | null
+    loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
+    generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutImageCommentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutImageCommentsInput, UserUncheckedCreateWithoutImageCommentsInput>
+  }
+
+  export type GeneratedImageCreateWithoutCommentsInput = {
+    prompt: string
+    imageUrl: string
+    model: string
+    size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutGeneratedImagesInput
+    likes?: ImageLikeCreateNestedManyWithoutImageInput
+  }
+
+  export type GeneratedImageUncheckedCreateWithoutCommentsInput = {
+    id?: number
+    userId: number
+    prompt: string
+    imageUrl: string
+    model: string
+    size?: string
+    editData?: string | null
+    editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
+  }
+
+  export type GeneratedImageCreateOrConnectWithoutCommentsInput = {
+    where: GeneratedImageWhereUniqueInput
+    create: XOR<GeneratedImageCreateWithoutCommentsInput, GeneratedImageUncheckedCreateWithoutCommentsInput>
+  }
+
+  export type ImageCommentCreateWithoutRepliesInput = {
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutImageCommentsInput
+    image: GeneratedImageCreateNestedOneWithoutCommentsInput
+    parent?: ImageCommentCreateNestedOneWithoutRepliesInput
+  }
+
+  export type ImageCommentUncheckedCreateWithoutRepliesInput = {
+    id?: number
+    userId: number
+    imageId: number
+    content: string
+    parentId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageCommentCreateOrConnectWithoutRepliesInput = {
+    where: ImageCommentWhereUniqueInput
+    create: XOR<ImageCommentCreateWithoutRepliesInput, ImageCommentUncheckedCreateWithoutRepliesInput>
+  }
+
+  export type ImageCommentCreateWithoutParentInput = {
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutImageCommentsInput
+    image: GeneratedImageCreateNestedOneWithoutCommentsInput
+    replies?: ImageCommentCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentUncheckedCreateWithoutParentInput = {
+    id?: number
+    userId: number
+    imageId: number
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    replies?: ImageCommentUncheckedCreateNestedManyWithoutParentInput
+  }
+
+  export type ImageCommentCreateOrConnectWithoutParentInput = {
+    where: ImageCommentWhereUniqueInput
+    create: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type ImageCommentCreateManyParentInputEnvelope = {
+    data: ImageCommentCreateManyParentInput | ImageCommentCreateManyParentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserUpsertWithoutImageCommentsInput = {
+    update: XOR<UserUpdateWithoutImageCommentsInput, UserUncheckedUpdateWithoutImageCommentsInput>
+    create: XOR<UserCreateWithoutImageCommentsInput, UserUncheckedCreateWithoutImageCommentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutImageCommentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutImageCommentsInput, UserUncheckedUpdateWithoutImageCommentsInput>
+  }
+
+  export type UserUpdateWithoutImageCommentsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
+    provider?: StringFieldUpdateOperationsInput | string
+    kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
+    generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutImageCommentsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
+    provider?: StringFieldUpdateOperationsInput | string
+    kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
+    generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type GeneratedImageUpsertWithoutCommentsInput = {
+    update: XOR<GeneratedImageUpdateWithoutCommentsInput, GeneratedImageUncheckedUpdateWithoutCommentsInput>
+    create: XOR<GeneratedImageCreateWithoutCommentsInput, GeneratedImageUncheckedCreateWithoutCommentsInput>
+    where?: GeneratedImageWhereInput
+  }
+
+  export type GeneratedImageUpdateToOneWithWhereWithoutCommentsInput = {
+    where?: GeneratedImageWhereInput
+    data: XOR<GeneratedImageUpdateWithoutCommentsInput, GeneratedImageUncheckedUpdateWithoutCommentsInput>
+  }
+
+  export type GeneratedImageUpdateWithoutCommentsInput = {
+    prompt?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGeneratedImagesNestedInput
+    likes?: ImageLikeUpdateManyWithoutImageNestedInput
+  }
+
+  export type GeneratedImageUncheckedUpdateWithoutCommentsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    prompt?: StringFieldUpdateOperationsInput | string
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
+  }
+
+  export type ImageCommentUpsertWithoutRepliesInput = {
+    update: XOR<ImageCommentUpdateWithoutRepliesInput, ImageCommentUncheckedUpdateWithoutRepliesInput>
+    create: XOR<ImageCommentCreateWithoutRepliesInput, ImageCommentUncheckedCreateWithoutRepliesInput>
+    where?: ImageCommentWhereInput
+  }
+
+  export type ImageCommentUpdateToOneWithWhereWithoutRepliesInput = {
+    where?: ImageCommentWhereInput
+    data: XOR<ImageCommentUpdateWithoutRepliesInput, ImageCommentUncheckedUpdateWithoutRepliesInput>
+  }
+
+  export type ImageCommentUpdateWithoutRepliesInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageCommentsNestedInput
+    image?: GeneratedImageUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: ImageCommentUpdateOneWithoutRepliesNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateWithoutRepliesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCommentUpsertWithWhereUniqueWithoutParentInput = {
+    where: ImageCommentWhereUniqueInput
+    update: XOR<ImageCommentUpdateWithoutParentInput, ImageCommentUncheckedUpdateWithoutParentInput>
+    create: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput>
+  }
+
+  export type ImageCommentUpdateWithWhereUniqueWithoutParentInput = {
+    where: ImageCommentWhereUniqueInput
+    data: XOR<ImageCommentUpdateWithoutParentInput, ImageCommentUncheckedUpdateWithoutParentInput>
+  }
+
+  export type ImageCommentUpdateManyWithWhereWithoutParentInput = {
+    where: ImageCommentScalarWhereInput
+    data: XOR<ImageCommentUpdateManyMutationInput, ImageCommentUncheckedUpdateManyWithoutParentInput>
   }
 
   export type LoginAttemptCreateManyUserInput = {
@@ -5636,6 +9390,21 @@ export namespace Prisma {
     size?: string
     editData?: string | null
     editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageLikeCreateManyUserInput = {
+    id?: number
+    imageId: number
+    createdAt?: Date | string
+  }
+
+  export type ImageCommentCreateManyUserInput = {
+    id?: number
+    imageId: number
+    content: string
+    parentId?: number | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -5675,6 +9444,8 @@ export namespace Prisma {
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likes?: ImageLikeUpdateManyWithoutImageNestedInput
+    comments?: ImageCommentUpdateManyWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateWithoutUserInput = {
@@ -5687,6 +9458,8 @@ export namespace Prisma {
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
+    comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateManyWithoutUserInput = {
@@ -5697,6 +9470,148 @@ export namespace Prisma {
     size?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeUpdateWithoutUserInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    image?: GeneratedImageUpdateOneRequiredWithoutLikesNestedInput
+  }
+
+  export type ImageLikeUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCommentUpdateWithoutUserInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    image?: GeneratedImageUpdateOneRequiredWithoutCommentsNestedInput
+    parent?: ImageCommentUpdateOneWithoutRepliesNestedInput
+    replies?: ImageCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: ImageCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeCreateManyImageInput = {
+    id?: number
+    userId: number
+    createdAt?: Date | string
+  }
+
+  export type ImageCommentCreateManyImageInput = {
+    id?: number
+    userId: number
+    content: string
+    parentId?: number | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageLikeUpdateWithoutImageInput = {
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageLikesNestedInput
+  }
+
+  export type ImageLikeUncheckedUpdateWithoutImageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageLikeUncheckedUpdateManyWithoutImageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCommentUpdateWithoutImageInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageCommentsNestedInput
+    parent?: ImageCommentUpdateOneWithoutRepliesNestedInput
+    replies?: ImageCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateWithoutImageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: ImageCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateManyWithoutImageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableIntFieldUpdateOperationsInput | number | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageCommentCreateManyParentInput = {
+    id?: number
+    userId: number
+    imageId: number
+    content: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageCommentUpdateWithoutParentInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageCommentsNestedInput
+    image?: GeneratedImageUpdateOneRequiredWithoutCommentsNestedInput
+    replies?: ImageCommentUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateWithoutParentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: ImageCommentUncheckedUpdateManyWithoutParentNestedInput
+  }
+
+  export type ImageCommentUncheckedUpdateManyWithoutParentInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    imageId?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

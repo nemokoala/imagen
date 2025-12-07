@@ -1,26 +1,25 @@
 "use client";
 
 import { ImageCard } from "@/components/gallery/ImageCard";
-import { Image } from "@/components/gallery/types";
+import { Image } from "@/types/types";
 import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
 import { Button } from "@/components/ui/button";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
 import { useWindowWidth } from "@/hooks/use-window-width";
+import { ImageModal } from "./ImageModal";
+import { downloadImage } from "@/lib/utils";
 
 interface InfiniteImageGalleryProps {
-  onImageClick?: (image: Image) => void;
-  onDownload?: (imageUrl: string, prompt: string) => void;
   onScrollChange?: (scrollTop: number) => void;
 }
 
 export function InfiniteImageGallery({
-  onImageClick,
-  onDownload,
   onScrollChange,
 }: InfiniteImageGalleryProps) {
+  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   const {
     data,
@@ -155,8 +154,8 @@ export function InfiniteImageGallery({
                     <ImageCard
                       key={image.id}
                       image={image}
-                      onImageClick={onImageClick ?? (() => {})}
-                      onDownload={onDownload ?? (() => {})}
+                      onImageClick={() => setSelectedImage(image)}
+                      onDownload={() => downloadImage(image.imageUrl)}
                     />
                   ))}
                   {/* 빈 공간 채우기 (마지막 행이 컬럼 수보다 적을 때) */}
@@ -209,6 +208,12 @@ export function InfiniteImageGallery({
           </div>
         </div>
       </div>
+      <ImageModal
+        image={selectedImage}
+        isOpen={!!selectedImage}
+        onClose={() => setSelectedImage(null)}
+        onDownload={downloadImage}
+      />
     </div>
   );
 }

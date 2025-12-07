@@ -27,6 +27,8 @@ model User {
   profileImageUrl String?
   loginAttempts LoginAttempt[]
   generatedImages GeneratedImage[]
+  imageLikes ImageLike[]
+  imageComments ImageComment[]
 }
 
 model LoginAttempt {
@@ -54,8 +56,46 @@ model GeneratedImage {
   editedImageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // 좋아요와 댓글 관계
+  likes     ImageLike[]
+  comments  ImageComment[]
 
   @@index([userId])
   @@index([createdAt])
   @@index([model])
+}
+
+// 이미지 좋아요 모델
+model ImageLike {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageId   Int
+  image     GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  // 한 사용자가 한 이미지에 한 번만 좋아요 가능
+  @@unique([userId, imageId])
+  @@index([imageId])
+  @@index([userId])
+}
+
+// 이미지 댓글 모델
+model ImageComment {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageId   Int
+  image     GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  parentId  Int?     // 대댓글을 위한 부모 댓글 ID
+  parent    ImageComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   ImageComment[] @relation("CommentReplies")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([imageId])
+  @@index([userId])
+  @@index([parentId])
 }

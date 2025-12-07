@@ -14,9 +14,15 @@ import {
   Image as ImageIcon,
   Download,
   Sparkles,
+  MessageCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { ko } from "date-fns/locale";
+import { CommentSection } from "./comment/CommentSection";
+import { useGetCommentsQuery } from "@/queries/image/queries";
+import { LikeButton } from "./LikeButton";
 
 interface Image {
   id: number;
@@ -54,19 +60,12 @@ export function ImageModal({
     }
   }, [image]);
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
+  // TanStack Query hooks
+  const { data: comments = [] } = useGetCommentsQuery(image?.id ?? null);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="w-[calc(100%-2rem)] max-w-5xl max-h-[90vh] overflow-y-auto bg-white/95 backdrop-blur-sm border-0 shadow-2xl scrollbar-hide">
+      <DialogContent className="w-[calc(100%-2rem)] max-w-5xl max-h-[90vh] overflow-y-auto bg-background backdrop-blur-sm border-0 shadow-2xl scrollbar-hide">
         <DialogHeader className="pb-4">
           <DialogTitle className="flex items-center justify-between text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
             <div className="flex items-center gap-2">
@@ -105,52 +104,75 @@ export function ImageModal({
 
             {/* 프롬프트 */}
             <div className="space-y-3">
-              <h3 className="font-semibold text-lg text-gray-800 flex items-center gap-2">
+              <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-purple-600" />
                 프롬프트
               </h3>
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 p-4 rounded-xl">
-                <p className="text-gray-700 leading-relaxed">
+              <div className="bg-background-plus border border-border p-4 rounded-xl">
+                <p className="text-foreground leading-relaxed">
                   {imageData.prompt}
                 </p>
               </div>
             </div>
 
-            {/* 이미지 정보 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 shadow-lg">
-                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                    <User className="h-4 w-4 text-purple-600" />
-                    생성자
-                  </h3>
-                  <p className="text-gray-700">{imageData.user.nickname}</p>
+            {/* 좋아요 및 댓글 섹션 */}
+            <div className="space-y-4">
+              {/* 좋아요 버튼 */}
+              <div className="flex items-center gap-4">
+                <LikeButton imageId={imageData.id} />
+                <div className="flex items-center gap-2 text-foreground">
+                  <MessageCircle className="h-5 w-5" />
+                  <span>{comments.length}</span>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 shadow-lg">
-                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              </div>
+              {/* 댓글 섹션 */}
+              <CommentSection imageId={imageData.id} />
+            </div>
+
+            {/* 이미지 정보 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <div className="bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
+                  <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-purple-600" />
                     모델
                   </h3>
-                  <Badge variant="secondary" className="text-sm">
+                  <Badge
+                    variant="secondary"
+                    className="gradient-purple-bg text-white"
+                  >
                     {imageData.model}
                   </Badge>
                 </div>
-              </div>
-              <div className="space-y-4">
-                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 shadow-lg">
-                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                <div className="bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
+                  <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                     <ImageIcon className="h-4 w-4 text-purple-600" />
                     크기
                   </h3>
-                  <p className="text-gray-700">{imageData.size}</p>
+                  <p className="text-foreground">{imageData.size}</p>
                 </div>
-                <div className="bg-white/80 backdrop-blur-sm p-4 rounded-xl border border-gray-200 shadow-lg">
-                  <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+              </div>
+              <div className="space-y-4">
+                <div className="bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
+                  <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+                    <User className="h-4 w-4 text-purple-600" />
+                    생성자
+                  </h3>
+                  <p className="text-foreground">{imageData.user.nickname}</p>
+                </div>
+                <div className="bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
+                  <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-purple-600" />
                     생성일
                   </h3>
-                  <p className="text-gray-700">
-                    {formatDate(imageData.createdAt)}
+                  <p className="text-foreground">
+                    {format(
+                      new Date(imageData.createdAt),
+                      "yyyy년 MM월 dd일 HH:mm",
+                      {
+                        locale: ko,
+                      }
+                    )}
                   </p>
                 </div>
               </div>

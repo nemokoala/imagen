@@ -34,3 +34,47 @@ export interface GetImageByIdResponse {
   image: GeneratedImage | null;
   error?: string;
 }
+
+export interface Image {
+  id: number;
+  userId: number;
+  prompt: string;
+  imageUrl: string;
+  model: string;
+  size: string;
+  editData: string | null;
+  editedImageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  user: {
+    id: number;
+    nickname: string;
+  };
+  likeCount: number;
+  commentCount: number;
+}
+
+export interface GalleryResponse {
+  success: boolean;
+  images: Image[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+  error?: string;
+}
+export interface Comment {
+  id: number;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  userId: number;
+  parentId: number | null;
+  user: {
+    id: number;
+    nickname: string;
+    profileImageUrl: string | null;
+  };
+  replies: Comment[];
+}

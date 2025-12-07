@@ -7,7 +7,7 @@ import { ImageModal } from "@/components/gallery/ImageModal";
 import { LoadingSkeleton } from "@/components/gallery/LoadingSkeleton";
 import { GalleryHeader } from "@/components/gallery/GalleryHeader";
 import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery";
-import { Image } from "@/components/gallery/types";
+import { Image } from "@/types/types";
 import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
 
 export default function GalleryPage() {

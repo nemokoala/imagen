@@ -5,8 +5,9 @@ import {
   GetImageByIdResponse,
 } from "../../types/image.interfaces";
 import { HealthCheckResponse } from "../../types/common.interfaces";
-import { GalleryResponse } from "../../components/gallery/types";
+import { GalleryResponse } from "../../types/image.interfaces";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import { Comment } from "@/types/image.interfaces";
 
 export const useGetUserImagesQuery = (userId: number) => {
   return useQuery({
@@ -85,5 +86,35 @@ export const useHealthCheckQuery = ({ target }: { target: string }) => {
       return response as HealthCheckResponse;
     },
     retry: false,
+  });
+};
+
+export const useGetLikeStatusQuery = (imageId: number | null) => {
+  return useQuery({
+    queryKey: ["likeStatus", imageId],
+    queryFn: async () => {
+      if (!imageId) return null;
+      const response = (await FetchUtil.get(`/api/images/${imageId}/like`)) as {
+        success: boolean;
+        likeCount: number;
+        liked: boolean;
+      };
+      return response.success ? response : null;
+    },
+    enabled: !!imageId,
+  });
+};
+
+export const useGetCommentsQuery = (imageId: number | null) => {
+  return useQuery<Comment[]>({
+    queryKey: ["comments", imageId],
+    queryFn: async (): Promise<Comment[]> => {
+      if (!imageId) return [];
+      const response = (await FetchUtil.get(
+        `/api/images/${imageId}/comments`
+      )) as { success: boolean; comments: Comment[] };
+      return response.success ? response.comments : [];
+    },
+    enabled: !!imageId,
   });
 };

@@ -38,6 +38,11 @@ export type ImageLike = $Result.DefaultSelection<Prisma.$ImageLikePayload>
  * 
  */
 export type ImageComment = $Result.DefaultSelection<Prisma.$ImageCommentPayload>
+/**
+ * Model CreditSettings
+ * 
+ */
+export type CreditSettings = $Result.DefaultSelection<Prisma.$CreditSettingsPayload>
 
 /**
  * Enums
@@ -242,6 +247,16 @@ export class PrismaClient<
     * ```
     */
   get imageComment(): Prisma.ImageCommentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.creditSettings`: Exposes CRUD operations for the **CreditSettings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CreditSettings
+    * const creditSettings = await prisma.creditSettings.findMany()
+    * ```
+    */
+  get creditSettings(): Prisma.CreditSettingsDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -686,7 +701,8 @@ export namespace Prisma {
     LoginAttempt: 'LoginAttempt',
     GeneratedImage: 'GeneratedImage',
     ImageLike: 'ImageLike',
-    ImageComment: 'ImageComment'
+    ImageComment: 'ImageComment',
+    CreditSettings: 'CreditSettings'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -705,7 +721,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "loginAttempt" | "generatedImage" | "imageLike" | "imageComment"
+      modelProps: "user" | "loginAttempt" | "generatedImage" | "imageLike" | "imageComment" | "creditSettings"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1039,6 +1055,72 @@ export namespace Prisma {
           }
         }
       }
+      CreditSettings: {
+        payload: Prisma.$CreditSettingsPayload<ExtArgs>
+        fields: Prisma.CreditSettingsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CreditSettingsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CreditSettingsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>
+          }
+          findFirst: {
+            args: Prisma.CreditSettingsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CreditSettingsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>
+          }
+          findMany: {
+            args: Prisma.CreditSettingsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>[]
+          }
+          create: {
+            args: Prisma.CreditSettingsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>
+          }
+          createMany: {
+            args: Prisma.CreditSettingsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.CreditSettingsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>
+          }
+          update: {
+            args: Prisma.CreditSettingsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>
+          }
+          deleteMany: {
+            args: Prisma.CreditSettingsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CreditSettingsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CreditSettingsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CreditSettingsPayload>
+          }
+          aggregate: {
+            args: Prisma.CreditSettingsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCreditSettings>
+          }
+          groupBy: {
+            args: Prisma.CreditSettingsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CreditSettingsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CreditSettingsCountArgs<ExtArgs>
+            result: $Utils.Optional<CreditSettingsCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1128,6 +1210,7 @@ export namespace Prisma {
     generatedImage?: GeneratedImageOmit
     imageLike?: ImageLikeOmit
     imageComment?: ImageCommentOmit
+    creditSettings?: CreditSettingsOmit
   }
 
   /* Types for Logging */
@@ -6581,6 +6664,964 @@ export namespace Prisma {
 
 
   /**
+   * Model CreditSettings
+   */
+
+  export type AggregateCreditSettings = {
+    _count: CreditSettingsCountAggregateOutputType | null
+    _avg: CreditSettingsAvgAggregateOutputType | null
+    _sum: CreditSettingsSumAggregateOutputType | null
+    _min: CreditSettingsMinAggregateOutputType | null
+    _max: CreditSettingsMaxAggregateOutputType | null
+  }
+
+  export type CreditSettingsAvgAggregateOutputType = {
+    id: number | null
+    dallE3: number | null
+    stableDiffusionXl: number | null
+    googleImagen: number | null
+    nanoBanana: number | null
+    zImage: number | null
+  }
+
+  export type CreditSettingsSumAggregateOutputType = {
+    id: number | null
+    dallE3: number | null
+    stableDiffusionXl: number | null
+    googleImagen: number | null
+    nanoBanana: number | null
+    zImage: number | null
+  }
+
+  export type CreditSettingsMinAggregateOutputType = {
+    id: number | null
+    dallE3: number | null
+    stableDiffusionXl: number | null
+    googleImagen: number | null
+    nanoBanana: number | null
+    zImage: number | null
+    updatedAt: Date | null
+  }
+
+  export type CreditSettingsMaxAggregateOutputType = {
+    id: number | null
+    dallE3: number | null
+    stableDiffusionXl: number | null
+    googleImagen: number | null
+    nanoBanana: number | null
+    zImage: number | null
+    updatedAt: Date | null
+  }
+
+  export type CreditSettingsCountAggregateOutputType = {
+    id: number
+    dallE3: number
+    stableDiffusionXl: number
+    googleImagen: number
+    nanoBanana: number
+    zImage: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CreditSettingsAvgAggregateInputType = {
+    id?: true
+    dallE3?: true
+    stableDiffusionXl?: true
+    googleImagen?: true
+    nanoBanana?: true
+    zImage?: true
+  }
+
+  export type CreditSettingsSumAggregateInputType = {
+    id?: true
+    dallE3?: true
+    stableDiffusionXl?: true
+    googleImagen?: true
+    nanoBanana?: true
+    zImage?: true
+  }
+
+  export type CreditSettingsMinAggregateInputType = {
+    id?: true
+    dallE3?: true
+    stableDiffusionXl?: true
+    googleImagen?: true
+    nanoBanana?: true
+    zImage?: true
+    updatedAt?: true
+  }
+
+  export type CreditSettingsMaxAggregateInputType = {
+    id?: true
+    dallE3?: true
+    stableDiffusionXl?: true
+    googleImagen?: true
+    nanoBanana?: true
+    zImage?: true
+    updatedAt?: true
+  }
+
+  export type CreditSettingsCountAggregateInputType = {
+    id?: true
+    dallE3?: true
+    stableDiffusionXl?: true
+    googleImagen?: true
+    nanoBanana?: true
+    zImage?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CreditSettingsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CreditSettings to aggregate.
+     */
+    where?: CreditSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CreditSettings to fetch.
+     */
+    orderBy?: CreditSettingsOrderByWithRelationInput | CreditSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CreditSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CreditSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CreditSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CreditSettings
+    **/
+    _count?: true | CreditSettingsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CreditSettingsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CreditSettingsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CreditSettingsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CreditSettingsMaxAggregateInputType
+  }
+
+  export type GetCreditSettingsAggregateType<T extends CreditSettingsAggregateArgs> = {
+        [P in keyof T & keyof AggregateCreditSettings]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCreditSettings[P]>
+      : GetScalarType<T[P], AggregateCreditSettings[P]>
+  }
+
+
+
+
+  export type CreditSettingsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CreditSettingsWhereInput
+    orderBy?: CreditSettingsOrderByWithAggregationInput | CreditSettingsOrderByWithAggregationInput[]
+    by: CreditSettingsScalarFieldEnum[] | CreditSettingsScalarFieldEnum
+    having?: CreditSettingsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CreditSettingsCountAggregateInputType | true
+    _avg?: CreditSettingsAvgAggregateInputType
+    _sum?: CreditSettingsSumAggregateInputType
+    _min?: CreditSettingsMinAggregateInputType
+    _max?: CreditSettingsMaxAggregateInputType
+  }
+
+  export type CreditSettingsGroupByOutputType = {
+    id: number
+    dallE3: number
+    stableDiffusionXl: number
+    googleImagen: number
+    nanoBanana: number
+    zImage: number
+    updatedAt: Date
+    _count: CreditSettingsCountAggregateOutputType | null
+    _avg: CreditSettingsAvgAggregateOutputType | null
+    _sum: CreditSettingsSumAggregateOutputType | null
+    _min: CreditSettingsMinAggregateOutputType | null
+    _max: CreditSettingsMaxAggregateOutputType | null
+  }
+
+  type GetCreditSettingsGroupByPayload<T extends CreditSettingsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CreditSettingsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CreditSettingsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CreditSettingsGroupByOutputType[P]>
+            : GetScalarType<T[P], CreditSettingsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CreditSettingsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    dallE3?: boolean
+    stableDiffusionXl?: boolean
+    googleImagen?: boolean
+    nanoBanana?: boolean
+    zImage?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["creditSettings"]>
+
+
+
+  export type CreditSettingsSelectScalar = {
+    id?: boolean
+    dallE3?: boolean
+    stableDiffusionXl?: boolean
+    googleImagen?: boolean
+    nanoBanana?: boolean
+    zImage?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CreditSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "dallE3" | "stableDiffusionXl" | "googleImagen" | "nanoBanana" | "zImage" | "updatedAt", ExtArgs["result"]["creditSettings"]>
+
+  export type $CreditSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CreditSettings"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      dallE3: number
+      stableDiffusionXl: number
+      googleImagen: number
+      nanoBanana: number
+      zImage: number
+      updatedAt: Date
+    }, ExtArgs["result"]["creditSettings"]>
+    composites: {}
+  }
+
+  type CreditSettingsGetPayload<S extends boolean | null | undefined | CreditSettingsDefaultArgs> = $Result.GetResult<Prisma.$CreditSettingsPayload, S>
+
+  type CreditSettingsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CreditSettingsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CreditSettingsCountAggregateInputType | true
+    }
+
+  export interface CreditSettingsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CreditSettings'], meta: { name: 'CreditSettings' } }
+    /**
+     * Find zero or one CreditSettings that matches the filter.
+     * @param {CreditSettingsFindUniqueArgs} args - Arguments to find a CreditSettings
+     * @example
+     * // Get one CreditSettings
+     * const creditSettings = await prisma.creditSettings.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CreditSettingsFindUniqueArgs>(args: SelectSubset<T, CreditSettingsFindUniqueArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CreditSettings that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CreditSettingsFindUniqueOrThrowArgs} args - Arguments to find a CreditSettings
+     * @example
+     * // Get one CreditSettings
+     * const creditSettings = await prisma.creditSettings.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CreditSettingsFindUniqueOrThrowArgs>(args: SelectSubset<T, CreditSettingsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CreditSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsFindFirstArgs} args - Arguments to find a CreditSettings
+     * @example
+     * // Get one CreditSettings
+     * const creditSettings = await prisma.creditSettings.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CreditSettingsFindFirstArgs>(args?: SelectSubset<T, CreditSettingsFindFirstArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CreditSettings that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsFindFirstOrThrowArgs} args - Arguments to find a CreditSettings
+     * @example
+     * // Get one CreditSettings
+     * const creditSettings = await prisma.creditSettings.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CreditSettingsFindFirstOrThrowArgs>(args?: SelectSubset<T, CreditSettingsFindFirstOrThrowArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CreditSettings that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CreditSettings
+     * const creditSettings = await prisma.creditSettings.findMany()
+     * 
+     * // Get first 10 CreditSettings
+     * const creditSettings = await prisma.creditSettings.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const creditSettingsWithIdOnly = await prisma.creditSettings.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CreditSettingsFindManyArgs>(args?: SelectSubset<T, CreditSettingsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CreditSettings.
+     * @param {CreditSettingsCreateArgs} args - Arguments to create a CreditSettings.
+     * @example
+     * // Create one CreditSettings
+     * const CreditSettings = await prisma.creditSettings.create({
+     *   data: {
+     *     // ... data to create a CreditSettings
+     *   }
+     * })
+     * 
+     */
+    create<T extends CreditSettingsCreateArgs>(args: SelectSubset<T, CreditSettingsCreateArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CreditSettings.
+     * @param {CreditSettingsCreateManyArgs} args - Arguments to create many CreditSettings.
+     * @example
+     * // Create many CreditSettings
+     * const creditSettings = await prisma.creditSettings.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CreditSettingsCreateManyArgs>(args?: SelectSubset<T, CreditSettingsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a CreditSettings.
+     * @param {CreditSettingsDeleteArgs} args - Arguments to delete one CreditSettings.
+     * @example
+     * // Delete one CreditSettings
+     * const CreditSettings = await prisma.creditSettings.delete({
+     *   where: {
+     *     // ... filter to delete one CreditSettings
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CreditSettingsDeleteArgs>(args: SelectSubset<T, CreditSettingsDeleteArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CreditSettings.
+     * @param {CreditSettingsUpdateArgs} args - Arguments to update one CreditSettings.
+     * @example
+     * // Update one CreditSettings
+     * const creditSettings = await prisma.creditSettings.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CreditSettingsUpdateArgs>(args: SelectSubset<T, CreditSettingsUpdateArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CreditSettings.
+     * @param {CreditSettingsDeleteManyArgs} args - Arguments to filter CreditSettings to delete.
+     * @example
+     * // Delete a few CreditSettings
+     * const { count } = await prisma.creditSettings.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CreditSettingsDeleteManyArgs>(args?: SelectSubset<T, CreditSettingsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CreditSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CreditSettings
+     * const creditSettings = await prisma.creditSettings.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CreditSettingsUpdateManyArgs>(args: SelectSubset<T, CreditSettingsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CreditSettings.
+     * @param {CreditSettingsUpsertArgs} args - Arguments to update or create a CreditSettings.
+     * @example
+     * // Update or create a CreditSettings
+     * const creditSettings = await prisma.creditSettings.upsert({
+     *   create: {
+     *     // ... data to create a CreditSettings
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CreditSettings we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CreditSettingsUpsertArgs>(args: SelectSubset<T, CreditSettingsUpsertArgs<ExtArgs>>): Prisma__CreditSettingsClient<$Result.GetResult<Prisma.$CreditSettingsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CreditSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsCountArgs} args - Arguments to filter CreditSettings to count.
+     * @example
+     * // Count the number of CreditSettings
+     * const count = await prisma.creditSettings.count({
+     *   where: {
+     *     // ... the filter for the CreditSettings we want to count
+     *   }
+     * })
+    **/
+    count<T extends CreditSettingsCountArgs>(
+      args?: Subset<T, CreditSettingsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CreditSettingsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CreditSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CreditSettingsAggregateArgs>(args: Subset<T, CreditSettingsAggregateArgs>): Prisma.PrismaPromise<GetCreditSettingsAggregateType<T>>
+
+    /**
+     * Group by CreditSettings.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CreditSettingsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CreditSettingsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CreditSettingsGroupByArgs['orderBy'] }
+        : { orderBy?: CreditSettingsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CreditSettingsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCreditSettingsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CreditSettings model
+   */
+  readonly fields: CreditSettingsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CreditSettings.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CreditSettingsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CreditSettings model
+   */
+  interface CreditSettingsFieldRefs {
+    readonly id: FieldRef<"CreditSettings", 'Int'>
+    readonly dallE3: FieldRef<"CreditSettings", 'Int'>
+    readonly stableDiffusionXl: FieldRef<"CreditSettings", 'Int'>
+    readonly googleImagen: FieldRef<"CreditSettings", 'Int'>
+    readonly nanoBanana: FieldRef<"CreditSettings", 'Int'>
+    readonly zImage: FieldRef<"CreditSettings", 'Int'>
+    readonly updatedAt: FieldRef<"CreditSettings", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CreditSettings findUnique
+   */
+  export type CreditSettingsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CreditSettings to fetch.
+     */
+    where: CreditSettingsWhereUniqueInput
+  }
+
+  /**
+   * CreditSettings findUniqueOrThrow
+   */
+  export type CreditSettingsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CreditSettings to fetch.
+     */
+    where: CreditSettingsWhereUniqueInput
+  }
+
+  /**
+   * CreditSettings findFirst
+   */
+  export type CreditSettingsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CreditSettings to fetch.
+     */
+    where?: CreditSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CreditSettings to fetch.
+     */
+    orderBy?: CreditSettingsOrderByWithRelationInput | CreditSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CreditSettings.
+     */
+    cursor?: CreditSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CreditSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CreditSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CreditSettings.
+     */
+    distinct?: CreditSettingsScalarFieldEnum | CreditSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * CreditSettings findFirstOrThrow
+   */
+  export type CreditSettingsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CreditSettings to fetch.
+     */
+    where?: CreditSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CreditSettings to fetch.
+     */
+    orderBy?: CreditSettingsOrderByWithRelationInput | CreditSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CreditSettings.
+     */
+    cursor?: CreditSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CreditSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CreditSettings.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CreditSettings.
+     */
+    distinct?: CreditSettingsScalarFieldEnum | CreditSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * CreditSettings findMany
+   */
+  export type CreditSettingsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * Filter, which CreditSettings to fetch.
+     */
+    where?: CreditSettingsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CreditSettings to fetch.
+     */
+    orderBy?: CreditSettingsOrderByWithRelationInput | CreditSettingsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CreditSettings.
+     */
+    cursor?: CreditSettingsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CreditSettings from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CreditSettings.
+     */
+    skip?: number
+    distinct?: CreditSettingsScalarFieldEnum | CreditSettingsScalarFieldEnum[]
+  }
+
+  /**
+   * CreditSettings create
+   */
+  export type CreditSettingsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CreditSettings.
+     */
+    data: XOR<CreditSettingsCreateInput, CreditSettingsUncheckedCreateInput>
+  }
+
+  /**
+   * CreditSettings createMany
+   */
+  export type CreditSettingsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CreditSettings.
+     */
+    data: CreditSettingsCreateManyInput | CreditSettingsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CreditSettings update
+   */
+  export type CreditSettingsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CreditSettings.
+     */
+    data: XOR<CreditSettingsUpdateInput, CreditSettingsUncheckedUpdateInput>
+    /**
+     * Choose, which CreditSettings to update.
+     */
+    where: CreditSettingsWhereUniqueInput
+  }
+
+  /**
+   * CreditSettings updateMany
+   */
+  export type CreditSettingsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CreditSettings.
+     */
+    data: XOR<CreditSettingsUpdateManyMutationInput, CreditSettingsUncheckedUpdateManyInput>
+    /**
+     * Filter which CreditSettings to update
+     */
+    where?: CreditSettingsWhereInput
+    /**
+     * Limit how many CreditSettings to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CreditSettings upsert
+   */
+  export type CreditSettingsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CreditSettings to update in case it exists.
+     */
+    where: CreditSettingsWhereUniqueInput
+    /**
+     * In case the CreditSettings found by the `where` argument doesn't exist, create a new CreditSettings with this data.
+     */
+    create: XOR<CreditSettingsCreateInput, CreditSettingsUncheckedCreateInput>
+    /**
+     * In case the CreditSettings was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CreditSettingsUpdateInput, CreditSettingsUncheckedUpdateInput>
+  }
+
+  /**
+   * CreditSettings delete
+   */
+  export type CreditSettingsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+    /**
+     * Filter which CreditSettings to delete.
+     */
+    where: CreditSettingsWhereUniqueInput
+  }
+
+  /**
+   * CreditSettings deleteMany
+   */
+  export type CreditSettingsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CreditSettings to delete
+     */
+    where?: CreditSettingsWhereInput
+    /**
+     * Limit how many CreditSettings to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CreditSettings without action
+   */
+  export type CreditSettingsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CreditSettings
+     */
+    select?: CreditSettingsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CreditSettings
+     */
+    omit?: CreditSettingsOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -6661,6 +7702,19 @@ export namespace Prisma {
   };
 
   export type ImageCommentScalarFieldEnum = (typeof ImageCommentScalarFieldEnum)[keyof typeof ImageCommentScalarFieldEnum]
+
+
+  export const CreditSettingsScalarFieldEnum: {
+    id: 'id',
+    dallE3: 'dallE3',
+    stableDiffusionXl: 'stableDiffusionXl',
+    googleImagen: 'googleImagen',
+    nanoBanana: 'nanoBanana',
+    zImage: 'zImage',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CreditSettingsScalarFieldEnum = (typeof CreditSettingsScalarFieldEnum)[keyof typeof CreditSettingsScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -7154,6 +8208,70 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"ImageComment"> | Date | string
   }
 
+  export type CreditSettingsWhereInput = {
+    AND?: CreditSettingsWhereInput | CreditSettingsWhereInput[]
+    OR?: CreditSettingsWhereInput[]
+    NOT?: CreditSettingsWhereInput | CreditSettingsWhereInput[]
+    id?: IntFilter<"CreditSettings"> | number
+    dallE3?: IntFilter<"CreditSettings"> | number
+    stableDiffusionXl?: IntFilter<"CreditSettings"> | number
+    googleImagen?: IntFilter<"CreditSettings"> | number
+    nanoBanana?: IntFilter<"CreditSettings"> | number
+    zImage?: IntFilter<"CreditSettings"> | number
+    updatedAt?: DateTimeFilter<"CreditSettings"> | Date | string
+  }
+
+  export type CreditSettingsOrderByWithRelationInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CreditSettingsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: CreditSettingsWhereInput | CreditSettingsWhereInput[]
+    OR?: CreditSettingsWhereInput[]
+    NOT?: CreditSettingsWhereInput | CreditSettingsWhereInput[]
+    dallE3?: IntFilter<"CreditSettings"> | number
+    stableDiffusionXl?: IntFilter<"CreditSettings"> | number
+    googleImagen?: IntFilter<"CreditSettings"> | number
+    nanoBanana?: IntFilter<"CreditSettings"> | number
+    zImage?: IntFilter<"CreditSettings"> | number
+    updatedAt?: DateTimeFilter<"CreditSettings"> | Date | string
+  }, "id">
+
+  export type CreditSettingsOrderByWithAggregationInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CreditSettingsCountOrderByAggregateInput
+    _avg?: CreditSettingsAvgOrderByAggregateInput
+    _max?: CreditSettingsMaxOrderByAggregateInput
+    _min?: CreditSettingsMinOrderByAggregateInput
+    _sum?: CreditSettingsSumOrderByAggregateInput
+  }
+
+  export type CreditSettingsScalarWhereWithAggregatesInput = {
+    AND?: CreditSettingsScalarWhereWithAggregatesInput | CreditSettingsScalarWhereWithAggregatesInput[]
+    OR?: CreditSettingsScalarWhereWithAggregatesInput[]
+    NOT?: CreditSettingsScalarWhereWithAggregatesInput | CreditSettingsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"CreditSettings"> | number
+    dallE3?: IntWithAggregatesFilter<"CreditSettings"> | number
+    stableDiffusionXl?: IntWithAggregatesFilter<"CreditSettings"> | number
+    googleImagen?: IntWithAggregatesFilter<"CreditSettings"> | number
+    nanoBanana?: IntWithAggregatesFilter<"CreditSettings"> | number
+    zImage?: IntWithAggregatesFilter<"CreditSettings"> | number
+    updatedAt?: DateTimeWithAggregatesFilter<"CreditSettings"> | Date | string
+  }
+
   export type UserCreateInput = {
     email: string
     password?: string | null
@@ -7535,6 +8653,76 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     parentId?: NullableIntFieldUpdateOperationsInput | number | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CreditSettingsCreateInput = {
+    id?: number
+    dallE3?: number
+    stableDiffusionXl?: number
+    googleImagen?: number
+    nanoBanana?: number
+    zImage?: number
+    updatedAt?: Date | string
+  }
+
+  export type CreditSettingsUncheckedCreateInput = {
+    id?: number
+    dallE3?: number
+    stableDiffusionXl?: number
+    googleImagen?: number
+    nanoBanana?: number
+    zImage?: number
+    updatedAt?: Date | string
+  }
+
+  export type CreditSettingsUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    dallE3?: IntFieldUpdateOperationsInput | number
+    stableDiffusionXl?: IntFieldUpdateOperationsInput | number
+    googleImagen?: IntFieldUpdateOperationsInput | number
+    nanoBanana?: IntFieldUpdateOperationsInput | number
+    zImage?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CreditSettingsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    dallE3?: IntFieldUpdateOperationsInput | number
+    stableDiffusionXl?: IntFieldUpdateOperationsInput | number
+    googleImagen?: IntFieldUpdateOperationsInput | number
+    nanoBanana?: IntFieldUpdateOperationsInput | number
+    zImage?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CreditSettingsCreateManyInput = {
+    id?: number
+    dallE3?: number
+    stableDiffusionXl?: number
+    googleImagen?: number
+    nanoBanana?: number
+    zImage?: number
+    updatedAt?: Date | string
+  }
+
+  export type CreditSettingsUpdateManyMutationInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    dallE3?: IntFieldUpdateOperationsInput | number
+    stableDiffusionXl?: IntFieldUpdateOperationsInput | number
+    googleImagen?: IntFieldUpdateOperationsInput | number
+    nanoBanana?: IntFieldUpdateOperationsInput | number
+    zImage?: IntFieldUpdateOperationsInput | number
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CreditSettingsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    dallE3?: IntFieldUpdateOperationsInput | number
+    stableDiffusionXl?: IntFieldUpdateOperationsInput | number
+    googleImagen?: IntFieldUpdateOperationsInput | number
+    nanoBanana?: IntFieldUpdateOperationsInput | number
+    zImage?: IntFieldUpdateOperationsInput | number
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -8022,6 +9210,54 @@ export namespace Prisma {
     _sum?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedIntNullableFilter<$PrismaModel>
     _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type CreditSettingsCountOrderByAggregateInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CreditSettingsAvgOrderByAggregateInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
+  }
+
+  export type CreditSettingsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CreditSettingsMinOrderByAggregateInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CreditSettingsSumOrderByAggregateInput = {
+    id?: SortOrder
+    dallE3?: SortOrder
+    stableDiffusionXl?: SortOrder
+    googleImagen?: SortOrder
+    nanoBanana?: SortOrder
+    zImage?: SortOrder
   }
 
   export type LoginAttemptCreateNestedManyWithoutUserInput = {

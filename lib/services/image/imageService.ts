@@ -6,7 +6,7 @@ import mime from "mime";
 import { prisma } from "../../prisma";
 import { ollamaService } from "../ollamaService";
 import { authService } from "../auth/authService";
-import { creditConstants } from "@/constants/credit.constants";
+import { creditSettingsService } from "../admin/creditSettingsService";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -46,8 +46,11 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      const creditSettings = await creditSettingsService.getCreditSettings();
+      const creditCost = creditSettings.dallE3;
+
       const credit = await authService.getCreditById(userId);
-      if (credit.credits < creditConstants.DALL_E_3) {
+      if (credit.credits < creditCost) {
         return { success: false, error: "크레딧이 부족합니다." };
       }
 
@@ -62,7 +65,7 @@ export const imageService = {
         return { success: false, error: "이미지 생성에 실패했습니다." };
       }
 
-      await authService.updateUserCredit(userId, -creditConstants.DALL_E_3);
+      await authService.updateUserCredit(userId, -creditCost);
 
       const imageUrl = result.data[0].url;
 
@@ -108,8 +111,11 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      const creditSettings = await creditSettingsService.getCreditSettings();
+      const creditCost = creditSettings.stableDiffusionXl;
+
       const credit = await authService.getCreditById(userId);
-      if (credit.credits < creditConstants.STABLE_DIFFUSION_XL) {
+      if (credit.credits < creditCost) {
         return { success: false, error: "크레딧이 부족합니다." };
       }
 
@@ -152,10 +158,7 @@ export const imageService = {
         return { success: false, error: "이미지 생성에 실패했습니다." };
       }
 
-      await authService.updateUserCredit(
-        userId,
-        -creditConstants.STABLE_DIFFUSION_XL
-      );
+      await authService.updateUserCredit(userId, -creditCost);
 
       const data = await response.json();
 
@@ -194,8 +197,11 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      const creditSettings = await creditSettingsService.getCreditSettings();
+      const creditCost = creditSettings.googleImagen;
+
       const credit = await authService.getCreditById(userId);
-      if (credit.credits < creditConstants.GOOGLE_IMAGEN) {
+      if (credit.credits < creditCost) {
         return { success: false, error: "크레딧이 부족합니다." };
       }
 
@@ -221,10 +227,7 @@ export const imageService = {
         return { success: false, error: "이미지 데이터를 가져올 수 없습니다." };
       }
 
-      await authService.updateUserCredit(
-        userId,
-        -creditConstants.GOOGLE_IMAGEN
-      );
+      await authService.updateUserCredit(userId, -creditCost);
 
       // 이미지를 파일시스템에 저장
       const savedImagePath = await imageService.saveImageToFileSystem(
@@ -287,8 +290,11 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      const creditSettings = await creditSettingsService.getCreditSettings();
+      const creditCost = creditSettings.zImage;
+
       const credit = await authService.getCreditById(userId);
-      if (credit.credits < creditConstants.ZIMAGE) {
+      if (credit.credits < creditCost) {
         return { success: false, error: "크레딧이 부족합니다." };
       }
 
@@ -500,7 +506,7 @@ export const imageService = {
       );
 
       // 크레딧 차감
-      await authService.updateUserCredit(userId, -creditConstants.ZIMAGE);
+      await authService.updateUserCredit(userId, -creditCost);
 
       // 데이터베이스에 이미지 정보 저장
       await imageService.saveImageToDatabase({
@@ -540,8 +546,11 @@ export const imageService = {
         return { success: false, error: "프롬프트가 필요합니다." };
       }
 
+      const creditSettings = await creditSettingsService.getCreditSettings();
+      const creditCost = creditSettings.nanoBanana;
+
       const credit = await authService.getCreditById(userId);
-      if (credit.credits < creditConstants.NANO_BANANA) {
+      if (credit.credits < creditCost) {
         return { success: false, error: "크레딧이 부족합니다." };
       }
 
@@ -592,7 +601,7 @@ export const imageService = {
         return { success: false, error: "이미지 생성에 실패했습니다." };
       }
 
-      await authService.updateUserCredit(userId, -creditConstants.NANO_BANANA);
+      await authService.updateUserCredit(userId, -creditCost);
 
       // 이미지를 파일시스템에 저장
       const savedImagePath = await imageService.saveImageToFileSystem(

@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "../ui/select";
-import { creditConstants } from "@/constants/credit.constants";
+import { useGetCreditSettingsQuery } from "@/queries/admin/creditSettings";
 import { HealthCheckResponse } from "@/types/common.interfaces";
 
 export const ModelSelect = ({
@@ -26,6 +26,17 @@ export const ModelSelect = ({
   isStableHealthCheckLoading: boolean;
   isZimageHealthCheckLoading: boolean;
 }) => {
+  const { data: creditSettings } = useGetCreditSettingsQuery();
+
+  // 기본 크레딧 값 (fallback)
+  const defaultCredits = {
+    dallE3: 20,
+    stableDiffusionXl: 5,
+    googleImagen: 20,
+    nanoBanana: 20,
+    zImage: 10,
+  };
+
   // 모델에 따른 표시 텍스트 매핑
   const getModelDisplayText = (modelValue: string) => {
     switch (modelValue) {
@@ -44,40 +55,43 @@ export const ModelSelect = ({
     }
   };
   const getCreditText = (modelValue: string) => {
+    // 크레딧 설정이 로딩 중이거나 없으면 기본값 사용
+    const credits = creditSettings || defaultCredits;
+
     switch (modelValue) {
       case "stable-diffusion-xl":
         return (
           <Badge variant="outline" className="text-xs">
             <MiniDot />
-            {creditConstants.STABLE_DIFFUSION_XL} 크레딧
+            {credits.stableDiffusionXl} 크레딧
           </Badge>
         );
       case "dall-e-3":
         return (
           <Badge variant="outline" className="text-xs">
             <MiniDot />
-            {creditConstants.DALL_E_3} 크레딧
+            {credits.dallE3} 크레딧
           </Badge>
         );
       case "google-imagen":
         return (
           <Badge variant="outline" className="text-xs">
             <MiniDot />
-            {creditConstants.GOOGLE_IMAGEN} 크레딧
+            {credits.googleImagen} 크레딧
           </Badge>
         );
       case "nano-banana":
         return (
           <Badge variant="outline" className="text-xs">
             <MiniDot />
-            {creditConstants.NANO_BANANA} 크레딧
+            {credits.nanoBanana} 크레딧
           </Badge>
         );
       case "Z-Image":
         return (
           <Badge variant="outline" className="text-xs">
             <MiniDot />
-            {creditConstants.ZIMAGE} 크레딧
+            {credits.zImage} 크레딧
           </Badge>
         );
       default:

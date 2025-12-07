@@ -110,3 +110,16 @@ model ImageComment {
   @@index([userId])
   @@index([parentId])
 }
+
+// 크레딧 설정 모델 (단일 레코드로 관리)
+model CreditSettings {
+  id                Int      @id @default(1) // 항상 1번만 사용
+  dallE3            Int      @default(20)
+  stableDiffusionXl Int      @default(5)
+  googleImagen      Int      @default(20)
+  nanoBanana        Int      @default(20)
+  zImage            Int      @default(10)
+  updatedAt         DateTime @updatedAt
+
+  @@map("credit_settings")
+}

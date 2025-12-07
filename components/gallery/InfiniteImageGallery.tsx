@@ -5,9 +5,10 @@ import { Image } from "@/components/gallery/types";
 import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
 import { Button } from "@/components/ui/button";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useEffect, useMemo, useState } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { Loader2 } from "lucide-react";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
+import { useWindowWidth } from "@/hooks/use-window-width";
 
 interface InfiniteImageGalleryProps {
   onImageClick?: (image: Image) => void;
@@ -38,25 +39,17 @@ export function InfiniteImageGallery({
   );
   const totalImages = data?.pages[0]?.totalCount || 0;
 
+  // 윈도우 너비 가져오기
+  const width = useWindowWidth();
+
   // 반응형 컬럼 수 계산
-  const getColumnCount = () => {
-    if (typeof window === "undefined") return 4;
-    const width = window.innerWidth;
+  const columnCount = useMemo(() => {
+    if (width === 0) return 4; // SSR 또는 초기 렌더링
     if (width >= 1280) return 4; // xl
     if (width >= 1024) return 3; // lg
     if (width >= 768) return 2; // md
-    return 1; // sm
-  };
-
-  const [columnCount, setColumnCount] = useState(getColumnCount);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setColumnCount(getColumnCount());
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+    return 2;
+  }, [width]);
 
   // 컬럼별로 이미지를 그룹화
   const rows = useMemo(() => {
@@ -74,7 +67,7 @@ export function InfiniteImageGallery({
     getScrollElement: () => parentRef.current,
     estimateSize: () => 350, // 초기 예상 높이 (실제 높이는 자동 측정됨)
     overscan: 5, // 화면 밖에 렌더링할 추가 행 수 (더 많이 유지하여 재로드 방지)
-    gap: 16,
+    gap: width < 768 ? 8 : 16,
     measureElement:
       typeof window !== "undefined" &&
       navigator.userAgent.indexOf("Firefox") === -1
@@ -157,7 +150,7 @@ export function InfiniteImageGallery({
                   transform: `translateY(${virtualRow.start}px)`,
                 }}
               >
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-1">
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 gap-2">
                   {row.map((image: Image) => (
                     <ImageCard
                       key={image.id}

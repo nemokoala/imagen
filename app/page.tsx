@@ -12,7 +12,7 @@ export default function Home() {
   });
 
   return (
-    <Layout.Content className="h-[calc(100dvh-60px)] p-4">
+    <Layout.Content className="h-[calc(100dvh-60px)] md:p-4 p-2">
       <WelcomeTitle />
       <InfiniteImageGallery onScrollChange={handleScrollChange} />
       <ImageCreatButton isVisible={isVisible} />

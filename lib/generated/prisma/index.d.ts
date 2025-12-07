@@ -40,6 +40,35 @@ export type ImageLike = $Result.DefaultSelection<Prisma.$ImageLikePayload>
 export type ImageComment = $Result.DefaultSelection<Prisma.$ImageCommentPayload>
 
 /**
+ * Enums
+ */
+export namespace $Enums {
+  export const UserRole: {
+  user: 'user',
+  admin: 'admin'
+};
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const AuthProvider: {
+  local: 'local',
+  kakao: 'kakao'
+};
+
+export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
+
+}
+
+export type UserRole = $Enums.UserRole
+
+export const UserRole: typeof $Enums.UserRole
+
+export type AuthProvider = $Enums.AuthProvider
+
+export const AuthProvider: typeof $Enums.AuthProvider
+
+/**
  * ##  Prisma Client ʲˢ
  *
  * Type-safe database client for TypeScript & Node.js
@@ -1349,7 +1378,8 @@ export namespace Prisma {
     password: string | null
     nickname: string | null
     credits: number | null
-    provider: string | null
+    role: $Enums.UserRole | null
+    provider: $Enums.AuthProvider | null
     kakaoId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1362,7 +1392,8 @@ export namespace Prisma {
     password: string | null
     nickname: string | null
     credits: number | null
-    provider: string | null
+    role: $Enums.UserRole | null
+    provider: $Enums.AuthProvider | null
     kakaoId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -1375,6 +1406,7 @@ export namespace Prisma {
     password: number
     nickname: number
     credits: number
+    role: number
     provider: number
     kakaoId: number
     createdAt: number
@@ -1400,6 +1432,7 @@ export namespace Prisma {
     password?: true
     nickname?: true
     credits?: true
+    role?: true
     provider?: true
     kakaoId?: true
     createdAt?: true
@@ -1413,6 +1446,7 @@ export namespace Prisma {
     password?: true
     nickname?: true
     credits?: true
+    role?: true
     provider?: true
     kakaoId?: true
     createdAt?: true
@@ -1426,6 +1460,7 @@ export namespace Prisma {
     password?: true
     nickname?: true
     credits?: true
+    role?: true
     provider?: true
     kakaoId?: true
     createdAt?: true
@@ -1526,7 +1561,8 @@ export namespace Prisma {
     password: string | null
     nickname: string
     credits: number
-    provider: string
+    role: $Enums.UserRole
+    provider: $Enums.AuthProvider
     kakaoId: string | null
     createdAt: Date
     updatedAt: Date
@@ -1558,6 +1594,7 @@ export namespace Prisma {
     password?: boolean
     nickname?: boolean
     credits?: boolean
+    role?: boolean
     provider?: boolean
     kakaoId?: boolean
     createdAt?: boolean
@@ -1578,6 +1615,7 @@ export namespace Prisma {
     password?: boolean
     nickname?: boolean
     credits?: boolean
+    role?: boolean
     provider?: boolean
     kakaoId?: boolean
     createdAt?: boolean
@@ -1585,7 +1623,7 @@ export namespace Prisma {
     profileImageUrl?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "provider" | "kakaoId" | "createdAt" | "updatedAt" | "profileImageUrl", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "role" | "provider" | "kakaoId" | "createdAt" | "updatedAt" | "profileImageUrl", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
@@ -1608,7 +1646,8 @@ export namespace Prisma {
       password: string | null
       nickname: string
       credits: number
-      provider: string
+      role: $Enums.UserRole
+      provider: $Enums.AuthProvider
       kakaoId: string | null
       createdAt: Date
       updatedAt: Date
@@ -1991,7 +2030,8 @@ export namespace Prisma {
     readonly password: FieldRef<"User", 'String'>
     readonly nickname: FieldRef<"User", 'String'>
     readonly credits: FieldRef<"User", 'Int'>
-    readonly provider: FieldRef<"User", 'String'>
+    readonly role: FieldRef<"User", 'UserRole'>
+    readonly provider: FieldRef<"User", 'AuthProvider'>
     readonly kakaoId: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -6560,6 +6600,7 @@ export namespace Prisma {
     password: 'password',
     nickname: 'nickname',
     credits: 'credits',
+    role: 'role',
     provider: 'provider',
     kakaoId: 'kakaoId',
     createdAt: 'createdAt',
@@ -6642,7 +6683,6 @@ export namespace Prisma {
     email: 'email',
     password: 'password',
     nickname: 'nickname',
-    provider: 'provider',
     kakaoId: 'kakaoId',
     profileImageUrl: 'profileImageUrl'
   };
@@ -6697,6 +6737,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'UserRole'
+   */
+  export type EnumUserRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'AuthProvider'
+   */
+  export type EnumAuthProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuthProvider'>
+    
+
+
+  /**
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -6722,7 +6776,8 @@ export namespace Prisma {
     password?: StringNullableFilter<"User"> | string | null
     nickname?: StringFilter<"User"> | string
     credits?: IntFilter<"User"> | number
-    provider?: StringFilter<"User"> | string
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    provider?: EnumAuthProviderFilter<"User"> | $Enums.AuthProvider
     kakaoId?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -6739,6 +6794,7 @@ export namespace Prisma {
     password?: SortOrderInput | SortOrder
     nickname?: SortOrder
     credits?: SortOrder
+    role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -6761,7 +6817,8 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     password?: StringNullableFilter<"User"> | string | null
     credits?: IntFilter<"User"> | number
-    provider?: StringFilter<"User"> | string
+    role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    provider?: EnumAuthProviderFilter<"User"> | $Enums.AuthProvider
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     profileImageUrl?: StringNullableFilter<"User"> | string | null
@@ -6777,6 +6834,7 @@ export namespace Prisma {
     password?: SortOrderInput | SortOrder
     nickname?: SortOrder
     credits?: SortOrder
+    role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -6798,7 +6856,8 @@ export namespace Prisma {
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
     nickname?: StringWithAggregatesFilter<"User"> | string
     credits?: IntWithAggregatesFilter<"User"> | number
-    provider?: StringWithAggregatesFilter<"User"> | string
+    role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+    provider?: EnumAuthProviderWithAggregatesFilter<"User"> | $Enums.AuthProvider
     kakaoId?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -7100,7 +7159,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7117,7 +7177,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7133,7 +7194,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7150,7 +7212,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7167,7 +7230,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -7179,7 +7243,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7192,7 +7257,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -7513,6 +7579,20 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type EnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[]
+    notIn?: $Enums.UserRole[]
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
+  export type EnumAuthProviderFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthProvider | EnumAuthProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthProvider[]
+    notIn?: $Enums.AuthProvider[]
+    not?: NestedEnumAuthProviderFilter<$PrismaModel> | $Enums.AuthProvider
+  }
+
   export type DateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -7581,6 +7661,7 @@ export namespace Prisma {
     password?: SortOrder
     nickname?: SortOrder
     credits?: SortOrder
+    role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrder
     createdAt?: SortOrder
@@ -7599,6 +7680,7 @@ export namespace Prisma {
     password?: SortOrder
     nickname?: SortOrder
     credits?: SortOrder
+    role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrder
     createdAt?: SortOrder
@@ -7612,6 +7694,7 @@ export namespace Prisma {
     password?: SortOrder
     nickname?: SortOrder
     credits?: SortOrder
+    role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrder
     createdAt?: SortOrder
@@ -7674,6 +7757,26 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedStringNullableFilter<$PrismaModel>
     _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[]
+    notIn?: $Enums.UserRole[]
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
+  export type EnumAuthProviderWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthProvider | EnumAuthProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthProvider[]
+    notIn?: $Enums.AuthProvider[]
+    not?: NestedEnumAuthProviderWithAggregatesFilter<$PrismaModel> | $Enums.AuthProvider
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAuthProviderFilter<$PrismaModel>
+    _max?: NestedEnumAuthProviderFilter<$PrismaModel>
   }
 
   export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -7991,6 +8094,14 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type EnumUserRoleFieldUpdateOperationsInput = {
+    set?: $Enums.UserRole
+  }
+
+  export type EnumAuthProviderFieldUpdateOperationsInput = {
+    set?: $Enums.AuthProvider
   }
 
   export type DateTimeFieldUpdateOperationsInput = {
@@ -8384,6 +8495,20 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[]
+    notIn?: $Enums.UserRole[]
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
+  export type NestedEnumAuthProviderFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthProvider | EnumAuthProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthProvider[]
+    notIn?: $Enums.AuthProvider[]
+    not?: NestedEnumAuthProviderFilter<$PrismaModel> | $Enums.AuthProvider
+  }
+
   export type NestedDateTimeFilter<$PrismaModel = never> = {
     equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     in?: Date[] | string[]
@@ -8467,6 +8592,26 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[]
+    notIn?: $Enums.UserRole[]
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
+  export type NestedEnumAuthProviderWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AuthProvider | EnumAuthProviderFieldRefInput<$PrismaModel>
+    in?: $Enums.AuthProvider[]
+    notIn?: $Enums.AuthProvider[]
+    not?: NestedEnumAuthProviderWithAggregatesFilter<$PrismaModel> | $Enums.AuthProvider
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAuthProviderFilter<$PrismaModel>
+    _max?: NestedEnumAuthProviderFilter<$PrismaModel>
   }
 
   export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
@@ -8745,7 +8890,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8761,7 +8907,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8792,7 +8939,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8808,7 +8956,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8823,7 +8972,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8839,7 +8989,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8920,7 +9071,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8936,7 +9088,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -8983,7 +9136,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -8999,7 +9153,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9062,7 +9217,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9078,7 +9234,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9131,7 +9288,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9147,7 +9305,8 @@ export namespace Prisma {
     password?: string | null
     nickname: string
     credits?: number
-    provider?: string
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
     kakaoId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9263,7 +9422,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9279,7 +9439,8 @@ export namespace Prisma {
     password?: NullableStringFieldUpdateOperationsInput | string | null
     nickname?: StringFieldUpdateOperationsInput | string
     credits?: IntFieldUpdateOperationsInput | number
-    provider?: StringFieldUpdateOperationsInput | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

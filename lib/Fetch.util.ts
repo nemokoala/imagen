@@ -98,6 +98,14 @@ export const FetchUtil = {
     });
   },
 
+  patch: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    return handleFetch(endpoint, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+      ...options,
+    });
+  },
+
   delete: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
     return handleFetch(endpoint, {
       method: "DELETE",

@@ -14,13 +14,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  user
+  admin
+}
+
+enum AuthProvider {
+  local
+  kakao
+}
+
 model User {
   id              Int              @id @default(autoincrement())
   email           String           @unique
   password        String?
   nickname        String           @unique
   credits         Int              @default(100) // 기본 100 크레딧
-  provider        String           @default("local") // local, kakao
+  role            UserRole         @default(user)
+  provider        AuthProvider     @default(local)
   kakaoId         String?          @unique // 카카오 고유 ID
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt

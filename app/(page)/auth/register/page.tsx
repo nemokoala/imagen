@@ -27,6 +27,7 @@ import Link from "next/link";
 import { registerSchema, type RegisterFormData } from "@/schemas/auth";
 import { toast } from "sonner";
 import { Layout } from "@/components/layout/Layout";
+import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -173,6 +174,20 @@ export default function RegisterPage() {
               >
                 {loading ? "처리중..." : "회원가입"}
               </Button>
+
+              <div className="relative w-full">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    또는
+                  </span>
+                </div>
+              </div>
+
+              <KakaoLoginButton disabled={loading} />
+
               <div className="text-sm text-muted-foreground text-center">
                 이미 계정이 있으신가요?{" "}
                 <Link

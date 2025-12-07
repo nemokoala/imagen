@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProviders from "../providers/QueryProviders";
 import { Header } from "@/components/common/CommonHeader";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import AuthProvider from "@/providers/AuthProviders";
 
 const pretendard = localFont({
   src: "../public/fonts/Pretendard.woff2",
@@ -33,8 +34,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <QueryProviders>
-            <Header />
-            {children}
+            <AuthProvider>
+              <Header />
+              {children}
+            </AuthProvider>
           </QueryProviders>
         </ThemeProvider>
       </body>

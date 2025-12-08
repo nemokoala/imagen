@@ -1,7 +1,8 @@
 import OpenAI from "openai";
 import { GoogleGenAI, PersonGeneration } from "@google/genai";
-import { writeFile, mkdir, readFile } from "fs/promises";
+import { writeFile, mkdir, readFile, unlink } from "fs/promises";
 import { join } from "path";
+import { existsSync } from "fs";
 import mime from "mime";
 import { prisma } from "../../prisma";
 import { ollamaService } from "../ollamaService";
@@ -836,6 +837,52 @@ export const imageService = {
     } catch (error) {
       console.error("Error checking ComfyUI health:", error);
       throw new Error("Failed to check ComfyUI health");
+    }
+  },
+
+  async deleteImage(id: number): Promise<void> {
+    try {
+      // 이미지 정보 조회
+      const image = await prisma.generatedImage.findUnique({
+        where: { id },
+      });
+
+      if (!image) {
+        throw new Error("이미지를 찾을 수 없습니다.");
+      }
+
+      // 파일시스템에서 이미지 파일 삭제
+      // imageUrl 형식: /api/uploads/images/${userId}/${fileName}
+      if (image.imageUrl.startsWith("/api/uploads/images/")) {
+        const pathParts = image.imageUrl
+          .replace("/api/uploads/images/", "")
+          .split("/");
+        const userId = pathParts[0];
+        const fileName = pathParts[1];
+
+        const uploadBaseDir =
+          process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+        const filePath = join(uploadBaseDir, "images", userId, fileName);
+
+        if (existsSync(filePath)) {
+          await unlink(filePath);
+          console.log(`✅ 이미지 파일 삭제 완료: ${filePath}`);
+        } else {
+          console.warn(`⚠️ 이미지 파일을 찾을 수 없습니다: ${filePath}`);
+        }
+      }
+
+      // 데이터베이스에서 이미지 삭제 (Cascade로 좋아요와 댓글도 자동 삭제됨)
+      await prisma.generatedImage.delete({
+        where: { id },
+      });
+
+      console.log(`✅ 이미지 삭제 완료: ID ${id}`);
+    } catch (error: unknown) {
+      console.error("Error deleting image:", error);
+      throw new Error(
+        error instanceof Error ? error.message : "이미지 삭제에 실패했습니다."
+      );
     }
   },
 };

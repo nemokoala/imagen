@@ -129,3 +129,24 @@ export const useDeleteCommentMutation = (imageId: number | null) => {
     },
   });
 };
+
+export const useDeleteImageMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      imageId: number
+    ): Promise<{ success: boolean; message: string }> => {
+      const response = await FetchUtil.delete<Record<string, never>>(
+        `/api/images/${imageId}`,
+        {}
+      );
+      return response as { success: boolean; message: string };
+    },
+    onSuccess: () => {
+      // 갤러리 이미지 쿼리 무효화 및 재조회
+      queryClient.invalidateQueries({ queryKey: ["galleryImages"] });
+      queryClient.invalidateQueries({ queryKey: ["galleryImagesInfinite"] });
+    },
+  });
+};

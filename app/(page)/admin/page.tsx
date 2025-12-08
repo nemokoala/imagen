@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { CreditSettingsComponent } from "@/components/admin/CreditSettings";
+import { ImageManagement } from "@/components/admin/ImageManagement";
 import { Layout } from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -44,10 +45,14 @@ export default function AdminPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="users">유저 관리</TabsTrigger>
+            <TabsTrigger value="images">이미지 관리</TabsTrigger>
             <TabsTrigger value="credits">크레딧 비용 설정</TabsTrigger>
           </TabsList>
           <TabsContent value="users" className="mt-4">
             <UserManagement />
+          </TabsContent>
+          <TabsContent value="images" className="mt-4">
+            <ImageManagement />
           </TabsContent>
           <TabsContent value="credits" className="mt-4">
             <CreditSettingsComponent />

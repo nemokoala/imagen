@@ -1,16 +1,16 @@
 "use client";
 
-import { ImageCard } from "@/components/gallery/ImageCard";
 import { Image } from "@/types/image.interfaces";
 import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
-import { Button } from "@/components/ui/button";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useEffect, useMemo, useState } from "react";
-import { Loader2 } from "lucide-react";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { ImageModal } from "./ImageModal";
 import { downloadImage } from "@/lib/utils";
+import { LoadingSpinner } from "./LoadingSpinner";
+import { VirtualRow } from "./VirtualRow";
+import { LoadMoreStatus } from "./LoadMoreStatus";
 
 interface InfiniteImageGalleryProps {
   onScrollChange?: (scrollTop: number) => void;
@@ -60,7 +60,6 @@ export function InfiniteImageGallery({
   }, [images, columnCount]);
 
   // 가상 스크롤 설정 - 동적 높이 측정
-  // eslint-disable-next-line react-hooks/incompatible-library
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
@@ -79,55 +78,57 @@ export function InfiniteImageGallery({
     onScrollChange,
   });
 
-  // 스크롤이 끝에 가까워지면 다음 페이지 로드
-  useEffect(() => {
-    const virtualItems = rowVirtualizer.getVirtualItems();
-    const [lastItem] = [...virtualItems].reverse();
-    if (!lastItem) return;
+  // IntersectionObserver를 위한 sentinel ref (로딩 상태 영역)
+  const loadMoreRef = useRef<HTMLDivElement>(null);
 
-    if (
-      lastItem.index >= rows.length - 2 &&
-      hasNextPage &&
-      !isFetchingNextPage
-    ) {
-      fetchNextPage();
-    }
-  }, [
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    rowVirtualizer,
-    rows.length,
-  ]);
+  // IntersectionObserver로 다음 페이지 로드
+  useEffect(() => {
+    const sentinel = loadMoreRef.current;
+    const scrollElement = parentRef.current;
+    if (!sentinel || !scrollElement || !hasNextPage || isFetchingNextPage)
+      return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      {
+        root: scrollElement,
+        rootMargin: "200px", // 뷰포트 끝에서 200px 전에 미리 로드
+        threshold: 0,
+      }
+    );
+
+    observer.observe(sentinel);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, rows.length]);
+
+  // 컨테이너 높이 계산
+  const baseHeight = rowVirtualizer.getTotalSize();
+  const hasStatus =
+    isFetchingNextPage || error || (!hasNextPage && images.length > 0);
+  const containerHeight = baseHeight + (hasStatus ? 120 : 0);
 
   if (isLoading) {
-    return (
-      <div className="h-[100dvh] fixed inset-0 flex justify-center items-center">
-        <Loader2 className="w-10 h-10 animate-spin" />
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="w-full flex flex-col flex-1 min-h-0 rounded-lg">
-      {/* 가상 스크롤 컨테이너 */}
       <div
         ref={parentRef}
         className="w-full flex-1 min-h-0 overflow-auto rounded-lg scrollbar-hide"
-        style={{
-          contain: "strict",
-        }}
+        style={{ contain: "strict" }}
       >
         <div
           style={{
-            height: `${
-              rowVirtualizer.getTotalSize() +
-              (isFetchingNextPage ||
-              error ||
-              (!hasNextPage && images.length > 0)
-                ? 120
-                : 0)
-            }px`,
+            height: `${containerHeight}px`,
             width: "100%",
             position: "relative",
           }}
@@ -137,77 +138,30 @@ export function InfiniteImageGallery({
             if (!row) return null;
 
             return (
-              <div
+              <VirtualRow
                 key={virtualRow.key}
-                data-index={virtualRow.index}
-                ref={rowVirtualizer.measureElement}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 gap-2">
-                  {row.map((image: Image) => (
-                    <ImageCard
-                      key={image.id}
-                      image={image}
-                      onImageClick={() => setSelectedImage(image)}
-                      onDownload={() => downloadImage(image.imageUrl)}
-                    />
-                  ))}
-                  {/* 빈 공간 채우기 (마지막 행이 컬럼 수보다 적을 때) */}
-                  {row.length < columnCount &&
-                    Array.from({ length: columnCount - row.length }).map(
-                      (_, idx) => <div key={`empty-${idx}`} />
-                    )}
-                </div>
-              </div>
+                virtualRow={virtualRow}
+                row={row}
+                columnCount={columnCount}
+                onImageClick={setSelectedImage}
+                measureElement={rowVirtualizer.measureElement}
+              />
             );
           })}
 
-          {/* 로딩 및 에러 상태 - 컨테이너 내부에 배치 */}
-          <div
-            style={{
-              position: "absolute",
-              top: `${rowVirtualizer.getTotalSize()}px`,
-              left: 0,
-              right: 0,
-              paddingTop: "2rem",
-              paddingBottom: "2rem",
-            }}
-            className="flex justify-center"
-          >
-            {isFetchingNextPage ? (
-              <div className="flex items-center gap-2 text-purple-600">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
-                <span>더 많은 이미지를 불러오는 중...</span>
-              </div>
-            ) : error ? (
-              <div className="text-center">
-                <p className="text-red-500 mb-4">
-                  {error instanceof Error
-                    ? error.message
-                    : "이미지를 불러오는데 실패했습니다."}
-                </p>
-                <Button
-                  onClick={() => refetch()}
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-                >
-                  다시 시도
-                </Button>
-              </div>
-            ) : !hasNextPage && images.length > 0 ? (
-              <div className="text-center text-gray-500">
-                <p>모든 이미지를 불러왔습니다.</p>
-                <p className="text-sm mt-1">총 {totalImages}개의 이미지</p>
-              </div>
-            ) : null}
-          </div>
+          <LoadMoreStatus
+            isFetchingNextPage={isFetchingNextPage}
+            error={error}
+            hasNextPage={hasNextPage}
+            imagesLength={images.length}
+            totalImages={totalImages}
+            onRetry={refetch}
+            topPosition={rowVirtualizer.getTotalSize()}
+            loadMoreRef={loadMoreRef}
+          />
         </div>
       </div>
+
       <ImageModal
         image={selectedImage}
         isOpen={!!selectedImage}

@@ -31,6 +31,8 @@ export function InfiniteImageGallery({
     refetch,
   } = useGetGalleryImagesInfiniteQuery(20);
 
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
   // 모든 페이지의 이미지를 하나의 배열로 합치기
   const images = useMemo(
     () => data?.pages.flatMap((page) => page.images) || [],
@@ -38,10 +40,8 @@ export function InfiniteImageGallery({
   );
   const totalImages = data?.pages[0]?.totalCount || 0;
 
-  // 윈도우 너비 가져오기
   const width = useWindowWidth();
 
-  // 반응형 컬럼 수 계산
   const columnCount = useMemo(() => {
     if (width === 0) return 4; // SSR 또는 초기 렌더링
     if (width >= 1280) return 4; // xl
@@ -64,7 +64,7 @@ export function InfiniteImageGallery({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 350, // 초기 예상 높이 (실제 높이는 자동 측정됨)
-    overscan: 5, // 화면 밖에 렌더링할 추가 행 수 (더 많이 유지하여 재로드 방지)
+    overscan: 10, // 화면 밖에 렌더링할 추가 행 수 (더 많이 유지하여 재로드 방지)
     gap: width < 768 ? 8 : 16,
     measureElement:
       typeof window !== "undefined" &&
@@ -77,9 +77,6 @@ export function InfiniteImageGallery({
   useScrollObserver(parentRef, {
     onScrollChange,
   });
-
-  // IntersectionObserver를 위한 sentinel ref (로딩 상태 영역)
-  const loadMoreRef = useRef<HTMLDivElement>(null);
 
   // IntersectionObserver로 다음 페이지 로드
   useEffect(() => {

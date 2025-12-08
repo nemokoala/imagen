@@ -116,8 +116,10 @@ export const imageService = {
       let translatedPrompt = prompt;
       try {
         translatedPrompt = await ollamaService.translateText(prompt);
-      } catch (error) {
-        console.error("Error translating prompt:", error);
+      } catch {
+        console.error("ollama service error");
+        // Ollama 서비스가 사용 불가능한 경우 원본 프롬프트 사용 (에러 로그 제거)
+        // 번역 실패는 치명적이지 않으므로 조용히 처리
       }
 
       const token = btoa(`${process.env.STABLE_DIFFUSION_API_KEY}`);
@@ -161,8 +163,13 @@ export const imageService = {
 
       const imageUrl = data.images[0];
 
+      // Stable Diffusion API는 base64 문자열을 반환하므로 data URI 형식으로 변환
+      const base64ImageUrl = imageUrl.startsWith("data:image/")
+        ? imageUrl
+        : `data:image/png;base64,${imageUrl}`;
+
       const savedImagePath = await imageService.saveImageToFileSystem(
-        imageUrl,
+        base64ImageUrl,
         userId
       );
 

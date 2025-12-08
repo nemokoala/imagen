@@ -14,13 +14,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  user
+  admin
+}
+
+enum AuthProvider {
+  local
+  kakao
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String?
   nickname  String   @unique
   credits   Int      @default(100)  // 기본 100 크레딧
-  provider  String   @default("local") // local, kakao
+  role      UserRole @default(user)
+  provider  AuthProvider @default(local)
   kakaoId   String?  @unique // 카카오 고유 ID
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -98,4 +109,17 @@ model ImageComment {
   @@index([imageId])
   @@index([userId])
   @@index([parentId])
+}
+
+// 크레딧 설정 모델 (단일 레코드로 관리)
+model CreditSettings {
+  id        Int      @id @default(1) // 항상 1번만 사용
+  dallE3    Int      @default(20)
+  stableDiffusionXl Int @default(5)
+  googleImagen Int   @default(20)
+  nanoBanana Int     @default(20)
+  zImage     Int     @default(10)
+  updatedAt DateTime @updatedAt
+
+  @@map("credit_settings")
 }

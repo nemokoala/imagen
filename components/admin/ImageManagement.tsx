@@ -40,7 +40,7 @@ export function ImageManagement() {
       toast.success("이미지가 삭제되었습니다.");
       setDeletingImageId(null);
       // 페이지가 비어있으면 이전 페이지로 이동
-      if (data && data.images.length === 1 && page > 1) {
+      if (data && data.images?.length === 1 && page > 1) {
         setPage(page - 1);
       }
     } catch (error) {

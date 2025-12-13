@@ -54,9 +54,9 @@ export const useGetGalleryImagesQuery = (
   return useQuery({
     queryKey: ["galleryImages", page, limit],
     queryFn: async () => {
-      const response = await FetchUtil.get(
+      const response = (await FetchUtil.get(
         `/api/images?page=${page}&limit=${limit}`
-      );
+      )) as GalleryResponse;
       return response;
     },
   });

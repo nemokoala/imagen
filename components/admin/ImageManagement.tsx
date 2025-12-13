@@ -14,31 +14,32 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import Image from "next/image";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { useModal } from "@/providers/ModalProvider";
 
 export function ImageManagement() {
   const [page, setPage] = useState(1);
   const limit = 20;
-  const [deletingImageId, setDeletingImageId] = useState<number | null>(null);
+  const { changeModalContent } = useModal();
 
   const { data, isLoading, error } = useGetGalleryImagesQuery(page, limit);
   const deleteImageMutation = useDeleteImageMutation();
+
+  const showDeleteModal = (imageId: number) => {
+    changeModalContent(
+      {
+        title: "이미지 삭제 확인",
+        content: "정말로 이 이미지를 삭제하시겠습니까?",
+        cancelable: true,
+        confirmText: "삭제",
+      },
+      () => handleDelete(imageId)
+    );
+  };
 
   const handleDelete = async (imageId: number) => {
     try {
       await deleteImageMutation.mutateAsync(imageId);
       toast.success("이미지가 삭제되었습니다.");
-      setDeletingImageId(null);
       // 페이지가 비어있으면 이전 페이지로 이동
       if (data && data.images?.length === 1 && page > 1) {
         setPage(page - 1);
@@ -122,41 +123,14 @@ export function ImageManagement() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <AlertDialog
-                      open={deletingImageId === image.id}
-                      onOpenChange={(open) =>
-                        setDeletingImageId(open ? image.id : null)
-                      }
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      disabled={deleteImageMutation.isPending}
+                      onClick={() => showDeleteModal(image.id)}
                     >
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          disabled={deleteImageMutation.isPending}
-                        >
-                          삭제
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>이미지 삭제 확인</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            정말로 이 이미지를 삭제하시겠습니까? 이 작업은
-                            되돌릴 수 없으며, 관련된 좋아요와 댓글도 함께
-                            삭제됩니다.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>취소</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(image.id)}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            삭제
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                      삭제
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))

@@ -111,7 +111,7 @@ export function UserManagement() {
                         type="number"
                         value={creditValue}
                         onChange={(e) => setCreditValue(e.target.value)}
-                        className="w-24"
+                        className="w-24 h-full"
                         min="0"
                       />
                       <Button

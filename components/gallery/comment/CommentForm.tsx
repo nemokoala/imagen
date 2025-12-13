@@ -18,7 +18,7 @@ export function CommentForm({
   loading,
 }: CommentFormProps) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <Textarea
         placeholder="댓글을 입력하세요..."
         value={commentContent}
@@ -29,7 +29,7 @@ export function CommentForm({
         <Button
           onClick={onSubmit}
           disabled={loading || !commentContent.trim()}
-          className="gradient-purple-bg text-white"
+          variant="gradient"
         >
           <Send className="mr-2 h-4 w-4" />
           댓글 작성

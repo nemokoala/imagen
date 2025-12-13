@@ -166,7 +166,7 @@ export function CommentItem({
 
           {!isEditing && isAuthenticated && (
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={handleReplyToggle}
               className="h-8 text-xs"

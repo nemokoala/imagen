@@ -41,7 +41,7 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
           <Button
             size="sm"
             variant="secondary"
-            className="h-8 w-8 p-0 bg-white/90 backdrop-blur-sm border-0 shadow-lg"
+            className="h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border-0 shadow-lg"
             onClick={(e) => {
               e.stopPropagation();
               onDownload(image.imageUrl, image.prompt);

@@ -40,11 +40,26 @@ export const ollamaService = {
   },
 
   async healthCheck(): Promise<boolean> {
-    const response = await fetch(`${process.env.OLLAMA_API_URL}`);
-    if (!response.ok) {
-      throw new Error("Failed to check health");
-    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-    return response.ok;
+    try {
+      const response = await fetch(`${process.env.OLLAMA_API_URL}`, {
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error("Failed to check health");
+      }
+
+      return response.ok;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("Health check timeout");
+      }
+      throw error;
+    }
   },
 };

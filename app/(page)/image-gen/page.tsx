@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -14,11 +14,17 @@ import { ModelSelect } from "@/components/image-gen/ModelSelect";
 import { CreditDisplay } from "@/components/image-gen/CreditDisplay";
 import { useGetUserCreditQuery } from "@/queries/auth/queries";
 import { useQueryClient } from "@tanstack/react-query";
+import {
+  RecommendPrompt,
+  RecommendPromptRef,
+} from "@/components/image-gen/RecommendPrompt";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const resultImageRef = useRef<HTMLDivElement>(null);
+  const recommendPromptRef = useRef<RecommendPromptRef>(null);
 
   const { data: stableHealthCheck, isLoading: isStableHealthCheckLoading } =
     useHealthCheckQuery({ target: "stable" });
@@ -55,6 +61,8 @@ export default function ImageGenPage() {
       toast.success("이미지 생성 완료!", {
         description: "AI가 이미지를 생성했습니다.",
       });
+      recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
+      resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
       queryClient.invalidateQueries({ queryKey: ["credit"] });
     },
     (error) => {
@@ -116,10 +124,10 @@ export default function ImageGenPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-subtitle mb-2 block">
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-subtitle mb-2">
                   프롬프트
-                </label>
+                </p>
                 <Textarea
                   placeholder="원하는 이미지를 자세히 설명해주세요... 예: 귀여운 고양이가 라면을 먹는 모습, 카툰 스타일, 밝은 색상"
                   value={prompt}
@@ -127,12 +135,14 @@ export default function ImageGenPage() {
                   className="min-h-[120px] resize-none border-2 focus:border-purple-500 transition-colors"
                   disabled={isPending}
                 />
+                <RecommendPrompt
+                  ref={recommendPromptRef}
+                  setPrompt={setPrompt}
+                />
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-subtitle">
-                  AI 모델
-                </label>
+                <p className="text-sm font-medium text-subtitle">AI 모델</p>
                 <ModelSelect
                   model={model}
                   setModel={handleModelChange}
@@ -148,7 +158,7 @@ export default function ImageGenPage() {
               <Button
                 onClick={handleGenerate}
                 disabled={isPending || !prompt.trim() || (credit ?? 0) < 1}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:transform-none disabled:opacity-50"
+                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform disabled:transform-none disabled:opacity-50"
               >
                 {isPending ? (
                   <>
@@ -167,7 +177,10 @@ export default function ImageGenPage() {
         </Card>
 
         {/* 결과 섹션 */}
-        <Card className="shadow-xl border-0 bg-background/80 backdrop-blur-sm">
+        <Card
+          ref={resultImageRef}
+          className="shadow-xl border-0 bg-background/80 backdrop-blur-sm"
+        >
           <CardHeader className="pb-4">
             <CardTitle className="text-xl font-semibold text-foreground">
               생성된 이미지
@@ -176,25 +189,22 @@ export default function ImageGenPage() {
           <CardContent>
             {imageUrl ? (
               <div className="space-y-4">
-                <div className="relative group">
-                  <div className="border-2 border-border rounded-xl overflow-hidden bg-background">
-                    <Image
-                      src={imageUrl}
-                      alt="생성된 이미지"
-                      width={800}
-                      height={600}
-                      className="w-full h-auto max-h-[400px] object-contain transition-transform duration-300 group-hover:scale-105"
-                      unoptimized
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-xl" />
+                <div className="mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden aspect-square bg-background flex items-center justify-center">
+                  <Image
+                    src={imageUrl}
+                    alt="생성된 이미지"
+                    width={800}
+                    height={600}
+                    className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                    unoptimized
+                  />
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 mt-8">
                   <Button
                     onClick={handleDownload}
                     variant="outline"
-                    className="flex-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+                    className="flex-1 border-purple-200 text-purple-400 hover:bg-purple-50"
                   >
                     <Download className="mr-2 h-4 w-4" />
                     다운로드
@@ -202,7 +212,7 @@ export default function ImageGenPage() {
                   <Button
                     onClick={handleRegenerate}
                     variant="outline"
-                    className="flex-1 border-blue-200 text-blue-700 hover:bg-blue-50"
+                    className="flex-1 border-blue-200 text-blue-400 hover:bg-blue-50"
                     disabled={isPending || (credit ?? 0) < 1}
                   >
                     <RefreshCw className="mr-2 h-4 w-4" />

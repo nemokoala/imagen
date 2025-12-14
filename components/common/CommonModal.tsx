@@ -20,10 +20,12 @@ export const CommonModal = () => {
     if (modalContent.content || modalContent.title) {
       setIsOpen(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modalContent]);
 
   useEffect(() => {
     setIsOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (

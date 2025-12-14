@@ -818,7 +818,7 @@ export const imageService = {
     try {
       const COMFY_URL = process.env.COMFYUI_URL || "http://127.0.0.1:8188";
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 3000);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
 
       // ComfyUI의 system_stats 엔드포인트로 헬스체크
       const response = await fetch(`${COMFY_URL}/system_stats`, {

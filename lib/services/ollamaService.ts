@@ -20,7 +20,7 @@ export const ollamaService = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "gpt-oss:20b",
+        model: "gemma3:4b",
         prompt: systemPrompt,
         stream: false,
       }),

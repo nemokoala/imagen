@@ -64,6 +64,7 @@ export default function ImageGenPage() {
       recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
       resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
       queryClient.invalidateQueries({ queryKey: ["credit"] });
+      queryClient.invalidateQueries({ queryKey: ["images"] });
     },
     (error) => {
       toast.error(error.message);

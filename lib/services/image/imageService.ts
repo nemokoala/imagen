@@ -308,8 +308,18 @@ export const imageService = {
 
       const COMFY_URL = process.env.COMFYUI_URL;
 
+      let translatedPrompt = prompt;
+      try {
+        translatedPrompt = await ollamaService.translateText(prompt);
+        console.log("translatedPrompt", translatedPrompt);
+      } catch {
+        console.error("ollama service error");
+        // Ollama 서비스가 사용 불가능한 경우 원본 프롬프트 사용 (에러 로그 제거)
+        // 번역 실패는 치명적이지 않으므로 조용히 처리
+      }
+
       console.log("[1/6] 요청 받음:", {
-        prompt,
+        translatedPrompt,
         negativePrompt,
         width,
         height,
@@ -337,7 +347,7 @@ export const imageService = {
       const defaultCfg = cfg || wf["3"]?.inputs?.cfg;
 
       // 1) 프롬프트 교체
-      wf["6"].inputs.text = prompt || wf["6"].inputs.text;
+      wf["6"].inputs.text = translatedPrompt || wf["6"].inputs.text;
       wf["7"].inputs.text = negativePrompt || defaultNegativePrompt;
 
       // 2) 해상도 옵션 (노드 13: EmptySD3LatentImage)

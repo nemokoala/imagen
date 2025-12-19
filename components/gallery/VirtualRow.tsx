@@ -10,7 +10,7 @@ interface VirtualRowProps {
   row: Image[];
   columnCount: number;
   onImageClick: (image: Image) => void;
-  measureElement: (element: Element | null) => void;
+  rowHeight: number;
 }
 
 export function VirtualRow({
@@ -18,22 +18,22 @@ export function VirtualRow({
   row,
   columnCount,
   onImageClick,
-  measureElement,
+  rowHeight,
 }: VirtualRowProps) {
   return (
     <div
       key={virtualRow.key}
       data-index={virtualRow.index}
-      ref={measureElement}
       style={{
         position: "absolute",
         top: 0,
         left: 0,
         width: "100%",
-        transform: `translateY(${virtualRow.start}px)`,
+        height: `${rowHeight}px`,
+        transform: `translateY(${virtualRow.index * (rowHeight + 4)}px)`,
       }}
     >
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 md:gap-4 gap-2">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
         {row.map((image: Image) => (
           <ImageCard
             key={image.id}

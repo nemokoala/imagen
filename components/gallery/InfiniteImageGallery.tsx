@@ -42,6 +42,9 @@ export function InfiniteImageGallery({
 
   const width = useWindowWidth();
 
+  const gap = 8;
+  const containerWidth = useMemo(() => width - gap * 2, [gap, width]);
+
   const columnCount = useMemo(() => {
     if (width === 0) return 4; // SSR 또는 초기 렌더링
     if (width >= 1280) return 4; // xl
@@ -59,18 +62,22 @@ export function InfiniteImageGallery({
     return rows;
   }, [images, columnCount]);
 
-  // 가상 스크롤 설정 - 동적 높이 측정
+  // 행 높이 직접 계산 (aspect-square 이미지: 너비 = 높이)
+  const rowHeight = useMemo(() => {
+    if (containerWidth === 0) return 350; // 초기값
+    const totalGap = gap * (columnCount - 1);
+    const cardWidth = (containerWidth - totalGap) / columnCount;
+    return Math.floor(cardWidth); // 소수점 제거로 정확한 픽셀 계산
+  }, [containerWidth, columnCount]);
+
+  // 가상 스크롤 설정 - 높이 직접 계산 (measureElement 제거로 떨림 방지)
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 350, // 초기 예상 높이 (실제 높이는 자동 측정됨)
-    overscan: 10, // 화면 밖에 렌더링할 추가 행 수 (더 많이 유지하여 재로드 방지)
-    gap: width < 768 ? 8 : 16,
-    measureElement:
-      typeof window !== "undefined" &&
-      navigator.userAgent.indexOf("Firefox") === -1
-        ? (element) => element?.getBoundingClientRect().height
-        : undefined, // Firefox는 자동 측정 사용
+    estimateSize: () => rowHeight,
+
+    overscan: 10,
+    gap,
   });
 
   // 스크롤 이벤트 감지
@@ -107,7 +114,7 @@ export function InfiniteImageGallery({
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, rows.length]);
 
   // 컨테이너 높이 계산
-  const baseHeight = rowVirtualizer.getTotalSize();
+  const baseHeight = rows.length * rowHeight + (gap / 2) * (rows.length - 1);
   const hasStatus =
     isFetchingNextPage || error || (!hasNextPage && images.length > 0);
   const containerHeight = baseHeight + (hasStatus ? 120 : 0);
@@ -141,7 +148,7 @@ export function InfiniteImageGallery({
                 row={row}
                 columnCount={columnCount}
                 onImageClick={setSelectedImage}
-                measureElement={rowVirtualizer.measureElement}
+                rowHeight={rowHeight}
               />
             );
           })}
@@ -153,7 +160,6 @@ export function InfiniteImageGallery({
             imagesLength={images.length}
             totalImages={totalImages}
             onRetry={refetch}
-            topPosition={rowVirtualizer.getTotalSize()}
             loadMoreRef={loadMoreRef}
           />
         </div>

@@ -9,7 +9,6 @@ interface LoadMoreStatusProps {
   imagesLength: number;
   totalImages: number;
   onRetry: () => void;
-  topPosition: number;
   loadMoreRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -20,7 +19,6 @@ export function LoadMoreStatus({
   imagesLength,
   totalImages,
   onRetry,
-  topPosition,
   loadMoreRef,
 }: LoadMoreStatusProps) {
   return (
@@ -28,7 +26,7 @@ export function LoadMoreStatus({
       ref={loadMoreRef}
       style={{
         position: "absolute",
-        top: `${topPosition}px`,
+        bottom: 0,
         left: 0,
         right: 0,
         paddingTop: "2rem",

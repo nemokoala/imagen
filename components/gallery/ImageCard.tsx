@@ -26,8 +26,7 @@ export function ImageCard({ image, onImageClick, onDownload }: ImageCardProps) {
           fill
           className="object-cover transition-transform duration-300 aspect-square"
           loading="eager"
-          sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-          priority={true}
+          sizes="33vw"
         />
         <div className="absolute top-3 right-3">
           <Badge

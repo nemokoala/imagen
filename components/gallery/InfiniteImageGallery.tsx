@@ -8,6 +8,8 @@ import { useWindowWidth } from "@/hooks/use-window-width";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { VirtualRow } from "./VirtualRow";
 import { LoadMoreStatus } from "./LoadMoreStatus";
+import { useScrollStore } from "@/stores/scrollStore";
+import { useScrollObserver } from "@/hooks/use-scroll-observer";
 
 interface InfiniteImageGalleryProps {
   onScrollChange?: (scrollTop: number) => void;
@@ -28,6 +30,7 @@ export function InfiniteImageGallery({
   } = useGetGalleryImagesInfiniteQuery(20);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const { scrollPos, setScrollPos } = useScrollStore();
 
   // 모든 페이지의 이미지를 하나의 배열로 합치기
   const images = useMemo(
@@ -73,6 +76,13 @@ export function InfiniteImageGallery({
     estimateSize: () => rowHeight,
     overscan: 10,
     gap,
+    initialOffset: scrollPos,
+  });
+
+  useScrollObserver(parentRef, {
+    onScrollChange: (scrollTop) => {
+      setScrollPos(scrollTop);
+    },
   });
 
   // 리사이즈 시 가상화 요소 재계산 및 측정값 초기화

@@ -26,7 +26,6 @@ export function ImageCard({ image, onDownload }: ImageCardProps) {
             loading="eager"
             priority={true}
             sizes="33vw"
-            unoptimized
           />
           <div className="absolute top-3 right-3">
             <Badge

@@ -75,10 +75,14 @@ export function InfiniteImageGallery({
     count: rows.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => rowHeight,
-
     overscan: 10,
     gap,
   });
+
+  // 리사이즈 시 가상화 요소 재계산 및 측정값 초기화
+  useEffect(() => {
+    rowVirtualizer.measure();
+  }, [width, rowHeight, rowVirtualizer]);
 
   // 스크롤 이벤트 감지
   useScrollObserver(parentRef, {
@@ -113,11 +117,11 @@ export function InfiniteImageGallery({
     };
   }, [hasNextPage, isFetchingNextPage, fetchNextPage, rows.length]);
 
-  // 컨테이너 높이 계산
-  const baseHeight = rows.length * rowHeight + (gap / 2) * (rows.length - 1);
+  // 가상화된 전체 높이
+  const virtualTotalSize = rowVirtualizer.getTotalSize();
   const hasStatus =
     isFetchingNextPage || error || (!hasNextPage && images.length > 0);
-  const containerHeight = baseHeight + (hasStatus ? 120 : 0);
+  const containerHeight = virtualTotalSize + (hasStatus ? 150 : 50);
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -148,7 +152,6 @@ export function InfiniteImageGallery({
                 row={row}
                 columnCount={columnCount}
                 onImageClick={setSelectedImage}
-                rowHeight={rowHeight}
               />
             );
           })}

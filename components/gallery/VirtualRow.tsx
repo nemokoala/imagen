@@ -10,7 +10,6 @@ interface VirtualRowProps {
   row: Image[];
   columnCount: number;
   onImageClick: (image: Image) => void;
-  rowHeight: number;
 }
 
 export function VirtualRow({
@@ -18,7 +17,6 @@ export function VirtualRow({
   row,
   columnCount,
   onImageClick,
-  rowHeight,
 }: VirtualRowProps) {
   return (
     <div
@@ -29,8 +27,8 @@ export function VirtualRow({
         top: 0,
         left: 0,
         width: "100%",
-        height: `${rowHeight}px`,
-        transform: `translateY(${virtualRow.index * (rowHeight + 4)}px)`,
+        height: `${virtualRow.size}px`,
+        transform: `translateY(${virtualRow.start}px)`,
       }}
     >
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">

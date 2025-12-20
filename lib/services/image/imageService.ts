@@ -8,6 +8,7 @@ import { prisma } from "../../prisma";
 import { ollamaService } from "../ollamaService";
 import { authService } from "../auth/authService";
 import { creditSettingsService } from "../admin/creditSettingsService";
+import type { Image as ImageType } from "@/types/image.interfaces";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -741,12 +742,43 @@ export const imageService = {
     }
   },
 
-  async getImageById(id: number) {
+  async getImageById(id: number): Promise<ImageType | null> {
     try {
-      return await prisma.generatedImage.findUnique({
+      const image = await prisma.generatedImage.findUnique({
         where: { id },
-        include: { user: { select: { nickname: true } } },
+        include: {
+          user: {
+            select: {
+              id: true,
+              nickname: true,
+            },
+          },
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+            },
+          },
+        },
       });
+
+      if (!image) {
+        return null;
+      }
+
+      // Image 타입으로 변환 (스키마 변경 시 여기만 수정하면 됨)
+      const { _count, createdAt, updatedAt, ...imageData } = image;
+      return {
+        ...imageData,
+        createdAt: createdAt.toISOString(),
+        updatedAt: updatedAt.toISOString(),
+        user: {
+          id: image.user.id,
+          nickname: image.user.nickname,
+        },
+        likeCount: _count.likes,
+        commentCount: _count.comments,
+      };
     } catch (error: unknown) {
       console.error("Error fetching image by id:", error);
       throw new Error("이미지 조회에 실패했습니다.");

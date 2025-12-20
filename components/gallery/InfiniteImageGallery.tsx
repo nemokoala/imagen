@@ -3,11 +3,8 @@
 import { Image } from "@/types/image.interfaces";
 import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useEffect, useMemo, useState } from "react";
-import { useScrollObserver } from "@/hooks/use-scroll-observer";
+import { useRef, useEffect, useMemo } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
-import { ImageModal } from "./ImageModal";
-import { downloadImage } from "@/lib/utils";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { VirtualRow } from "./VirtualRow";
 import { LoadMoreStatus } from "./LoadMoreStatus";
@@ -17,9 +14,8 @@ interface InfiniteImageGalleryProps {
 }
 
 export function InfiniteImageGallery({
-  onScrollChange,
+  onScrollChange: _onScrollChange,
 }: InfiniteImageGalleryProps) {
-  const [selectedImage, setSelectedImage] = useState<Image | null>(null);
   const parentRef = useRef<HTMLDivElement>(null);
   const {
     data,
@@ -84,11 +80,6 @@ export function InfiniteImageGallery({
     rowVirtualizer.measure();
   }, [width, rowHeight, rowVirtualizer]);
 
-  // 스크롤 이벤트 감지
-  useScrollObserver(parentRef, {
-    onScrollChange,
-  });
-
   // IntersectionObserver로 다음 페이지 로드
   useEffect(() => {
     const sentinel = loadMoreRef.current;
@@ -151,7 +142,6 @@ export function InfiniteImageGallery({
                 virtualRow={virtualRow}
                 row={row}
                 columnCount={columnCount}
-                onImageClick={setSelectedImage}
               />
             );
           })}
@@ -167,13 +157,6 @@ export function InfiniteImageGallery({
           />
         </div>
       </div>
-
-      <ImageModal
-        image={selectedImage}
-        isOpen={!!selectedImage}
-        onClose={() => setSelectedImage(null)}
-        onDownload={downloadImage}
-      />
     </div>
   );
 }

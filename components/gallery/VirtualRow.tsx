@@ -9,15 +9,9 @@ interface VirtualRowProps {
   virtualRow: VirtualItem;
   row: Image[];
   columnCount: number;
-  onImageClick: (image: Image) => void;
 }
 
-export function VirtualRow({
-  virtualRow,
-  row,
-  columnCount,
-  onImageClick,
-}: VirtualRowProps) {
+export function VirtualRow({ virtualRow, row, columnCount }: VirtualRowProps) {
   return (
     <div
       key={virtualRow.key}
@@ -36,8 +30,7 @@ export function VirtualRow({
           <ImageCard
             key={image.id}
             image={image}
-            onImageClick={() => onImageClick(image)}
-            onDownload={() => downloadImage(image.imageUrl)}
+            onDownload={(imageUrl, prompt) => downloadImage(imageUrl, prompt)}
           />
         ))}
         {/* 빈 공간 채우기 (마지막 행이 컬럼 수보다 적을 때) */}

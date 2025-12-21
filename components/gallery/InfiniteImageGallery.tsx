@@ -1,9 +1,12 @@
 "use client";
 
 import { Image } from "@/types/image.interfaces";
-import { useGetGalleryImagesInfiniteQuery } from "@/queries/image/queries";
+import {
+  useGetGalleryImagesInfiniteQuery,
+  useGetUserImagesInfiniteQuery,
+} from "@/queries/image/queries";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo, useState } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { VirtualRow } from "./VirtualRow";
@@ -12,13 +15,21 @@ import { useScrollStore } from "@/stores/scrollStore";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
 
 interface InfiniteImageGalleryProps {
+  userId?: number;
   onScrollChange?: (scrollTop: number) => void;
+  scrollElementRef?: React.RefObject<HTMLDivElement>;
 }
 
 export function InfiniteImageGallery({
+  userId,
   onScrollChange: _onScrollChange,
+  scrollElementRef,
 }: InfiniteImageGalleryProps) {
   const parentRef = useRef<HTMLDivElement>(null);
+  const scrollElement = scrollElementRef || parentRef;
+  const galleryQuery = useGetGalleryImagesInfiniteQuery(20, Boolean(!userId));
+  const userQuery = useGetUserImagesInfiniteQuery(userId || 0, 20);
+
   const {
     data,
     error,
@@ -27,10 +38,12 @@ export function InfiniteImageGallery({
     hasNextPage,
     isFetchingNextPage,
     refetch,
-  } = useGetGalleryImagesInfiniteQuery(20);
+  } = userId ? userQuery : galleryQuery;
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const { scrollPos, setScrollPos } = useScrollStore();
+  const [containerWidth, setContainerWidth] = useState(0);
 
   // 모든 페이지의 이미지를 하나의 배열로 합치기
   const images = useMemo(
@@ -42,7 +55,6 @@ export function InfiniteImageGallery({
   const width = useWindowWidth();
 
   const gap = 8;
-  const containerWidth = useMemo(() => width - gap * 2, [gap, width]);
 
   const columnCount = useMemo(() => {
     if (width === 0) return 4; // SSR 또는 초기 렌더링
@@ -51,6 +63,26 @@ export function InfiniteImageGallery({
     if (width >= 768) return 2; // md
     return 2;
   }, [width]);
+
+  // ref callback으로 마운트 시점 감지 및 크기 측정
+  const containerRefCallback = (node: HTMLDivElement | null) => {
+    containerRef.current = node;
+    if (node) {
+      // 마운트 시점에 크기 측정
+      const measuredWidth = node.clientWidth;
+      setContainerWidth(measuredWidth);
+    }
+  };
+
+  // width나 columnCount 변경 시 크기 재측정
+  useEffect(() => {
+    if (containerRef.current) {
+      const measuredWidth = containerRef.current.clientWidth;
+      setContainerWidth(measuredWidth);
+    } else {
+      setContainerWidth(width);
+    }
+  }, [width, columnCount, gap]);
 
   // 컬럼별로 이미지를 그룹화
   const rows = useMemo(() => {
@@ -72,14 +104,14 @@ export function InfiniteImageGallery({
   // 가상 스크롤 설정 - 높이 직접 계산 (measureElement 제거로 떨림 방지)
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
-    getScrollElement: () => parentRef.current,
+    getScrollElement: () => scrollElement.current,
     estimateSize: () => rowHeight,
     overscan: 10,
     gap,
     initialOffset: scrollPos,
   });
 
-  useScrollObserver(parentRef, {
+  useScrollObserver(scrollElement as React.RefObject<HTMLDivElement>, {
     onScrollChange: (scrollTop) => {
       setScrollPos(scrollTop);
     },
@@ -93,9 +125,8 @@ export function InfiniteImageGallery({
   // IntersectionObserver로 다음 페이지 로드
   useEffect(() => {
     const sentinel = loadMoreRef.current;
-    const scrollElement = parentRef.current;
-    if (!sentinel || !scrollElement || !hasNextPage || isFetchingNextPage)
-      return;
+    const scrollEl = scrollElement.current;
+    if (!sentinel || !scrollEl || !hasNextPage || isFetchingNextPage) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -105,7 +136,7 @@ export function InfiniteImageGallery({
         }
       },
       {
-        root: scrollElement,
+        root: scrollEl,
         rootMargin: "200px", // 뷰포트 끝에서 200px 전에 미리 로드
         threshold: 0,
       }
@@ -116,7 +147,13 @@ export function InfiniteImageGallery({
     return () => {
       observer.disconnect();
     };
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, rows.length]);
+  }, [
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    rows.length,
+    scrollElement,
+  ]);
 
   // 가상화된 전체 높이
   const virtualTotalSize = rowVirtualizer.getTotalSize();
@@ -128,44 +165,62 @@ export function InfiniteImageGallery({
     return <LoadingSpinner />;
   }
 
+  // 공통 콘텐츠
+  const content = (
+    <div
+      style={{
+        height: `${containerHeight}px`,
+        width: "100%",
+        position: "relative",
+      }}
+    >
+      {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+        const row = rows[virtualRow.index];
+        if (!row) return null;
+
+        return (
+          <VirtualRow
+            key={virtualRow.key}
+            virtualRow={virtualRow}
+            row={row}
+            columnCount={columnCount}
+          />
+        );
+      })}
+
+      <LoadMoreStatus
+        isFetchingNextPage={isFetchingNextPage}
+        error={error}
+        hasNextPage={hasNextPage}
+        imagesLength={images.length}
+        totalImages={totalImages}
+        onRetry={refetch}
+        loadMoreRef={loadMoreRef}
+      />
+    </div>
+  );
+
+  // 외부 스크롤 컨테이너를 사용하는 경우
+  if (scrollElementRef) {
+    return (
+      <div className="w-full" ref={containerRefCallback}>
+        {content}
+      </div>
+    );
+  }
+
+  // 자체 스크롤 컨테이너를 사용하는 경우 (기본 동작)
   return (
-    <div className="w-full flex flex-col flex-1 min-h-0 rounded-lg">
+    <div
+      className="w-full flex flex-col flex-1 min-h-0 rounded-lg"
+      ref={containerRefCallback}
+    >
       <div
         ref={parentRef}
         className="w-full flex-1 min-h-0 overflow-auto rounded-lg scrollbar-hide"
         style={{ contain: "strict" }}
       >
-        <div
-          style={{
-            height: `${containerHeight}px`,
-            width: "100%",
-            position: "relative",
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-            const row = rows[virtualRow.index];
-            if (!row) return null;
-
-            return (
-              <VirtualRow
-                key={virtualRow.key}
-                virtualRow={virtualRow}
-                row={row}
-                columnCount={columnCount}
-              />
-            );
-          })}
-
-          <LoadMoreStatus
-            isFetchingNextPage={isFetchingNextPage}
-            error={error}
-            hasNextPage={hasNextPage}
-            imagesLength={images.length}
-            totalImages={totalImages}
-            onRetry={refetch}
-            loadMoreRef={loadMoreRef}
-          />
-        </div>
+        {content}
       </div>
     </div>
   );

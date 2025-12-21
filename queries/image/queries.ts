@@ -66,7 +66,10 @@ export const useGetGalleryImagesQuery = (
   });
 };
 
-export const useGetGalleryImagesInfiniteQuery = (limit: number = 20) => {
+export const useGetGalleryImagesInfiniteQuery = (
+  limit: number = 20,
+  enabled: boolean = true
+) => {
   return useInfiniteQuery({
     queryKey: ["galleryImagesInfinite", limit],
     queryFn: async ({ pageParam = 1 }) => {
@@ -79,6 +82,27 @@ export const useGetGalleryImagesInfiniteQuery = (limit: number = 20) => {
       return lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined;
     },
     initialPageParam: 1,
+    enabled,
+  });
+};
+
+export const useGetUserImagesInfiniteQuery = (
+  userId: number,
+  limit: number = 20
+) => {
+  return useInfiniteQuery({
+    queryKey: ["userImagesInfinite", userId, limit],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = (await FetchUtil.get(
+        `/api/images/user?userId=${userId}&page=${pageParam}&limit=${limit}`
+      )) as GetUserImagesResponse;
+      return response;
+    },
+    getNextPageParam: (lastPage: GetUserImagesResponse) => {
+      return lastPage.hasNextPage ? lastPage.currentPage + 1 : undefined;
+    },
+    initialPageParam: 1,
+    enabled: !!userId,
   });
 };
 

@@ -5,11 +5,19 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const accessToken = request.cookies.get("accessToken");
   const refreshToken = request.cookies.get("refreshToken");
+  const notLogin = !accessToken && !refreshToken;
+  const notLoginDeniedPath = ["/image-gen", "/profile"];
+
+  if (notLogin) {
+    if (notLoginDeniedPath.includes(pathname)) {
+      return NextResponse.redirect(new URL("/?needLogin=true", request.url));
+    }
+  }
 
   if (
     pathname.startsWith("/auth") &&
     !pathname.includes("callback") &&
-    (accessToken || refreshToken)
+    !notLogin
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }

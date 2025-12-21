@@ -6,6 +6,7 @@ import { Header } from "@/components/common/CommonHeader";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import AuthProvider from "@/providers/AuthProviders";
 import { ModalProvider } from "@/providers/ModalProvider";
+import { Suspense } from "react";
 
 const pretendard = localFont({
   src: "../public/fonts/Pretendard.woff2",
@@ -37,8 +38,10 @@ export default function RootLayout({
           <QueryProviders>
             <AuthProvider>
               <ModalProvider>
-                <Header />
-                {children}
+                <Suspense fallback={null}>
+                  <Header />
+                  {children}
+                </Suspense>
               </ModalProvider>
             </AuthProvider>
           </QueryProviders>

@@ -9,14 +9,18 @@ import { GalleryResponse } from "../../types/image.interfaces";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { Comment } from "@/types/image.interfaces";
 
-export const useGetUserImagesQuery = (userId: number) => {
+export const useGetUserImagesQuery = (
+  userId: number,
+  page: number = 1,
+  limit: number = 20
+) => {
   return useQuery({
-    queryKey: ["userImages", userId],
-    queryFn: async (): Promise<GeneratedImage[]> => {
+    queryKey: ["userImages", userId, page, limit],
+    queryFn: async (): Promise<GetUserImagesResponse> => {
       const response = (await FetchUtil.get(
-        `/api/images/user?userId=${userId}`
+        `/api/images/user?userId=${userId}&page=${page}&limit=${limit}`
       )) as GetUserImagesResponse;
-      return response.images || [];
+      return response;
     },
     enabled: !!userId,
   });

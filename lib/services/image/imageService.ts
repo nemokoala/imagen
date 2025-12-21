@@ -730,12 +730,10 @@ export const imageService = {
     }
   },
 
-  async getUserImages(userId: number) {
+  async getUserImages(userId: number, page: number = 1, limit: number = 20) {
     try {
-      return await prisma.generatedImage.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-      });
+      // getAllImages를 재사용하여 페이지네이션 지원
+      return await imageService.getAllImages(page, limit, userId);
     } catch (error: unknown) {
       console.error("Error fetching user images:", error);
       throw new Error("사용자 이미지 조회에 실패했습니다.");
@@ -785,12 +783,14 @@ export const imageService = {
     }
   },
 
-  async getAllImages(page: number = 1, limit: number = 20) {
+  async getAllImages(page: number = 1, limit: number = 20, userId?: number) {
     try {
       const skip = (page - 1) * limit;
+      const whereClause = userId ? { userId } : undefined;
 
       const [images, totalCount] = await Promise.all([
         prisma.generatedImage.findMany({
+          where: whereClause,
           include: {
             user: {
               select: {
@@ -809,7 +809,9 @@ export const imageService = {
           skip,
           take: limit,
         }),
-        prisma.generatedImage.count(),
+        prisma.generatedImage.count({
+          where: whereClause,
+        }),
       ]);
 
       // 평탄화: _count 객체를 likeCount, commentCount로 변환

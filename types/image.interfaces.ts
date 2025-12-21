@@ -25,7 +25,12 @@ export interface GenerateImageResponse {
 
 export interface GetUserImagesResponse {
   success: boolean;
-  images: GeneratedImage[];
+  images: Image[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
   error?: string;
 }
 

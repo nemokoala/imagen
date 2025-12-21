@@ -10,6 +10,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId");
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "20");
 
     if (!userId) {
       return NextResponse.json(
@@ -18,12 +20,16 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const images = await imageService.getUserImages(parseInt(userId));
+    const result = await imageService.getUserImages(
+      parseInt(userId),
+      page,
+      limit
+    );
 
     return NextResponse.json(
       {
         success: true,
-        images,
+        ...result,
       },
       { status: 200 }
     );

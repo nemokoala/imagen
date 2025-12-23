@@ -4,7 +4,7 @@ import { errorHandler } from "@/lib/errors/errorHandler";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { userId: string } }
+  { params }: { params: Promise<{ userId: string }> }
 ) {
   try {
     const param = await params;

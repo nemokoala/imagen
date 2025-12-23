@@ -6,7 +6,7 @@ import {
   useGetUserImagesInfiniteQuery,
 } from "@/queries/image/queries";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef, useEffect, useMemo, useState } from "react";
+import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { VirtualRow } from "./VirtualRow";
@@ -64,23 +64,27 @@ export function InfiniteImageGallery({
     return 2;
   }, [width]);
 
-  // ref callback으로 마운트 시점 감지 및 크기 측정
-  const containerRefCallback = (node: HTMLDivElement | null) => {
+  // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지
+  const containerRefCallback = useCallback((node: HTMLDivElement | null) => {
     containerRef.current = node;
     if (node) {
-      // 마운트 시점에 크기 측정
+      // 마운트 시점에만 크기 측정 (이전 값과 다를 때만 업데이트)
       const measuredWidth = node.clientWidth;
-      setContainerWidth(measuredWidth);
+      setContainerWidth((prev) =>
+        measuredWidth !== prev ? measuredWidth : prev
+      );
     }
-  };
+  }, []); // 빈 의존성 배열로 한 번만 생성
 
   // width나 columnCount 변경 시 크기 재측정
   useEffect(() => {
     if (containerRef.current) {
       const measuredWidth = containerRef.current.clientWidth;
-      setContainerWidth(measuredWidth);
-    } else {
-      setContainerWidth(width);
+      setContainerWidth((prev) =>
+        measuredWidth !== prev ? measuredWidth : prev
+      );
+    } else if (width > 0) {
+      setContainerWidth((prev) => (width !== prev ? width : prev));
     }
   }, [width, columnCount, gap]);
 

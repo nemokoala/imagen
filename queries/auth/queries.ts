@@ -1,8 +1,8 @@
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "@/types/user.interfaces";
+import { PublicUser, User } from "@/types/user.interfaces";
 
-export const useGetUserCreditQuery = () => {
+export const useGetUserCredit = () => {
   return useQuery({
     queryKey: ["credit"],
     queryFn: async () => {
@@ -14,7 +14,7 @@ export const useGetUserCreditQuery = () => {
   });
 };
 
-export const useGetUserInfoQuery = ({ enabled }: { enabled: boolean }) => {
+export const useGetUserInfo = ({ enabled }: { enabled: boolean }) => {
   return useQuery<User>({
     queryKey: ["userInfo"],
     queryFn: async (): Promise<User> => {
@@ -22,5 +22,16 @@ export const useGetUserInfoQuery = ({ enabled }: { enabled: boolean }) => {
       return response as User;
     },
     enabled,
+  });
+};
+
+export const useGetPublicUserById = (userId: number | null) => {
+  return useQuery<PublicUser>({
+    queryKey: ["user", userId],
+    queryFn: async (): Promise<PublicUser> => {
+      const response = await FetchUtil.get(`/api/auth/user/${userId}`);
+      return response as PublicUser;
+    },
+    enabled: !!userId,
   });
 };

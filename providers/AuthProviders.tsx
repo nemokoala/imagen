@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
-import { useGetUserInfoQuery } from "@/queries/auth/queries";
+import { useGetUserInfo } from "@/queries/auth/queries";
 import { hasCookie } from "@/lib/server-utils";
 
 export default function AuthProvider({
@@ -12,7 +12,7 @@ export default function AuthProvider({
 }) {
   const { user, isLoading, setUser } = useUserStore();
   const [hasAccessToken, setHasAccessToken] = useState(false);
-  const { data: userInfo } = useGetUserInfoQuery({
+  const { data: userInfo } = useGetUserInfo({
     enabled: !user && !isLoading && hasAccessToken,
   });
 

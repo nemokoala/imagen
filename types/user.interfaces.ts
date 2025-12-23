@@ -10,20 +10,14 @@ export interface User {
   updatedAt: string;
 }
 
-export interface AdminUser {
+export interface PublicUser {
   id: number;
-  email: string;
-  nickname: string;
-  credits: number;
-  role: "user" | "admin";
-  provider: "local" | "kakao";
-  createdAt: string;
-  updatedAt: string;
   profileImageUrl: string | null;
+  nickname: string;
 }
 
 export interface UsersListResponse {
-  users: AdminUser[];
+  users: User[];
   pagination: {
     page: number;
     limit: number;

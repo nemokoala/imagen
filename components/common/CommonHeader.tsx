@@ -9,7 +9,6 @@ import { useLogoutMutation } from "@/queries/auth/mutations";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { User, LogOut } from "lucide-react";
+import { ProfileAvatar } from "../auth/ProfileAvatar";
 
 export const Header = () => {
   const { isAuthenticated, isLoading, logout, user } = useUserStore();
@@ -74,28 +74,19 @@ export const Header = () => {
                   variant="ghost"
                   className="relative h-10 w-10 rounded-full"
                 >
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage
-                      src={user?.profileImageUrl || undefined}
-                      alt={user?.nickname || "User"}
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white">
-                      {user?.nickname?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
+                  <ProfileAvatar
+                    profileImageUrl={user?.profileImageUrl || ""}
+                    nickname={user?.nickname || ""}
+                  />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex items-center gap-2 p-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={user?.profileImageUrl || undefined}
-                      alt={user?.nickname || "User"}
-                    />
-                    <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white text-sm">
-                      {user?.nickname?.charAt(0).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
+                <div className="flex items-center gap-3 p-2">
+                  <ProfileAvatar
+                    profileImageUrl={user?.profileImageUrl || ""}
+                    nickname={user?.nickname || ""}
+                    size="small"
+                  />
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
                       {user?.nickname}

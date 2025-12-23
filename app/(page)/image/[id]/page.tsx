@@ -79,6 +79,7 @@ export default async function ImagePage({ params }: PageProps) {
   let image;
   try {
     image = await imageService.getImageById(id);
+    console.log(image);
   } catch (error) {
     console.error("Error fetching image:", error);
     notFound();

@@ -54,6 +54,7 @@ export interface Image {
   user: {
     id: number;
     nickname: string;
+    profileImageUrl: string | null;
   };
   likeCount: number;
   commentCount: number;

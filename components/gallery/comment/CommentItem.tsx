@@ -5,9 +5,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Edit2, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Comment } from "@/types/image.interfaces";
 import { useState } from "react";
+import { ProfileAvatar } from "@/components/auth/ProfileAvatar";
+import Link from "next/link";
 
 interface CommentItemProps {
   comment: Comment;
@@ -95,12 +96,13 @@ export function CommentItem({
   return (
     <div className="bg-background-plus border border-border rounded-xl p-4 space-y-3">
       <div className="flex items-start gap-3">
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={comment.user.profileImageUrl || undefined} />
-          <AvatarFallback>
-            {comment.user.nickname.charAt(0).toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+        <Link href={`/profile/${comment.user.id}`}>
+          <ProfileAvatar
+            profileImageUrl={comment.user.profileImageUrl || ""}
+            nickname={comment.user.nickname || ""}
+            size="small"
+          />
+        </Link>
         <div className="flex-1 space-y-2">
           <div className="flex items-center justify-between">
             <div>
@@ -205,14 +207,11 @@ export function CommentItem({
             <div className="mt-3 space-y-3 pl-4 border-l-2 border-purple-200">
               {comment.replies.map((reply) => (
                 <div key={reply.id} className="flex items-start gap-3">
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={reply.user.profileImageUrl || undefined}
-                    />
-                    <AvatarFallback>
-                      {reply.user.nickname.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <ProfileAvatar
+                    profileImageUrl={reply.user.profileImageUrl || ""}
+                    nickname={reply.user.nickname || ""}
+                    size="small"
+                  />
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
                       <div>

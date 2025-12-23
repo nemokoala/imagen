@@ -749,6 +749,7 @@ export const imageService = {
             select: {
               id: true,
               nickname: true,
+              profileImageUrl: true,
             },
           },
           _count: {
@@ -773,6 +774,7 @@ export const imageService = {
         user: {
           id: image.user.id,
           nickname: image.user.nickname,
+          profileImageUrl: image.user.profileImageUrl,
         },
         likeCount: _count.likes,
         commentCount: _count.comments,
@@ -796,6 +798,7 @@ export const imageService = {
               select: {
                 id: true,
                 nickname: true,
+                profileImageUrl: true,
               },
             },
             _count: {

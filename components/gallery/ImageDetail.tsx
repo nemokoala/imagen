@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
-  User,
   Image as ImageIcon,
   Download,
   Sparkles,
@@ -26,6 +25,9 @@ import { useModal } from "@/providers/ModalProvider";
 import { useRouter } from "next/navigation";
 import { downloadImage } from "@/lib/utils";
 import { Image as ImageType } from "@/types/image.interfaces";
+import { Layout } from "../layout/Layout";
+import Link from "next/link";
+import { ProfileAvatar } from "../auth/ProfileAvatar";
 
 interface ImageDetailProps {
   image: ImageType;
@@ -82,7 +84,7 @@ export function ImageDetail({ image: initialImage }: ImageDetailProps) {
   if (!imageData) return null;
 
   return (
-    <div className="w-full min-h-screen bg-background p-4 md:p-8">
+    <Layout.Content className="p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         {/* 뒤로가기 버튼 */}
         <Button variant="ghost" onClick={() => router.back()} className="mb-6">
@@ -175,7 +177,13 @@ export function ImageDetail({ image: initialImage }: ImageDetailProps) {
                 <div className="space-y-4">
                   <div className="bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
                     <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
-                      <User className="h-4 w-4 text-purple-600" />
+                      <Link href={`/profile/${imageData.user.id}`}>
+                        <ProfileAvatar
+                          profileImageUrl={imageData.user.profileImageUrl || ""}
+                          nickname={imageData.user.nickname || ""}
+                          size="small"
+                        />
+                      </Link>
                       생성자
                     </h3>
                     <p className="text-foreground whitespace-nowrap">
@@ -214,6 +222,6 @@ export function ImageDetail({ image: initialImage }: ImageDetailProps) {
           </div>
         </div>
       </div>
-    </div>
+    </Layout.Content>
   );
 }

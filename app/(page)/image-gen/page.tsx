@@ -12,7 +12,7 @@ import { useGenerateImageMutation } from "@/queries/image/mutations";
 import { useHealthCheckQuery } from "@/queries/image/queries";
 import { ModelSelect } from "@/components/image-gen/ModelSelect";
 import { CreditDisplay } from "@/components/image-gen/CreditDisplay";
-import { useGetUserCreditQuery } from "@/queries/auth/queries";
+import { useGetUserCredit } from "@/queries/auth/queries";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   RecommendPrompt,
@@ -32,7 +32,7 @@ export default function ImageGenPage() {
   const { data: zimageHealthCheck, isLoading: isZimageHealthCheckLoading } =
     useHealthCheckQuery({ target: "zimage" });
 
-  const { data: credit, isLoading: isCreditLoading } = useGetUserCreditQuery();
+  const { data: credit, isLoading: isCreditLoading } = useGetUserCredit();
 
   // healthCheck에 따라 기본 모델 계산
   const defaultModel = useMemo(
@@ -64,7 +64,9 @@ export default function ImageGenPage() {
       recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
       resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
       queryClient.invalidateQueries({ queryKey: ["credit"] });
-      queryClient.invalidateQueries({ queryKey: ["images"] });
+      queryClient.invalidateQueries({
+        queryKey: ["galleryImagesInfinite", "userImagesInfinite"],
+      });
     },
     (error) => {
       toast.error(error.message);

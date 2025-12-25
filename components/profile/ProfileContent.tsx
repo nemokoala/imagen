@@ -79,7 +79,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
     >
       <div className="container flex flex-col items-center mx-auto px-4 pt-8 max-w-6xl">
         {/* 프로필 헤더 */}
-        <Card className="flex flex-col justify-center items-center min-w-2/3 w-fit p-8 mb-8 bg-background backdrop-blur-sm border-0 shadow-xl">
+        <Card className="flex flex-col justify-center items-center min-w-2/3 w-fit p-8 mb-8 bg-background">
           <ProfileAvatar
             profileImageUrl={userInfo.profileImageUrl || ""}
             nickname={userInfo.nickname || ""}

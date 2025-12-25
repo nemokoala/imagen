@@ -66,7 +66,10 @@ export default function ImageGenPage() {
       resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
       queryClient.invalidateQueries({ queryKey: ["credit"] });
       queryClient.invalidateQueries({
-        queryKey: ["galleryImagesInfinite", "userImagesInfinite"],
+        queryKey: ["galleryImagesInfinite"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["userImagesInfinite"],
       });
     },
     (error) => {

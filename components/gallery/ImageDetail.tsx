@@ -85,7 +85,7 @@ export function ImageDetail({ image: initialImage }: ImageDetailProps) {
 
   return (
     <Layout.Content className="p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full">
         {/* 뒤로가기 버튼 */}
         <Button variant="ghost" onClick={() => router.back()} className="mb-6">
           <ArrowLeft className="mr-2 h-4 w-4" />
@@ -100,51 +100,48 @@ export function ImageDetail({ image: initialImage }: ImageDetailProps) {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
           <div className="flex flex-col gap-4">
             <div className="space-y-6">
               {/* 이미지 */}
-              <div className="flex justify-center aspect-square">
-                <div className="relative group">
-                  <Image
-                    src={imageData.imageUrl}
-                    alt={imageData.prompt}
-                    width={800}
-                    height={600}
-                    className="max-w-full object-contain rounded-xl shadow-2xl transition-transform duration-300"
-                    unoptimized
-                    priority
-                  />
-                  <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button
-                      onClick={() =>
-                        downloadImage(imageData.imageUrl, imageData.prompt)
-                      }
-                      className="gradient-purple-bg hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      다운로드
-                    </Button>
-                  </div>
-                </div>
+              <div className="flex justify-center aspect-square relative">
+                <Image
+                  src={imageData.imageUrl}
+                  alt={imageData.prompt}
+                  fill
+                  className="max-w-full object-contain rounded-xl shadow-lg transition-transform duration-300"
+                  unoptimized
+                  priority
+                />
               </div>
 
               {/* 프롬프트 */}
               <div className="space-y-3">
-                <h3 className="font-semibold text-lg text-foreground flex items-center gap-2">
+                <div className="font-semibold text-lg text-foreground flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-purple-600" />
                   프롬프트
-                  {canDelete && (
+                  <div className="flex items-center gap-2 ml-auto">
                     <Button
-                      variant="destructive"
-                      onClick={showDeleteModal}
-                      className="rounded-full h-full px-1 ml-auto"
+                      onClick={() =>
+                        downloadImage(imageData.imageUrl, imageData.prompt)
+                      }
+                      variant="outline"
                     >
-                      <Trash2 className="h-4 w-4" />
-                      삭제
+                      <Download className="mr-2 h-4 w-4" />
+                      다운로드
                     </Button>
-                  )}
-                </h3>
+                    {canDelete && (
+                      <Button
+                        variant="destructive"
+                        onClick={showDeleteModal}
+                        className="rounded-full h-full px-1 ml-auto"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        삭제
+                      </Button>
+                    )}
+                  </div>
+                </div>
                 <div className="bg-background-plus border border-border p-4 rounded-xl">
                   <p className="text-foreground leading-relaxed">
                     {imageData.prompt}

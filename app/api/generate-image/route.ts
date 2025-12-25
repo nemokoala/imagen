@@ -5,6 +5,7 @@ import { authService } from "@/lib/services/auth/authService";
 import { cookies } from "next/headers";
 import { errorHandler } from "@/lib/errors/errorHandler";
 import { ApiError } from "@/lib/errors/AppError";
+import { Model } from "@/types/model.interfaces";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,11 +25,8 @@ export async function POST(req: NextRequest) {
     }
 
     // 🆕 Stable Diffusion과 Z-Image 제외하고 전체 요청 횟수 체크
-    const isZImage = model === "Z-Image";
-    const isStableDiffusion =
-      model.includes("stable-diffusion") ||
-      model.startsWith("sd-") ||
-      !["dall-e-3", "google-imagen", "nano-banana", "Z-Image"].includes(model);
+    const isZImage = model === Model.Z_IMAGE;
+    const isStableDiffusion = model === Model.STABLE_DIFFUSION_XL;
 
     if (
       !isStableDiffusion &&
@@ -47,25 +45,25 @@ export async function POST(req: NextRequest) {
 
     let result;
 
-    if (model === "dall-e-3") {
+    if (model === Model.DALL_E_3) {
       result = await imageService.generateImageByOpenAI({
         prompt,
         model,
         userId,
       });
-    } else if (model === "google-imagen") {
+    } else if (model === Model.GOOGLE_IMAGEN) {
       result = await imageService.generateImageByGoogleImagen({
         prompt,
         model,
         userId,
       });
-    } else if (model === "nano-banana") {
+    } else if (model === Model.NANO_BANANA) {
       result = await imageService.generateImageByNanoBanana({
         prompt,
         model,
         userId,
       });
-    } else if (model === "Z-Image") {
+    } else if (model === Model.Z_IMAGE) {
       result = await imageService.generateImageByZImage({
         prompt,
         model,

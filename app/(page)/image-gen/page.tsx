@@ -18,6 +18,7 @@ import {
   RecommendPrompt,
   RecommendPromptRef,
 } from "@/components/image-gen/RecommendPrompt";
+import { Model } from "@/types/model.interfaces";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
@@ -38,20 +39,20 @@ export default function ImageGenPage() {
   const defaultModel = useMemo(
     () =>
       stableHealthCheck?.healthy
-        ? "stable-diffusion-xl"
+        ? Model.STABLE_DIFFUSION_XL
         : zimageHealthCheck?.healthy
-        ? "Z-Image"
-        : "dall-e-3",
+        ? Model.Z_IMAGE
+        : Model.DALL_E_3,
     [stableHealthCheck?.healthy, zimageHealthCheck?.healthy]
   );
 
   // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
-  const [manualModel, setManualModel] = useState<string | null>(null);
+  const [manualModel, setManualModel] = useState<Model | null>(null);
 
   // 실제 사용할 모델 (수동 선택이 있으면 그것을, 없으면 기본 모델 사용)
   const model = manualModel ?? defaultModel;
 
-  const handleModelChange = (value: string) => {
+  const handleModelChange = (value: Model) => {
     setManualModel(value);
   };
 

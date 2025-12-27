@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { ApiError } from "./AppError";
+import { discordService } from "../services/logs/logService";
 
 export function errorHandler(error: unknown) {
   console.error("API 에러:", error);
+  // 비동기 호출이지만 에러 핸들러이므로 await 없이 호출 (fire-and-forget)
+  // discordService 내부에서 이미 에러를 처리하므로 .catch() 불필요
+  discordService.sendError(
+    error instanceof Error ? error.message : "Unknown error"
+  );
 
   if (error instanceof ApiError) {
     return NextResponse.json(

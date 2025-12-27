@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authService } from "@/lib/services/auth/authService";
 import { errorHandler } from "@/lib/errors/errorHandler";
 import { ApiError } from "@/lib/errors/AppError";
+import { discordService } from "@/lib/services/logs/logService";
 
 export async function POST(req: NextRequest) {
   let email = "";
@@ -12,6 +13,8 @@ export async function POST(req: NextRequest) {
 
     // 서비스의 로그인 메서드 호출
     const user = await authService.login(email, password);
+
+    discordService.sendLog(`로그인 성공: ${JSON.stringify(user)}`);
 
     return NextResponse.json(
       {

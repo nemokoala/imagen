@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authService } from "@/lib/services/auth/authService";
 import { errorHandler } from "@/lib/errors/errorHandler";
+import { discordService } from "@/lib/services/logs/logService";
 
 interface CreateUserData {
   email: string;
@@ -13,6 +14,8 @@ export async function POST(req: NextRequest) {
     const data: CreateUserData = await req.json();
 
     const user = await authService.register(data);
+
+    discordService.sendLog(`회원가입 성공: ${JSON.stringify(user)}`);
 
     return NextResponse.json(
       {

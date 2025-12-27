@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authService } from "@/lib/services/auth/authService";
+import { discordService } from "@/lib/services/logs/logService";
 
 interface KakaoTokenResponse {
   access_token: string;
@@ -128,6 +129,9 @@ export async function GET(req: NextRequest) {
       profileImageUrl:
         kakaoUserInfo.kakao_account.profile?.profile_image_url || null,
     });
+
+    // Discord 로그 전송 (비동기, 응답 대기 안 함)
+    discordService.sendLog(`카카오 로그인 성공: ${JSON.stringify(user)}`);
 
     // 4. 로그인 성공 시 콜백 페이지로 리다이렉트
     // 쿠키는 authService에서 설정되므로, 프론트엔드에서 사용자 정보를 받을 수 있도록 쿼리 파라미터로 전달

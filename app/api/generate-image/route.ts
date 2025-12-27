@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { errorHandler } from "@/lib/errors/errorHandler";
 import { ApiError } from "@/lib/errors/AppError";
 import { Model } from "@/types/model.interfaces";
+import { discordService } from "@/lib/services/logs/logService";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -90,6 +91,12 @@ export async function POST(req: NextRequest) {
       totalRequestCount++;
       console.log(`[Request Count] ${totalRequestCount}/${MAX_TOTAL_REQUESTS}`);
     }
+
+    // Discord 로그 전송 (비동기, 응답 대기 안 함)
+    const resetCount = MAX_TOTAL_REQUESTS - totalRequestCount;
+    discordService.sendLog(
+      `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${result.imageUrl}`
+    );
 
     return NextResponse.json(
       {

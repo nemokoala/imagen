@@ -1,11 +1,17 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { imageService } from "@/lib/services/image/imageService";
 import { ImageDetail } from "@/components/gallery/ImageDetail";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
+
+// 같은 요청 내에서 getImageById 호출을 캐싱
+const getCachedImage = cache(async (id: number) => {
+  return await imageService.getImageById(id);
+});
 
 export async function generateMetadata({
   params,
@@ -20,7 +26,7 @@ export async function generateMetadata({
   }
 
   try {
-    const image = await imageService.getImageById(id);
+    const image = await getCachedImage(id);
 
     if (!image) {
       return {
@@ -78,7 +84,7 @@ export default async function ImagePage({ params }: PageProps) {
 
   let image;
   try {
-    image = await imageService.getImageById(id);
+    image = await getCachedImage(id);
     console.log(image);
   } catch (error) {
     console.error("Error fetching image:", error);

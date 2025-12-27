@@ -34,7 +34,7 @@ export function WelcomeTitle() {
           <span className="gradient-purple-text">특별한 사진</span>
         </h1>
         <p className="text-xl text-subtitle mb-8 max-w-2xl mx-auto">
-          Imagen와 함께 AI 이미지를 생성해보세요. 당신의 상상력을 현실로
+          ImageGen와 함께 AI 이미지를 생성해보세요. 당신의 상상력을 현실로
           구현합니다.
         </p>
         <div className="flex gap-4 justify-center">

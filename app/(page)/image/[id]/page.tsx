@@ -35,10 +35,10 @@ export async function generateMetadata({
     const creator = image.user?.nickname || "익명";
 
     return {
-      title: `${truncatedPrompt} - AI 이미지 갤러리`,
+      title: `${truncatedPrompt} - ImageGen`,
       description: `AI로 생성된 이미지입니다. 프롬프트: ${prompt}. 생성자: ${creator}. 모델: ${image.model}`,
       openGraph: {
-        title: `${truncatedPrompt} - AI 이미지 갤러리`,
+        title: `${truncatedPrompt} - ImageGen`,
         description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
         type: "website",
         images: [
@@ -52,7 +52,7 @@ export async function generateMetadata({
       },
       twitter: {
         card: "summary_large_image",
-        title: `${truncatedPrompt} - AI 이미지 갤러리`,
+        title: `${truncatedPrompt} - ImageGen`,
         description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
         images: [imageUrl],
       },

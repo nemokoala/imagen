@@ -7,6 +7,8 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import AuthProvider from "@/providers/AuthProviders";
 import { ModalProvider } from "@/providers/ModalProvider";
 import { Suspense } from "react";
+import { defaultMetadata } from "@/lib/metadata";
+import { StructuredData } from "@/components/seo/StructuredData";
 
 const pretendard = localFont({
   src: "../public/fonts/Pretendard.woff2",
@@ -14,10 +16,7 @@ const pretendard = localFont({
   weight: "100 900",
 });
 
-export const metadata: Metadata = {
-  title: "Imagen",
-  description: "이미지를 생성하는 서비스",
-};
+export const metadata: Metadata = defaultMetadata;
 
 export default function RootLayout({
   children,
@@ -25,10 +24,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="ko" suppressHydrationWarning>
       <body
         className={`${pretendard.className} ${pretendard.variable} antialiased`}
       >
+        <StructuredData type="WebSite" />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

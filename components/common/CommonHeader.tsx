@@ -48,7 +48,7 @@ export const Header = () => {
         >
           <Image
             src="/images/logo.png"
-            alt="Imagen"
+            alt="ImageGen"
             fill
             className="object-contain"
             priority

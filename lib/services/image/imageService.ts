@@ -9,7 +9,6 @@ import { ollamaService } from "../ollamaService";
 import { authService } from "../auth/authService";
 import { creditSettingsService } from "../admin/creditSettingsService";
 import type { Image as ImageType } from "@/types/image.interfaces";
-import { discordService } from "../logs/logService";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -763,11 +762,8 @@ export const imageService = {
       });
 
       if (!image) {
-        discordService.sendError(`이미지 조회 실패: ${JSON.stringify(image)}`);
         return null;
       }
-
-      discordService.sendLog(`이미지 조회 성공: ${JSON.stringify(image)}`);
 
       // Image 타입으로 변환 (스키마 변경 시 여기만 수정하면 됨)
       const { _count, createdAt, updatedAt, ...imageData } = image;

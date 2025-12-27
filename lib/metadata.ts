@@ -92,6 +92,11 @@ export function createMetadata({
       //   "naver-site-verification": "your-naver-verification-code",
       // },
     },
+    icons: {
+      icon: "/images/favicon.png",
+      shortcut: "/images/favicon.png",
+      apple: "/images/favicon.png",
+    },
   };
 }
 

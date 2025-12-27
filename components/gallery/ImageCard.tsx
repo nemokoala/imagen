@@ -15,7 +15,7 @@ interface ImageCardProps {
 
 export function ImageCard({ image, onDownload }: ImageCardProps) {
   return (
-    <Link href={`/image/${image.id}`} className="block">
+    <Link href={`/image/${image.id}`} prefetch={false} className="block">
       <Card className="overflow-hidden hover:shadow-2xl aspect-square transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-xl gap-1 p-0">
         <div className="relative h-full">
           <Image

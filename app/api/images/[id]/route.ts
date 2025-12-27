@@ -4,7 +4,6 @@ import { errorHandler } from "@/lib/errors/errorHandler";
 import { cookies } from "next/headers";
 import { authService } from "@/lib/services/auth/authService";
 import { ApiError } from "@/lib/errors/AppError";
-import { discordService } from "@/lib/services/logs/logService";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +25,6 @@ export async function GET(
     }
 
     const image = await imageService.getImageById(parseInt(id));
-    discordService.sendLog(`이미지 조회 요청: ${JSON.stringify(image)}`);
 
     if (!image) {
       return NextResponse.json(

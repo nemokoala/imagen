@@ -8,21 +8,24 @@ import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { useUserStore } from "@/stores/userStore";
 
 export default function Home() {
   const { isVisible, handleScrollChange } = useScrollVisibility({
     threshold: 100,
   });
 
-  const { getParam, setParam } = useUrlParams();
+  const { logout } = useUserStore();
+  const { getParam, removeParam } = useUrlParams();
   const needLogin = getParam("needLogin");
 
   useEffect(() => {
     if (needLogin) {
+      logout();
       toast.error("로그인이 필요합니다.");
-      setParam("needLogin", null);
+      removeParam("needLogin");
     }
-  }, [needLogin, setParam]);
+  }, [needLogin, removeParam, logout]);
 
   return (
     <Layout.Content className="h-[calc(100dvh-60px)] p-2">

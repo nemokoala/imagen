@@ -9,16 +9,16 @@ const handleFetch = async (
   options: RequestInit,
   isRetry = false
 ): Promise<unknown> => {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
-    {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    }
-  );
+  // 상대 경로 사용 (www/non-www 모두 동일한 도메인으로 요청)
+  const apiUrl = "";
+
+  const response = await fetch(`${apiUrl}${endpoint}`, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
 
   // 401 에러 && 첫 시도일 때만 토큰 갱신 후 재시도
   if (response.status === 401 && !isRetry) {
@@ -51,14 +51,14 @@ const refreshToken = async (): Promise<boolean> => {
   isRefreshing = true;
 
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/auth/refresh`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+    // 상대 경로 사용 (www/non-www 모두 동일한 도메인으로 요청)
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
+
+    const response = await fetch(`${apiUrl}/api/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
 
     if (response.ok) {
       return true;

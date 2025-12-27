@@ -86,7 +86,7 @@ export function createMetadata({
       },
     },
     verification: {
-      google: "googleb486188493c53425",
+      google: "U3jI9Lgs_ByKDr7UWJIUXbz0mufu5hgEOZdmC6Oz2LA",
       // Naver Search Advisor verification code를 여기에 추가하세요
       // other: {
       //   "naver-site-verification": "your-naver-verification-code",

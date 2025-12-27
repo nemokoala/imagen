@@ -30,7 +30,10 @@ export default function Home() {
   return (
     <Layout.Content className="h-[calc(100dvh-60px)] p-2">
       <WelcomeTitle />
-      <InfiniteImageGallery onScrollChange={handleScrollChange} />
+      <InfiniteImageGallery
+        onScrollChange={handleScrollChange}
+        maintainScrollPosition={true}
+      />
       <ImageCreatButton isVisible={isVisible} />
     </Layout.Content>
   );

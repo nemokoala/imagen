@@ -18,12 +18,14 @@ interface InfiniteImageGalleryProps {
   userId?: number;
   onScrollChange?: (scrollTop: number) => void;
   scrollElementRef?: React.RefObject<HTMLDivElement>;
+  maintainScrollPosition?: boolean;
 }
 
 export function InfiniteImageGallery({
   userId,
   onScrollChange: _onScrollChange,
   scrollElementRef,
+  maintainScrollPosition = false,
 }: InfiniteImageGalleryProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollElement = scrollElementRef || parentRef;
@@ -112,7 +114,7 @@ export function InfiniteImageGallery({
     estimateSize: () => rowHeight,
     overscan: 10,
     gap,
-    initialOffset: scrollPos,
+    initialOffset: maintainScrollPosition ? scrollPos : undefined,
   });
 
   useScrollObserver(scrollElement as React.RefObject<HTMLDivElement>, {

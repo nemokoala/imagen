@@ -3,9 +3,20 @@ import { notFound } from "next/navigation";
 import { cache } from "react";
 import { imageService } from "@/lib/services/image/imageService";
 import { ImageDetail } from "@/components/gallery/ImageDetail";
+import { StructuredData } from "@/components/seo/StructuredData";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://image-gen.store";
+
+// 이미지 URL을 절대 경로로 변환
+function getAbsoluteImageUrl(imageUrl: string): string {
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
+    return imageUrl;
+  }
+  return `${baseUrl}${imageUrl.startsWith("/") ? "" : "/"}${imageUrl}`;
 }
 
 // 같은 요청 내에서 getImageById 호출을 캐싱
@@ -22,6 +33,7 @@ export async function generateMetadata({
   if (isNaN(id)) {
     return {
       title: "이미지를 찾을 수 없습니다",
+      metadataBase: new URL(baseUrl),
     };
   }
 
@@ -31,28 +43,35 @@ export async function generateMetadata({
     if (!image) {
       return {
         title: "이미지를 찾을 수 없습니다",
+        metadataBase: new URL(baseUrl),
       };
     }
 
     const prompt = image.prompt || "AI 생성 이미지";
     const truncatedPrompt =
       prompt.length > 60 ? prompt.substring(0, 60) + "..." : prompt;
-    const imageUrl = image.imageUrl;
+    const absoluteImageUrl = getAbsoluteImageUrl(image.imageUrl);
     const creator = image.user?.nickname || "익명";
+    const pageUrl = `${baseUrl}/image/${id}`;
 
     return {
       title: `${truncatedPrompt} - ImageGen`,
       description: `AI로 생성된 이미지입니다. 프롬프트: ${prompt}. 생성자: ${creator}. 모델: ${image.model}`,
+      metadataBase: new URL(baseUrl),
       openGraph: {
         title: `${truncatedPrompt} - ImageGen`,
         description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
         type: "website",
+        url: pageUrl,
+        siteName: "ImageGen",
+        locale: "ko_KR",
         images: [
           {
-            url: imageUrl,
+            url: absoluteImageUrl,
             width: 1024,
             height: 1024,
             alt: prompt,
+            type: "image/png",
           },
         ],
       },
@@ -60,16 +79,28 @@ export async function generateMetadata({
         card: "summary_large_image",
         title: `${truncatedPrompt} - ImageGen`,
         description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
-        images: [imageUrl],
+        images: [absoluteImageUrl],
       },
       alternates: {
-        canonical: `/image/${id}`,
+        canonical: pageUrl,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+          "max-image-preview": "large",
+          "max-snippet": -1,
+          "max-video-preview": -1,
+        },
       },
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
     return {
       title: "이미지를 찾을 수 없습니다",
+      metadataBase: new URL(baseUrl),
     };
   }
 }
@@ -96,5 +127,32 @@ export default async function ImagePage({ params }: PageProps) {
   }
 
   // imageService.getImageById가 이미 Image 타입을 반환하므로 변환 불필요
-  return <ImageDetail image={image} />;
+  const absoluteImageUrl = getAbsoluteImageUrl(image.imageUrl);
+  const pageUrl = `${baseUrl}/image/${image.id}`;
+
+  return (
+    <>
+      <StructuredData
+        type="ImageObject"
+        imageObject={{
+          contentUrl: absoluteImageUrl,
+          url: pageUrl,
+          name: image.prompt || "AI 생성 이미지",
+          description: `AI로 생성된 이미지입니다. 프롬프트: ${
+            image.prompt
+          }. 생성자: ${image.user?.nickname || "익명"}. 모델: ${image.model}`,
+          creator: {
+            "@type": "Person",
+            name: image.user?.nickname || "익명",
+          },
+          dateCreated: image.createdAt,
+          encodingFormat: "image/png",
+          width: 1024,
+          height: 1024,
+          license: "https://creativecommons.org/licenses/by/4.0/",
+        }}
+      />
+      <ImageDetail image={image} />
+    </>
+  );
 }

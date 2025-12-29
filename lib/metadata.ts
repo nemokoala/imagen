@@ -48,6 +48,16 @@ export function createMetadata({
     creator: siteConfig.name,
     publisher: siteConfig.name,
     metadataBase: new URL(siteConfig.url),
+    icons: {
+      icon: [
+        { url: "/favicon.ico", sizes: "any" },
+        { url: "/images/favicon.png", type: "image/png" },
+      ],
+      apple: [
+        { url: "/images/favicon.png", sizes: "180x180", type: "image/png" },
+      ],
+      shortcut: "/favicon.ico",
+    },
     alternates: {
       canonical: fullUrl,
     },

@@ -202,6 +202,7 @@ export function InfiniteImageGallery({
         totalImages={totalImages}
         onRetry={refetch}
         loadMoreRef={loadMoreRef}
+        rowHeight={rowHeight}
       />
     </div>
   );

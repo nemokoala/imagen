@@ -24,6 +24,11 @@ const getCachedImage = cache(async (id: number) => {
   return await imageService.getImageById(id);
 });
 
+// 같은 요청 내에서 getAdjacentImages 호출을 캐싱
+const getCachedAdjacentImages = cache(async (id: number) => {
+  return await imageService.getAdjacentImages(id, 3, 3);
+});
+
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
@@ -114,8 +119,10 @@ export default async function ImagePage({ params }: PageProps) {
   }
 
   let image;
+  let adjacentImages;
   try {
     image = await getCachedImage(id);
+    adjacentImages = await getCachedAdjacentImages(id);
     console.log(image);
   } catch (error) {
     console.error("Error fetching image:", error);
@@ -152,7 +159,11 @@ export default async function ImagePage({ params }: PageProps) {
           license: "https://creativecommons.org/licenses/by/4.0/",
         }}
       />
-      <ImageDetail image={image} />
+      <ImageDetail
+        image={image}
+        prevImages={adjacentImages?.prevImages || []}
+        nextImages={adjacentImages?.nextImages || []}
+      />
     </>
   );
 }

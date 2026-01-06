@@ -19,6 +19,7 @@ import {
   RecommendPromptRef,
 } from "@/components/image-gen/RecommendPrompt";
 import { Model } from "@/types/model.interfaces";
+import { downloadImage } from "@/lib/utils";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
@@ -100,17 +101,6 @@ export default function ImageGenPage() {
     });
   };
 
-  const handleDownload = () => {
-    if (imageUrl) {
-      const link = document.createElement("a");
-      link.href = imageUrl;
-      link.download = `ai-generated-image-${Date.now()}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
   const handleRegenerate = () => {
     setImageUrl(null);
     handleGenerate();
@@ -119,6 +109,7 @@ export default function ImageGenPage() {
   return (
     <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4 gap-4 md:gap-8 md:p-8">
       {/* 크레딧 정보 섹션 */}
+
       <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
@@ -209,7 +200,7 @@ export default function ImageGenPage() {
 
                 <div className="flex gap-2 mt-8">
                   <Button
-                    onClick={handleDownload}
+                    onClick={() => downloadImage(imageUrl)}
                     variant="outline"
                     className="flex-1 border-purple-200 text-purple-400 hover:bg-purple-50"
                   >

@@ -3,7 +3,6 @@
 import { ImageCard } from "@/components/gallery/ImageCard";
 import { Image } from "@/types/image.interfaces";
 import { VirtualItem } from "@tanstack/react-virtual";
-import { downloadImage } from "@/lib/utils";
 
 interface VirtualRowProps {
   virtualRow: VirtualItem;
@@ -27,11 +26,7 @@ export function VirtualRow({ virtualRow, row, columnCount }: VirtualRowProps) {
     >
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
         {row.map((image: Image) => (
-          <ImageCard
-            key={image.id}
-            image={image}
-            onDownload={(imageUrl, prompt) => downloadImage(imageUrl, prompt)}
-          />
+          <ImageCard key={image.id} image={image} />
         ))}
         {/* 빈 공간 채우기 (마지막 행이 컬럼 수보다 적을 때) */}
         {row.length < columnCount &&

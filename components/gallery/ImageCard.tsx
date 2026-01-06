@@ -9,13 +9,13 @@ import { Badge } from "@/components/ui/badge";
 import { Download, Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { Image as ImageType } from "@/types/image.interfaces";
+import { downloadImage } from "@/lib/utils";
 
 interface ImageCardProps {
   image: ImageType;
-  onDownload: (imageUrl: string, prompt: string) => void;
 }
 
-export function ImageCard({ image, onDownload }: ImageCardProps) {
+export function ImageCard({ image }: ImageCardProps) {
   const router = useRouter();
   const prefetchedRef = useRef(false); // 중복 prefetch 방지
 
@@ -72,7 +72,7 @@ export function ImageCard({ image, onDownload }: ImageCardProps) {
               className="h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border-0 shadow-lg"
               onClick={(e) => {
                 e.stopPropagation();
-                onDownload(image.imageUrl, image.prompt);
+                downloadImage(image.imageUrl, image.prompt);
               }}
             >
               <Download className="h-4 w-4" />

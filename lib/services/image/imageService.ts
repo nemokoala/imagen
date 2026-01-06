@@ -741,6 +741,45 @@ export const imageService = {
     }
   },
 
+  /**
+   * Prisma 쿼리 결과를 ImageType으로 변환하는 공통 함수
+   */
+  convertToImageType(image: {
+    id: number;
+    userId: number;
+    prompt: string;
+    imageUrl: string;
+    model: string;
+    size: string;
+    editData: string | null;
+    editedImageUrl: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    user: {
+      id: number;
+      nickname: string;
+      profileImageUrl: string | null;
+    };
+    _count: {
+      likes: number;
+      comments: number;
+    };
+  }): ImageType {
+    const { _count, createdAt, updatedAt, ...imageData } = image;
+    return {
+      ...imageData,
+      createdAt: createdAt.toISOString(),
+      updatedAt: updatedAt.toISOString(),
+      user: {
+        id: image.user.id,
+        nickname: image.user.nickname,
+        profileImageUrl: image.user.profileImageUrl,
+      },
+      likeCount: _count.likes,
+      commentCount: _count.comments,
+    };
+  },
+
   async getImageById(id: number): Promise<ImageType | null> {
     try {
       const image = await prisma.generatedImage.findUnique({
@@ -771,23 +810,88 @@ export const imageService = {
         `이미지 조회 성공: ${image.id} - ${image.prompt} - ${image.imageUrl}`
       );
 
-      // Image 타입으로 변환 (스키마 변경 시 여기만 수정하면 됨)
-      const { _count, createdAt, updatedAt, ...imageData } = image;
-      return {
-        ...imageData,
-        createdAt: createdAt.toISOString(),
-        updatedAt: updatedAt.toISOString(),
-        user: {
-          id: image.user.id,
-          nickname: image.user.nickname,
-          profileImageUrl: image.user.profileImageUrl,
-        },
-        likeCount: _count.likes,
-        commentCount: _count.comments,
-      };
+      return imageService.convertToImageType(image);
     } catch (error: unknown) {
       console.error("Error fetching image by id:", error);
       throw new Error("이미지 조회에 실패했습니다.");
+    }
+  },
+
+  async getAdjacentImages(
+    id: number,
+    prevCount: number = 2,
+    nextCount: number = 2
+  ): Promise<{ prevImages: ImageType[]; nextImages: ImageType[] }> {
+    try {
+      // 현재 이미지 정보 가져오기
+      const currentImage = await prisma.generatedImage.findUnique({
+        where: { id },
+        select: { id: true, createdAt: true },
+      });
+
+      if (!currentImage) {
+        return { prevImages: [], nextImages: [] };
+      }
+
+      // 이전 이미지들 (ID가 작고, 최신순으로 정렬하여 최대 prevCount개)
+      const prevImages = await prisma.generatedImage.findMany({
+        where: {
+          id: {
+            lt: id,
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              nickname: true,
+              profileImageUrl: true,
+            },
+          },
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+            },
+          },
+        },
+        orderBy: { id: "desc" },
+        take: prevCount,
+      });
+
+      // 다음 이미지들 (ID가 크고, 오래된순으로 정렬하여 최대 nextCount개)
+      const nextImages = await prisma.generatedImage.findMany({
+        where: {
+          id: {
+            gt: id,
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              nickname: true,
+              profileImageUrl: true,
+            },
+          },
+          _count: {
+            select: {
+              likes: true,
+              comments: true,
+            },
+          },
+        },
+        orderBy: { id: "asc" },
+        take: nextCount,
+      });
+
+      return {
+        prevImages: prevImages.map(imageService.convertToImageType),
+        nextImages: nextImages.map(imageService.convertToImageType),
+      };
+    } catch (error: unknown) {
+      console.error("Error fetching adjacent images:", error);
+      throw new Error("이전/다음 이미지 조회에 실패했습니다.");
     }
   },
 
@@ -823,12 +927,10 @@ export const imageService = {
         }),
       ]);
 
-      // 평탄화: _count 객체를 likeCount, commentCount로 변환
-      const flattenedImages = images.map(({ _count, ...image }) => ({
-        ...image,
-        likeCount: _count.likes,
-        commentCount: _count.comments,
-      }));
+      // Image 타입으로 변환
+      const flattenedImages = images.map((image) =>
+        imageService.convertToImageType(image)
+      );
 
       return {
         images: flattenedImages,

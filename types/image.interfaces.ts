@@ -37,6 +37,8 @@ export interface GetUserImagesResponse {
 export interface GetImageByIdResponse {
   success: boolean;
   image: GeneratedImage | null;
+  prevImages?: Image[];
+  nextImages?: Image[];
   error?: string;
 }
 

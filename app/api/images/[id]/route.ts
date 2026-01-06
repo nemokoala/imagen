@@ -33,10 +33,19 @@ export async function GET(
       );
     }
 
+    // 이전/다음 이미지 가져오기
+    const { prevImages, nextImages } = await imageService.getAdjacentImages(
+      parseInt(id),
+      3,
+      3
+    );
+
     return NextResponse.json(
       {
         success: true,
         image,
+        prevImages,
+        nextImages,
       },
       { status: 200 }
     );

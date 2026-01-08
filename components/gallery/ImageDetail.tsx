@@ -121,11 +121,13 @@ export function ImageDetail({
               <div className="flex justify-center aspect-square relative">
                 <Image
                   src={imageData.imageUrl}
-                  alt={imageData.prompt}
+                  alt={imageData.prompt || "AI 생성 이미지"}
+                  title={imageData.prompt || "AI 생성 이미지"}
                   fill
                   className="max-w-full object-contain rounded-xl shadow-lg transition-transform duration-300"
                   unoptimized
                   priority
+                  itemProp="image"
                 />
               </div>
 

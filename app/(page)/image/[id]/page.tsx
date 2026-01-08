@@ -89,6 +89,11 @@ export async function generateMetadata({
       alternates: {
         canonical: pageUrl,
       },
+      icons: {
+        icon: [
+          { url: absoluteImageUrl, sizes: "1024x1024", type: "image/png" },
+        ],
+      },
       robots: {
         index: true,
         follow: true,
@@ -99,6 +104,12 @@ export async function generateMetadata({
           "max-snippet": -1,
           "max-video-preview": -1,
         },
+      },
+      other: {
+        image_src: absoluteImageUrl,
+        "og:image:secure_url": absoluteImageUrl,
+        "og:image:width": "1024",
+        "og:image:height": "1024",
       },
     };
   } catch (error) {

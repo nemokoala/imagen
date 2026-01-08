@@ -50,13 +50,15 @@ export function createMetadata({
     metadataBase: new URL(siteConfig.url),
     icons: {
       icon: [
+        { url: "/icon.png", sizes: "any" },
+        { url: "/images/favicon.png", type: "image/png", sizes: "32x32" },
         { url: "/favicon.ico", sizes: "any" },
-        { url: "/images/favicon.png", type: "image/png" },
       ],
       apple: [
+        { url: "/icon.png", sizes: "180x180", type: "image/png" },
         { url: "/images/favicon.png", sizes: "180x180", type: "image/png" },
       ],
-      shortcut: "/favicon.ico",
+      shortcut: "/icon.png",
     },
     alternates: {
       canonical: fullUrl,

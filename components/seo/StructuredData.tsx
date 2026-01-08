@@ -44,6 +44,7 @@ export function StructuredData({
         url: imageObject.url,
         name: imageObject.name,
         description: imageObject.description,
+        thumbnailUrl: imageObject.contentUrl,
         ...(imageObject.creator && { creator: imageObject.creator }),
         ...(imageObject.dateCreated && {
           dateCreated:

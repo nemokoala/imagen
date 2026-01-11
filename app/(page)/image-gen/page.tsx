@@ -20,6 +20,7 @@ import {
 } from "@/components/image-gen/RecommendPrompt";
 import { Model } from "@/types/model.interfaces";
 import { downloadImage } from "@/lib/utils";
+import { FetchUtil } from "@/lib/Fetch.util";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
@@ -91,15 +92,9 @@ export default function ImageGenPage() {
       setGenerationProgress("연결 중...");
       setImageUrl(null);
 
-      const response = await fetch("/api/generate-image", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt,
-          model,
-        }),
+      const response = await FetchUtil.postRaw("/api/generate-image", {
+        prompt,
+        model,
       });
 
       if (!response.ok) {
@@ -181,7 +176,7 @@ export default function ImageGenPage() {
       return;
     }
 
-    if (model === Model.Z_IMAGE) {
+    if (model === Model.Z_IMAGE || model === Model.STABLE_DIFFUSION_XL) {
       await handleStreamGenerate();
     } else {
       generateImage({

@@ -4,18 +4,18 @@ import { removeCookie } from "./action";
 // 토큰 갱신 중인지 추적 (동시 다발적 요청 시 중복 갱신 방지)
 let isRefreshing = false;
 
-const handleFetch = async (
+const handleFetchResponse = async (
   endpoint: string,
   options: RequestInit,
   isRetry = false
-): Promise<unknown> => {
-  // 상대 경로 사용 (www/non-www 모두 동일한 도메인으로 요청)
+): Promise<Response> => {
   const apiUrl = "";
 
   const response = await fetch(`${apiUrl}${endpoint}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...options.headers,
     },
     credentials: "include",
   });
@@ -24,12 +24,18 @@ const handleFetch = async (
   if (response.status === 401 && !isRetry) {
     const refreshed = await refreshToken();
     if (refreshed) {
-      // 토큰 갱신 성공 -> 재시도 (isRetry=true로 설정하여 무한 재귀 방지)
-      return handleFetch(endpoint, options, true);
+      return handleFetchResponse(endpoint, options, true);
     }
-    // 토큰 갱신 실패 -> 에러 던지기
   }
 
+  return response;
+};
+
+const handleFetchJSON = async (
+  endpoint: string,
+  options: RequestInit
+): Promise<unknown> => {
+  const response = await handleFetchResponse(endpoint, options);
   const data = await response.json();
 
   if (!response.ok) {
@@ -79,11 +85,19 @@ const refreshToken = async (): Promise<boolean> => {
 
 export const FetchUtil = {
   get: async (endpoint: string) => {
-    return handleFetch(endpoint, { method: "GET" });
+    return handleFetchJSON(endpoint, { method: "GET" });
   },
 
   post: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
-    return handleFetch(endpoint, {
+    return handleFetchJSON(endpoint, {
+      method: "POST",
+      body: JSON.stringify(data),
+      ...options,
+    });
+  },
+
+  postRaw: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    return handleFetchResponse(endpoint, {
       method: "POST",
       body: JSON.stringify(data),
       ...options,
@@ -91,7 +105,7 @@ export const FetchUtil = {
   },
 
   put: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
-    return handleFetch(endpoint, {
+    return handleFetchJSON(endpoint, {
       method: "PUT",
       body: JSON.stringify(data),
       ...options,
@@ -99,7 +113,7 @@ export const FetchUtil = {
   },
 
   patch: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
-    return handleFetch(endpoint, {
+    return handleFetchJSON(endpoint, {
       method: "PATCH",
       body: JSON.stringify(data),
       ...options,
@@ -107,7 +121,7 @@ export const FetchUtil = {
   },
 
   delete: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
-    return handleFetch(endpoint, {
+    return handleFetchJSON(endpoint, {
       method: "DELETE",
       body: JSON.stringify(data),
       ...options,

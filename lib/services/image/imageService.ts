@@ -107,11 +107,30 @@ export const imageService = {
   async generateImageByStableDiffusion(
     request: GenerateImageRequest
   ): Promise<GenerateImageResponse> {
+    const generator = this.generateImageByStableDiffusionStream(request);
+    let result: GenerateImageResponse = {
+      success: false,
+      error: "Unknown error occurred",
+    };
+
+    for await (const step of generator) {
+      if (typeof step !== "string") {
+        result = step;
+      }
+    }
+
+    return result;
+  },
+
+  async *generateImageByStableDiffusionStream(
+    request: GenerateImageRequest
+  ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
     try {
       const { prompt, model, userId } = request;
 
       if (!prompt) {
-        return { success: false, error: "프롬프트가 필요합니다." };
+        yield { success: false, error: "프롬프트가 필요합니다." };
+        return;
       }
 
       const creditSettings = await creditSettingsService.getCreditSettings();
@@ -119,9 +138,11 @@ export const imageService = {
 
       const credit = await authService.getCreditById(userId);
       if (credit.credits < creditCost) {
-        return { success: false, error: "크레딧이 부족합니다." };
+        yield { success: false, error: "크레딧이 부족합니다." };
+        return;
       }
 
+      yield "프롬프트를 번역하고 분석하는 중입니다...";
       let translatedPrompt = prompt;
       try {
         translatedPrompt = await ollamaService.translateText(prompt);
@@ -131,6 +152,7 @@ export const imageService = {
         // 번역 실패는 치명적이지 않으므로 조용히 처리
       }
 
+      yield "이미지 생성 중...";
       const token = btoa(`${process.env.STABLE_DIFFUSION_API_KEY}`);
       const requestBody = {
         prompt: translatedPrompt,
@@ -160,9 +182,11 @@ export const imageService = {
       );
 
       if (!response.ok) {
-        return { success: false, error: "이미지 생성에 실패했습니다." };
+        yield { success: false, error: "이미지 생성에 실패했습니다." };
+        return;
       }
 
+      yield "이미지 데이터를 처리하고 있습니다...";
       await authService.updateUserCredit(userId, -creditCost);
 
       const data = await response.json();
@@ -187,13 +211,13 @@ export const imageService = {
         size: "1024x1024",
       });
 
-      return {
+      yield {
         success: true,
         imageUrl: savedImagePath,
       };
     } catch (error) {
       console.error("Error generating image by Stable Diffusion:", error);
-      return { success: false, error: "이미지 생성에 실패했습니다." };
+      yield { success: false, error: "이미지 생성에 실패했습니다." };
     }
   },
 

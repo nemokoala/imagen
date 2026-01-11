@@ -283,6 +283,24 @@ export const imageService = {
   async generateImageByZImage(
     request: GenerateImageRequest
   ): Promise<GenerateImageResponse> {
+    const generator = this.generateImageByZImageStream(request);
+    let result: GenerateImageResponse = {
+      success: false,
+      error: "Unknown error occurred",
+    };
+
+    for await (const step of generator) {
+      if (typeof step !== "string") {
+        result = step;
+      }
+    }
+
+    return result;
+  },
+
+  async *generateImageByZImageStream(
+    request: GenerateImageRequest
+  ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
     try {
       const {
         prompt,
@@ -297,7 +315,8 @@ export const imageService = {
       } = request;
 
       if (!prompt) {
-        return { success: false, error: "프롬프트가 필요합니다." };
+        yield { success: false, error: "프롬프트가 필요합니다." };
+        return;
       }
 
       const creditSettings = await creditSettingsService.getCreditSettings();
@@ -305,19 +324,20 @@ export const imageService = {
 
       const credit = await authService.getCreditById(userId);
       if (credit.credits < creditCost) {
-        return { success: false, error: "크레딧이 부족합니다." };
+        yield { success: false, error: "크레딧이 부족합니다." };
+        return;
       }
 
       const COMFY_URL = process.env.COMFYUI_URL;
 
+      yield "프롬프트를 번역하고 분석하는 중입니다...";
       let translatedPrompt = prompt;
       try {
         translatedPrompt = await ollamaService.translateText(prompt);
         console.log("translatedPrompt", translatedPrompt);
       } catch {
         console.error("ollama service error");
-        // Ollama 서비스가 사용 불가능한 경우 원본 프롬프트 사용 (에러 로그 제거)
-        // 번역 실패는 치명적이지 않으므로 조용히 처리
+        // Ollama 서비스가 사용 불가능한 경우 원본 프롬프트 사용
       }
 
       console.log("[1/6] 요청 받음:", {
@@ -330,6 +350,7 @@ export const imageService = {
         seed,
       });
 
+      yield "이미지 생성 워크플로우를 구성하는 중입니다...";
       // workflow.json 파일 읽기
       const workflowPath = join(
         process.cwd(),
@@ -375,10 +396,9 @@ export const imageService = {
         steps: wf["3"].inputs.steps,
         cfg: wf["3"].inputs.cfg,
         seed: wf["3"].inputs.seed,
-        unet: wf["16"]?.inputs?.unet_name,
-        vae: wf["17"]?.inputs?.vae_name,
       });
 
+      yield "서버에 작업을 등록하고 있습니다...";
       // 4) ComfyUI에 작업 등록
       console.log("[3/6] ComfyUI에 작업 등록 중...");
       const promptRes = await fetch(`${COMFY_URL}/api/prompt`, {
@@ -392,15 +412,9 @@ export const imageService = {
 
       const responseData = await promptRes.json();
       console.log("[3/6] ComfyUI 응답:", JSON.stringify(responseData, null, 2));
-      console.log("[3/6] 응답 상태:", promptRes.status, promptRes.statusText);
 
       if (!promptRes.ok) {
-        // 노드 에러 정보 출력
         if (responseData.node_errors) {
-          console.error(
-            "[3/6] 노드 에러 상세:",
-            JSON.stringify(responseData.node_errors, null, 2)
-          );
           const errorNodes = Object.keys(responseData.node_errors);
           const errorMessages = errorNodes.map((nodeId) => {
             const errors = responseData.node_errors[nodeId].errors;
@@ -412,31 +426,23 @@ export const imageService = {
           });
           throw new Error(
             `ComfyUI API 오류: ${promptRes.status}\n` +
-              `에러 노드: ${errorMessages.join("\n")}\n` +
-              `상세: ${JSON.stringify(responseData.node_errors, null, 2)}`
+              `에러 노드: ${errorMessages.join("\n")}`
           );
         }
-        throw new Error(
-          `ComfyUI API 오류: ${promptRes.status} - ${JSON.stringify(
-            responseData
-          )}`
-        );
+        throw new Error(`ComfyUI API 오류: ${promptRes.status}`);
       }
 
-      // ComfyUI 응답 구조 확인: prompt_id는 배열의 첫 번째 요소일 수도 있음
       const prompt_id =
         responseData.prompt_id ||
         (Array.isArray(responseData) ? responseData[0]?.prompt_id : null);
 
       if (!prompt_id) {
-        console.error("[3/6] 응답 데이터:", responseData);
-        throw new Error(
-          `prompt_id를 찾을 수 없습니다. 응답: ${JSON.stringify(responseData)}`
-        );
+        throw new Error("prompt_id를 찾을 수 없습니다.");
       }
 
       console.log("[4/6] 작업 등록 완료, prompt_id:", prompt_id);
 
+      yield "이미지가 생성되는 중입니다. 잠시만 기다려주세요...";
       // 5) 결과 나올 때까지 폴링
       console.log("[5/6] 결과 대기 중 (폴링 시작)...");
       type HistoryResponse = Record<
@@ -456,18 +462,21 @@ export const imageService = {
       >;
       let history: HistoryResponse | undefined;
       let pollCount = 0;
-      const maxPolls = 300; // 최대 5분 대기 (300초)
+      const maxPolls = 300; // 최대 5분 대기
 
       while (pollCount < maxPolls) {
         pollCount++;
+        
+        // 사용자에게 진행 상태 업데이트 (매 2초 또는 적절한 간격으로)
+        if (pollCount % 2 === 0) { // 약 2초마다
+            yield `이미지 생성 중... (${pollCount}초 경과)`;
+        }
+
         const hRes = await fetch(`${COMFY_URL}/api/history/${prompt_id}`, {
           method: "GET",
         });
 
         if (!hRes.ok) {
-          console.error(
-            `[5/6] History API 오류: ${hRes.status} ${hRes.statusText}`
-          );
           await new Promise((r) => setTimeout(r, 1000));
           continue;
         }
@@ -475,27 +484,19 @@ export const imageService = {
         const historyData = (await hRes.json()) as HistoryResponse;
         history = historyData;
 
-        // 응답 구조 확인
-        if (pollCount === 1) {
-          console.log("[5/6] History 응답 구조:", Object.keys(historyData));
-        }
         if (historyData[prompt_id]?.outputs) {
           console.log(`[5/6] 결과 수신 완료 (${pollCount}번째 폴링)`);
           break;
         }
 
-        if (pollCount % 5 === 0) {
-          console.log(`[5/6] 진행 중... (${pollCount}번째 확인)`);
-        }
-
-        // 너무 자주 때리는 거 방지
         await new Promise((r) => setTimeout(r, 1000));
       }
 
       if (pollCount >= maxPolls || !history) {
-        throw new Error(`타임아웃: ${maxPolls}초 동안 결과를 받지 못했습니다.`);
+        throw new Error(`타임아웃: 결과를 받지 못했습니다.`);
       }
 
+      yield "생성된 이미지를 처리하고 저장하는 중입니다...";
       // 6) SaveImage 노드(9) 출력에서 이미지 정보 추출
       const output = history[prompt_id]?.outputs?.["9"];
       if (!output) {
@@ -503,16 +504,8 @@ export const imageService = {
       }
       const images = output.images;
       const first = images[0];
-      console.log("[6/6] 이미지 정보 추출 완료:", {
-        imageCount: images.length,
-        firstImage: {
-          filename: first.filename,
-          subfolder: first.subfolder,
-          type: first.type,
-        },
-      });
 
-      // ComfyUI 이미지 URL에서 이미지 다운로드
+      // ComfyUI 이미지 URL
       const imageUrl = `${COMFY_URL}/view?filename=${encodeURIComponent(
         first.filename
       )}&subfolder=${encodeURIComponent(
@@ -539,7 +532,7 @@ export const imageService = {
 
       console.log("✅ 응답 전송 완료");
 
-      return {
+      yield {
         success: true,
         imageUrl: savedImagePath,
       };
@@ -549,7 +542,7 @@ export const imageService = {
         error instanceof Error
           ? error.message
           : "이미지 생성 중 오류가 발생했습니다.";
-      return {
+      yield {
         success: false,
         error: errorMessage,
       };

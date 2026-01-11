@@ -44,6 +44,74 @@ export async function POST(req: NextRequest) {
     const cookieStore = await cookies();
     const userId = await authService.getUserIdFromCookie(cookieStore);
 
+    // Z_IMAGE 모델인 경우 스트림 응답 처리 (SSE)
+    if (model === Model.Z_IMAGE) {
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            const generator = imageService.generateImageByZImageStream({
+              prompt,
+              model,
+              userId,
+            });
+
+            for await (const chunk of generator) {
+              if (typeof chunk === "string") {
+                // 진행 상태 전송
+                const payload = JSON.stringify({
+                  status: "progress",
+                  message: chunk,
+                });
+                controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+              } else {
+                // 최종 결과 전송
+                if (chunk.success) {
+                  const payload = JSON.stringify({
+                    status: "complete",
+                    ...chunk,
+                  });
+                  controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+
+                  // Discord 로그 전송
+                  const resetCount = MAX_TOTAL_REQUESTS - totalRequestCount;
+                  discordService.sendLog(
+                    `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${chunk.imageUrl}`
+                  );
+                } else {
+                  const payload = JSON.stringify({
+                    status: "error",
+                    message: chunk.error,
+                  });
+                  controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+                }
+              }
+            }
+          } catch (error: unknown) {
+            console.error("Stream generation error:", error);
+            const errorMessage =
+              error instanceof Error ? error.message : "Unknown stream error";
+            const payload = JSON.stringify({
+              status: "error",
+              message: errorMessage,
+            });
+            controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+          } finally {
+            controller.close();
+          }
+        },
+      });
+
+      return new NextResponse(stream, {
+        headers: {
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+        },
+      });
+    }
+
+    // 기존 로직 (다른 모델들)
     let result;
 
     if (model === Model.DALL_E_3) {
@@ -64,13 +132,8 @@ export async function POST(req: NextRequest) {
         model,
         userId,
       });
-    } else if (model === Model.Z_IMAGE) {
-      result = await imageService.generateImageByZImage({
-        prompt,
-        model,
-        userId,
-      });
     } else {
+      // Stable Diffusion
       result = await imageService.generateImageByStableDiffusion({
         prompt,
         model,

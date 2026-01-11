@@ -24,6 +24,11 @@ import { downloadImage } from "@/lib/utils";
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [generationProgress, setGenerationProgress] = useState<string | null>(
+    null
+  );
+  const [isStreaming, setIsStreaming] = useState(false);
+
   const queryClient = useQueryClient();
   const resultImageRef = useRef<HTMLDivElement>(null);
   const recommendPromptRef = useRef<RecommendPromptRef>(null);
@@ -57,27 +62,108 @@ export default function ImageGenPage() {
     setManualModel(value);
   };
 
-  const { mutate: generateImage, isPending } = useGenerateImageMutation(
-    (data) => {
-      setImageUrl(data.imageUrl!);
-      toast.success("이미지 생성 완료!", {
-        description: "AI가 이미지를 생성했습니다.",
+  const { mutate: generateImage, isPending: isMutationPending } =
+    useGenerateImageMutation(
+      (data) => {
+        setImageUrl(data.imageUrl!);
+        toast.success("이미지 생성 완료!", {
+          description: "AI가 이미지를 생성했습니다.",
+        });
+        recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
+        resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
+        queryClient.invalidateQueries({ queryKey: ["credit"] });
+        queryClient.invalidateQueries({
+          queryKey: ["galleryImagesInfinite"],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["userImagesInfinite"],
+        });
+      },
+      (error) => {
+        toast.error(error.message);
+        queryClient.invalidateQueries({ queryKey: ["credit"] });
+      }
+    );
+
+  const handleStreamGenerate = async () => {
+    try {
+      setIsStreaming(true);
+      setGenerationProgress("연결 중...");
+      setImageUrl(null);
+
+      const response = await fetch("/api/generate-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          model,
+        }),
       });
-      recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
-      resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
-      queryClient.invalidateQueries({ queryKey: ["credit"] });
-      queryClient.invalidateQueries({
-        queryKey: ["galleryImagesInfinite"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["userImagesInfinite"],
-      });
-    },
-    (error) => {
-      toast.error(error.message);
-      queryClient.invalidateQueries({ queryKey: ["credit"] });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      if (!response.body) {
+        throw new Error("Response body is empty");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        buffer += chunk;
+
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() || ""; // Incomplete line remains in buffer
+
+        for (const line of lines) {
+          if (line.startsWith("data: ")) {
+            const dataStr = line.slice(6);
+            try {
+              const data = JSON.parse(dataStr);
+
+              if (data.status === "progress") {
+                setGenerationProgress(data.message);
+              } else if (data.status === "complete") {
+                setImageUrl(data.imageUrl);
+                setGenerationProgress(null);
+                toast.success("이미지 생성 완료!", {
+                  description: "AI가 이미지를 생성했습니다.",
+                });
+                recommendPromptRef.current?.refresh();
+                resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
+                queryClient.invalidateQueries({ queryKey: ["credit"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["galleryImagesInfinite"],
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ["userImagesInfinite"],
+                });
+              } else if (data.status === "error") {
+                throw new Error(data.message);
+              }
+            } catch (e) {
+              console.error("JSON parse error", e);
+            }
+          }
+        }
+      }
+    } catch (error: any) {
+      toast.error(error.message || "이미지 생성 중 오류가 발생했습니다.");
+      setGenerationProgress(null);
+    } finally {
+      setIsStreaming(false);
+      setGenerationProgress(null);
     }
-  );
+  };
 
   const handleGenerate = async () => {
     if (!prompt.trim()) {
@@ -95,16 +181,23 @@ export default function ImageGenPage() {
       return;
     }
 
-    generateImage({
-      prompt,
-      model,
-    });
+    if (model === Model.Z_IMAGE) {
+      await handleStreamGenerate();
+    } else {
+      generateImage({
+        prompt,
+        model,
+      });
+    }
   };
 
   const handleRegenerate = () => {
     setImageUrl(null);
+    console.log("handleRegenerate");
     handleGenerate();
   };
+
+  const isPending = isMutationPending || isStreaming;
 
   return (
     <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 p-4 gap-4 md:gap-8 md:p-8">
@@ -161,7 +254,7 @@ export default function ImageGenPage() {
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    생성 중...
+                    {generationProgress || "생성 중..."}
                   </>
                 ) : (
                   <>
@@ -220,15 +313,28 @@ export default function ImageGenPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-700/70 dark:to-blue-700/70 flex items-center justify-center mb-4">
-                  <Sparkles className="h-12 w-12 text-purple-400" />
-                </div>
-                <p className="text-lg font-medium mb-2">
-                  이미지가 생성되면 여기에 표시됩니다
-                </p>
-                <p className="text-sm text-gray-400">
-                  프롬프트를 입력하고 생성 버튼을 눌러보세요
-                </p>
+                {isPending && generationProgress ? (
+                  <div className="flex flex-col items-center gap-2 mb-4">
+                    <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
+                    <p className="text-lg font-medium text-purple-600 animate-pulse">
+                      {generationProgress}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-700/70 dark:to-blue-700/70 flex items-center justify-center mb-4">
+                    <Sparkles className="h-12 w-12 text-purple-400" />
+                  </div>
+                )}
+                {!isPending && (
+                  <>
+                    <p className="text-lg font-medium mb-2">
+                      이미지가 생성되면 여기에 표시됩니다
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      프롬프트를 입력하고 생성 버튼을 눌러보세요
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </CardContent>

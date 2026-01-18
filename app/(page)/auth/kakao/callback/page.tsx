@@ -47,7 +47,7 @@ function KakaoCallbackContent() {
       });
       setTimeout(() => {
         router.replace("/");
-      }, 1000);
+      }, 500);
     }
   }, [kakaoLogin, userInfo, error, setUser, router]);
 

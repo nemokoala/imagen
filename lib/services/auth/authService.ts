@@ -366,17 +366,7 @@ export const authService = {
       where: { kakaoId },
     });
 
-    if (user) {
-      // 기존 사용자: 프로필 정보 업데이트
-      user = await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          email,
-          nickname,
-          profileImageUrl,
-        },
-      });
-    } else {
+    if (!user) {
       // 새 사용자: 이메일 중복 확인
       const existingUser = await prisma.user.findUnique({
         where: { email },
@@ -384,14 +374,11 @@ export const authService = {
 
       if (existingUser) {
         // 이미 같은 이메일로 가입된 사용자가 있으면 카카오 ID 연결
-        user = await prisma.user.update({
-          where: { id: existingUser.id },
-          data: {
-            kakaoId,
-            provider: "kakao",
-            profileImageUrl: profileImageUrl || existingUser.profileImageUrl,
-          },
-        });
+        throw new ApiError(
+          "다른 방법으로 가입된 이메일입니다.",
+          409,
+          "EMAIL_ALREADY_EXISTS",
+        );
       } else {
         // 닉네임 중복 확인 및 처리
         let finalNickname = nickname;

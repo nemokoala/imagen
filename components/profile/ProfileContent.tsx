@@ -81,13 +81,13 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
     >
       <div className="container flex flex-col items-center mx-auto px-4 pt-8 max-w-6xl">
         {/* 프로필 헤더 */}
-        <Card className="flex flex-col justify-center items-center min-w-2/3 w-fit p-8 mb-8 bg-background">
+        <Card className="flex flex-col justify-center items-center p-8 mb-8 bg-background gap-4 w-[calc(100%-2rem)] max-w-sm">
           <ProfileAvatar
             profileImageUrl={userInfo.profileImageUrl || ""}
             nickname={userInfo.nickname || ""}
             size="large"
           />
-          <h1 className="text-2xl font-bold text-foreground mb-2 text-center">
+          <h1 className="text-2xl font-bold text-foreground mb-1 text-center">
             {userInfo.nickname}
           </h1>
           {isOwnProfile && (

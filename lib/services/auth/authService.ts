@@ -4,7 +4,7 @@ import { ApiError } from "@/lib/errors/AppError";
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { User } from "@/lib/generated/prisma";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
 
 interface CreateUserData {
@@ -433,6 +433,33 @@ export const authService = {
     const { password: _, ...userWithoutPassword } = user;
     return { ...userWithoutPassword, refreshExpiresAt };
   },
+  async deleteProfileImage(imageUrl: string): Promise<void> {
+    try {
+      // /api/uploads/profiles/... 형식인지 확인
+      const uploadPathPrefix = "/api/uploads/profiles/";
+      if (!imageUrl.startsWith(uploadPathPrefix)) {
+        return;
+      }
+
+      // 파일명 추출
+      const relativePath = imageUrl.substring(uploadPathPrefix.length); // userId/filename
+
+      const uploadBaseDir =
+        process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+      const filePath = join(uploadBaseDir, "profiles", relativePath);
+
+      // 파일 삭제
+      await unlink(filePath).catch((error) => {
+        // 파일이 없는 경우는 무시
+        if (error.code !== "ENOENT") {
+          console.error("Failed to delete old profile image:", error);
+        }
+      });
+    } catch (error) {
+      console.error("Error in deleteProfileImage:", error);
+    }
+  },
+
   async updateUserProfile(
     userId: number,
     data: { nickname?: string; profileImageUrl?: string },
@@ -455,6 +482,21 @@ export const authService = {
           "NICKNAME_EXISTS",
         );
       }
+    }
+
+    // 기존 사용자 정보 조회 (프로필 이미지 변경 시 기존 이미지 삭제를 위해)
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { profileImageUrl: true },
+    });
+
+    if (
+      currentUser?.profileImageUrl &&
+      data.profileImageUrl &&
+      currentUser.profileImageUrl !== data.profileImageUrl
+    ) {
+      // 기존 이미지가 있고, 새 이미지로 변경되는 경우 기존 이미지 삭제
+      await this.deleteProfileImage(currentUser.profileImageUrl);
     }
 
     const updatedUser = await prisma.user.update({

@@ -36,7 +36,7 @@ export function ProfileEditDialog({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { mutate: updateProfile, isPending } = useUpdateProfile(
-    (updatedUser) => {
+    () => {
       onOpenChange(false);
       // Optional: Success feedback
     },
@@ -87,7 +87,7 @@ export function ProfileEditDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-background">
+      <DialogContent className="bg-background">
         <DialogHeader>
           <DialogTitle>프로필 수정</DialogTitle>
           <DialogDescription>
@@ -141,7 +141,7 @@ export function ProfileEditDialog({
             >
               취소
             </Button>
-            <Button type="submit" disabled={isPending}>
+            <Button type="submit" variant="gradient" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               저장
             </Button>

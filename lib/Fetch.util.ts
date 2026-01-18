@@ -7,16 +7,22 @@ let isRefreshing = false;
 const handleFetchResponse = async (
   endpoint: string,
   options: RequestInit,
-  isRetry = false
+  isRetry = false,
 ): Promise<Response> => {
   const apiUrl = "";
 
+  const headers = {
+    "Content-Type": "application/json",
+    ...options.headers,
+  } as Record<string, string>;
+
+  if (options.body instanceof FormData) {
+    delete headers["Content-Type"];
+  }
+
   const response = await fetch(`${apiUrl}${endpoint}`, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
     credentials: "include",
   });
 
@@ -33,7 +39,7 @@ const handleFetchResponse = async (
 
 const handleFetchJSON = async (
   endpoint: string,
-  options: RequestInit
+  options: RequestInit,
 ): Promise<unknown> => {
   const response = await handleFetchResponse(endpoint, options);
   const data = await response.json();
@@ -89,41 +95,46 @@ export const FetchUtil = {
   },
 
   post: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    const isFormData = data instanceof FormData;
     return handleFetchJSON(endpoint, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: isFormData ? (data as BodyInit) : JSON.stringify(data),
       ...options,
     });
   },
 
   postRaw: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    const isFormData = data instanceof FormData;
     return handleFetchResponse(endpoint, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: isFormData ? (data as BodyInit) : JSON.stringify(data),
       ...options,
     });
   },
 
   put: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    const isFormData = data instanceof FormData;
     return handleFetchJSON(endpoint, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: isFormData ? (data as BodyInit) : JSON.stringify(data),
       ...options,
     });
   },
 
   patch: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    const isFormData = data instanceof FormData;
     return handleFetchJSON(endpoint, {
       method: "PATCH",
-      body: JSON.stringify(data),
+      body: isFormData ? (data as BodyInit) : JSON.stringify(data),
       ...options,
     });
   },
 
   delete: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {
+    const isFormData = data instanceof FormData;
     return handleFetchJSON(endpoint, {
       method: "DELETE",
-      body: JSON.stringify(data),
+      body: isFormData ? (data as BodyInit) : JSON.stringify(data),
       ...options,
     });
   },

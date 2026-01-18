@@ -25,7 +25,7 @@ export const authService = {
     if (!email || !password || !nickname) {
       throw new ApiError(
         "이메일, 비밀번호, 닉네임은 필수 입력 항목입니다.",
-        400
+        400,
       );
     }
 
@@ -56,7 +56,7 @@ export const authService = {
   },
 
   async register(
-    data: CreateUserData
+    data: CreateUserData,
   ): Promise<Omit<CreateUserData, "password">> {
     // 데이터 검증
     await this.validateRegisterData(data);
@@ -103,7 +103,7 @@ export const authService = {
       throw new ApiError(
         "카카오 로그인으로 가입된 계정입니다. 카카오 로그인을 사용해주세요.",
         400,
-        "KAKAO_ACCOUNT"
+        "KAKAO_ACCOUNT",
       );
     }
 
@@ -113,7 +113,7 @@ export const authService = {
       throw new ApiError(
         "비밀번호가 일치하지 않습니다.",
         400,
-        "INVALID_PASSWORD"
+        "INVALID_PASSWORD",
       );
     }
 
@@ -124,13 +124,13 @@ export const authService = {
     const accessToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET as string,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" },
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET as string,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     const cookieStore = await cookies();
@@ -173,7 +173,7 @@ export const authService = {
   },
 
   async getUserIdFromCookie(
-    cookieStore: Awaited<ReturnType<typeof cookies>>
+    cookieStore: Awaited<ReturnType<typeof cookies>>,
   ): Promise<number> {
     const accessToken = cookieStore.get("accessToken")?.value;
 
@@ -188,7 +188,7 @@ export const authService = {
     try {
       const decoded = jwt.verify(
         refreshToken,
-        process.env.JWT_SECRET as string
+        process.env.JWT_SECRET as string,
       ) as {
         userId: number;
       };
@@ -197,7 +197,7 @@ export const authService = {
       throw new ApiError(
         "유효하지 않은 리프레시 토큰입니다.",
         401,
-        "INVALID_REFRESH_TOKEN"
+        "INVALID_REFRESH_TOKEN",
       );
     }
   },
@@ -235,7 +235,7 @@ export const authService = {
 
   async login(
     email: string,
-    password: string
+    password: string,
   ): Promise<Omit<User, "password"> & { refreshExpiresAt: Date }> {
     // 로그인 데이터 검증
     await this.validateLoginData({ email, password });
@@ -262,7 +262,7 @@ export const authService = {
 
   async saveProfileImageToFileSystem(
     file: File,
-    userId: number
+    userId: number,
   ): Promise<string> {
     try {
       // File 객체에서 ArrayBuffer로 변환
@@ -277,7 +277,7 @@ export const authService = {
       if (!allowedExtensions.includes(fileExtension)) {
         throw new ApiError(
           "지원되지 않는 이미지 형식입니다. (jpg, jpeg, png, gif, webp만 지원)",
-          400
+          400,
         );
       }
 
@@ -357,7 +357,7 @@ export const authService = {
       throw new ApiError(
         "카카오 로그인 정보가 올바르지 않습니다.",
         400,
-        "INVALID_KAKAO_DATA"
+        "INVALID_KAKAO_DATA",
       );
     }
 
@@ -432,5 +432,40 @@ export const authService = {
     // 비밀번호를 제외한 사용자 정보 반환
     const { password: _, ...userWithoutPassword } = user;
     return { ...userWithoutPassword, refreshExpiresAt };
+  },
+  async updateUserProfile(
+    userId: number,
+    data: { nickname?: string; profileImageUrl?: string },
+  ): Promise<Omit<User, "password">> {
+    // 닉네임 중복 확인 (본인 닉네임 제외)
+    if (data.nickname) {
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          nickname: data.nickname,
+          NOT: {
+            id: userId,
+          },
+        },
+      });
+
+      if (existingUser) {
+        throw new ApiError(
+          "이미 사용 중인 닉네임입니다.",
+          409,
+          "NICKNAME_EXISTS",
+        );
+      }
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(data.nickname && { nickname: data.nickname }),
+        ...(data.profileImageUrl && { profileImageUrl: data.profileImageUrl }),
+      },
+    });
+
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    return userWithoutPassword;
   },
 };

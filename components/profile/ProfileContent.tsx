@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { useGetUserInfo, useGetPublicUserById } from "@/queries/auth/queries";
 import { Layout } from "@/components/layout/Layout";
@@ -12,6 +12,7 @@ import Link from "next/link";
 import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery";
 import { useGetUserImagesInfiniteQuery } from "@/queries/image/queries";
 import { ProfileAvatar } from "../auth/ProfileAvatar";
+import { ProfileEditDialog } from "./ProfileEditDialog";
 
 interface ProfileContentProps {
   targetUserId?: number | null;
@@ -19,6 +20,7 @@ interface ProfileContentProps {
 
 export function ProfileContent({ targetUserId }: ProfileContentProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const { user: storeUser, isLoading: storeLoading } = useUserStore();
 
   // 본인 프로필인지 확인
@@ -89,7 +91,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
             {userInfo.nickname}
           </h1>
           {isOwnProfile && (
-            <Button variant="gradient">
+            <Button variant="gradient" onClick={() => setIsEditOpen(true)}>
               <Pencil className="w-4 h-4" />
               프로필 수정
             </Button>
@@ -135,6 +137,13 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
             }
           />
         </div>
+      )}
+      {ownUserInfo && isOwnProfile && (
+        <ProfileEditDialog
+          user={ownUserInfo}
+          open={isEditOpen}
+          onOpenChange={setIsEditOpen}
+        />
       )}
     </Layout.Content>
   );

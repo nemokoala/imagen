@@ -23,7 +23,7 @@ export function WelcomeTitle() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={cn(
-        "mx-auto px-6 py-12 w-full rounded-[2rem] mb-2 relative shadow-2xl overflow-hidden group",
+        "mx-auto px-6 py-10 w-full rounded-[2rem] relative shadow-2xl overflow-hidden group mt-2",
         "bg-gradient-to-br from-white/90 via-purple-50/50 to-blue-50/90 dark:from-gray-900/90 dark:via-gray-800/50 dark:to-gray-900/90",
         "backdrop-blur-3xl border border-white/40 dark:border-white/10",
         isLoading ? "opacity-0" : "",
@@ -79,9 +79,9 @@ export function WelcomeTitle() {
             <Button
               variant="gradient"
               size="lg"
-              className="h-14 px-8 text-lg text-foreground font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-none shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
+              className="text-white h-14 px-8 text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-none shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
             >
-              <Wand2 className="w-5 h-5 mr-2 animate-pulse text-foreground" />
+              <Wand2 className="w-5 h-5 mr-2 animate-pulse text-white" />
               무료로 시작하기
             </Button>
           </Link>

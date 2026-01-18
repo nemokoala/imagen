@@ -50,7 +50,7 @@ export function InfiniteImageGallery({
   // 모든 페이지의 이미지를 하나의 배열로 합치기
   const images = useMemo(
     () => data?.pages.flatMap((page) => page.images) || [],
-    [data?.pages]
+    [data?.pages],
   );
   const totalImages = data?.pages[0]?.totalCount || 0;
 
@@ -73,7 +73,7 @@ export function InfiniteImageGallery({
       // 마운트 시점에만 크기 측정 (이전 값과 다를 때만 업데이트)
       const measuredWidth = node.clientWidth;
       setContainerWidth((prev) =>
-        measuredWidth !== prev ? measuredWidth : prev
+        measuredWidth !== prev ? measuredWidth : prev,
       );
     }
   }, []); // 빈 의존성 배열로 한 번만 생성
@@ -83,7 +83,7 @@ export function InfiniteImageGallery({
     if (containerRef.current) {
       const measuredWidth = containerRef.current.clientWidth;
       setContainerWidth((prev) =>
-        measuredWidth !== prev ? measuredWidth : prev
+        measuredWidth !== prev ? measuredWidth : prev,
       );
     } else if (width > 0) {
       setContainerWidth((prev) => (width !== prev ? width : prev));
@@ -145,7 +145,7 @@ export function InfiniteImageGallery({
         root: scrollEl,
         rootMargin: "200px", // 뷰포트 끝에서 200px 전에 미리 로드
         threshold: 0,
-      }
+      },
     );
 
     observer.observe(sentinel);
@@ -178,6 +178,7 @@ export function InfiniteImageGallery({
         height: `${containerHeight}px`,
         width: "100%",
         position: "relative",
+        marginTop: "0.5rem",
       }}
     >
       {rowVirtualizer.getVirtualItems().map((virtualRow) => {

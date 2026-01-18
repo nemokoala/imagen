@@ -28,7 +28,7 @@ export default function Home() {
   }, [needLogin, removeParam, logout]);
 
   return (
-    <Layout.Content className="h-[calc(100dvh-60px)] p-2">
+    <Layout.Content className="h-[calc(100dvh-60px)] px-2">
       <WelcomeTitle />
       <InfiniteImageGallery
         onScrollChange={handleScrollChange}

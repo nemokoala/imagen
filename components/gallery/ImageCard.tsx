@@ -72,6 +72,7 @@ export function ImageCard({ image }: ImageCardProps) {
               className="h-8 w-8 p-0 bg-background/90 backdrop-blur-sm border-0 shadow-lg"
               onClick={(e) => {
                 e.stopPropagation();
+                e.preventDefault();
                 downloadImage(image.imageUrl, image.prompt);
               }}
             >

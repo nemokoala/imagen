@@ -57,11 +57,17 @@ jobs:
           set +a
           npm run build
 
-      - name: Copy static for standalone
+      - name: Copy static files and public folder for standalone
         working-directory: ${{ github.workspace }}
         run: |
+          # .next/static을 standalone/.next/static으로 복사
           mkdir -p .next/standalone/.next
           rsync -a .next/static .next/standalone/.next/
+          
+          # public 폴더를 standalone/public으로 복사
+          rsync -a public .next/standalone/ || true
+          
+          echo "✅ Static files and public folder copied to standalone"
 
       # 🔸 외부 uploads 디렉토리 생성 (없을 경우)
       - name: Ensure uploads directory exists

@@ -4,6 +4,10 @@ module.exports = {
       name: "imagen-app",
       cwd: process.env.APP_CWD || "/home/koala/imagen", // ← 기본값은 유지 (fallback)
       script: "node",
+      instances: "max", 
+      exec_mode: "cluster",
+      kill_timeout: 3000,
+      wait_ready: true,
       args: ".next/standalone/server.js",
       env_production: {
         NODE_ENV: "production",

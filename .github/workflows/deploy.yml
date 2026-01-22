@@ -74,13 +74,20 @@ jobs:
           mkdir -p "$UPLOAD_DIR"
           echo "✅ Uploads directory: $UPLOAD_DIR"
 
-      - name: Restart PM2 process
+      - name: Reload PM2 process (Zero Downtime)
         working-directory: ${{ github.workspace }}
         run: |
           set -a
           . ~/.env.next || true
           set +a
-          export APP_CWD="$GITHUB_WORKSPACE"
-          pm2 delete imagen-app || true
-          pm2 startOrReload "$GITHUB_WORKSPACE/ecosystem.config.js" --env production --update-env
+          
+          echo "🔄 PM2 Reloading..."
+          
+          # 1. 프로세스가 떠 있으면 Reload(무중단), 없으면 Start
+          # --update-env: 환경변수가 바뀌었을 경우를 대비해 갱신
+          pm2 reload ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
+
+          # 2. 설정 저장 (재부팅 대비)
           pm2 save
+          
+          echo "✅ Deploy Complete!"

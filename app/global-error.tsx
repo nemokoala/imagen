@@ -12,7 +12,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     // 글로벌 에러 로깅
-    console.error('Global application error:', error);
+    console.error('Global application error: ', error);
 
     // 청크 로드 에러 감지 및 자동 새로고침
     const handler = (event: ErrorEvent) => {

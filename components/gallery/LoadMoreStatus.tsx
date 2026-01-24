@@ -28,7 +28,7 @@ export function LoadMoreStatus({
       <div
         ref={loadMoreRef}
         style={{
-          // backgroundColor: "red",
+          backgroundColor: "transparent",
           position: "absolute",
           height: `${rowHeight}px`,
           bottom: `${rowHeight * 3}px`, // 여유 있는 탐지 높이

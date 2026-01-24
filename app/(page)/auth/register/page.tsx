@@ -186,7 +186,7 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <KakaoLoginButton disabled={loading} />
+              <KakaoLoginButton disabled={loading} isRegister />
 
               <div className="text-sm text-muted-foreground text-center">
                 이미 계정이 있으신가요?{" "}

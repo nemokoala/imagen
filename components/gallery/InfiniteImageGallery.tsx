@@ -17,7 +17,7 @@ import { useScrollObserver } from "@/hooks/use-scroll-observer";
 interface InfiniteImageGalleryProps {
   userId?: number;
   onScrollChange?: (scrollTop: number) => void;
-  scrollElementRef?: React.RefObject<HTMLDivElement>;
+  scrollElementRef?: React.RefObject<HTMLDivElement | null>;
   maintainScrollPosition?: boolean;
 }
 
@@ -117,7 +117,7 @@ export function InfiniteImageGallery({
     initialOffset: maintainScrollPosition ? scrollPos : undefined,
   });
 
-  useScrollObserver(scrollElement as React.RefObject<HTMLDivElement>, {
+  useScrollObserver(scrollElement, {
     onScrollChange: (scrollTop) => {
       setScrollPos(scrollTop);
     },

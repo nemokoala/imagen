@@ -14,7 +14,7 @@ interface UseScrollObserverOptions {
  */
 export function useScrollObserver<T extends HTMLElement = HTMLElement>(
   scrollRef: RefObject<T | null>,
-  options: UseScrollObserverOptions = {}
+  options: UseScrollObserverOptions = {},
 ) {
   const { onScrollChange, passive = true } = options;
 
@@ -30,5 +30,5 @@ export function useScrollObserver<T extends HTMLElement = HTMLElement>(
     return () => {
       scrollElement.removeEventListener("scroll", handleScroll);
     };
-  }, [scrollRef, onScrollChange, passive]);
+  }, [scrollRef, scrollRef.current, onScrollChange, passive]);
 }

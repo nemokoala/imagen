@@ -132,9 +132,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
         <div className="px-2 pb-8 w-full max-w-6xl">
           <InfiniteImageGallery
             userId={userInfo?.id}
-            scrollElementRef={
-              scrollContainerRef as React.RefObject<HTMLDivElement>
-            }
+            scrollElementRef={scrollContainerRef}
           />
         </div>
       )}

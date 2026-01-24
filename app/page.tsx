@@ -5,7 +5,7 @@ import { WelcomeTitle } from "@/components/home/WelcomeTitle";
 import { Layout } from "@/components/layout/Layout";
 import { ImageCreatButton } from "@/components/home/ImageCreatButton";
 import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { useUserStore } from "@/stores/userStore";
@@ -15,6 +15,7 @@ export default function Home() {
     threshold: 100,
   });
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const { logout } = useUserStore();
   const { getParam, removeParam } = useUrlParams();
   const needLogin = getParam("needLogin");
@@ -28,11 +29,15 @@ export default function Home() {
   }, [needLogin, removeParam, logout]);
 
   return (
-    <Layout.Content className="h-[calc(100dvh-60px)] px-2">
+    <Layout.Content
+      className="h-[calc(100dvh-60px)] px-2"
+      ref={scrollContainerRef}
+    >
       <WelcomeTitle />
       <InfiniteImageGallery
         onScrollChange={handleScrollChange}
         maintainScrollPosition={true}
+        scrollElementRef={scrollContainerRef}
       />
       <ImageCreatButton isVisible={isVisible} />
     </Layout.Content>

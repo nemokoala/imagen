@@ -15,6 +15,7 @@ export interface GeneratedImage {
 export interface GenerateImageRequest {
   prompt: string;
   model: string;
+  categories?: string[]; // 카테고리 slug 배열 (선택)
 }
 
 export interface GenerateImageResponse {

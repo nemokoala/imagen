@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import debounce from "lodash/debounce";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -18,17 +19,20 @@ import {
   RecommendPrompt,
   RecommendPromptRef,
 } from "@/components/image-gen/RecommendPrompt";
+import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { downloadImage } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
+import { useSuggestCategories } from "@/queries/category/queries";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [generationProgress, setGenerationProgress] = useState<string | null>(
-    null
+    null,
   );
   const [isStreaming, setIsStreaming] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
   const queryClient = useQueryClient();
   const resultImageRef = useRef<HTMLDivElement>(null);
@@ -48,9 +52,9 @@ export default function ImageGenPage() {
       stableHealthCheck?.healthy
         ? Model.STABLE_DIFFUSION_XL
         : zimageHealthCheck?.healthy
-        ? Model.Z_IMAGE
-        : Model.DALL_E_3,
-    [stableHealthCheck?.healthy, zimageHealthCheck?.healthy]
+          ? Model.Z_IMAGE
+          : Model.DALL_E_3,
+    [stableHealthCheck?.healthy, zimageHealthCheck?.healthy],
   );
 
   // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
@@ -62,6 +66,41 @@ export default function ImageGenPage() {
   const handleModelChange = (value: Model) => {
     setManualModel(value);
   };
+
+  // AI 카테고리 추천
+  const { mutate: suggestCategories, isPending: isSuggestingCategories } =
+    useSuggestCategories();
+
+  // 디바운스된 카테고리 추천 함수
+  const debouncedSuggestCategories = useMemo(
+    () =>
+      debounce((promptText: string) => {
+        if (promptText.trim().length > 5) {
+          suggestCategories(promptText, {
+            onSuccess: (suggestedSlugs) => {
+              if (suggestedSlugs.length > 0) {
+                setSelectedCategories(suggestedSlugs);
+              }
+            },
+          });
+        }
+      }, 1000),
+    [suggestCategories],
+  );
+
+  // 프롬프트 변경 시 디바운스 카테고리 추천
+  useEffect(() => {
+    if (!prompt) {
+      setSelectedCategories([]);
+      return;
+    }
+    debouncedSuggestCategories(prompt);
+
+    // cleanup: 컴포넌트 언마운트 시 디바운스 취소
+    return () => {
+      debouncedSuggestCategories.cancel();
+    };
+  }, [prompt, debouncedSuggestCategories]);
 
   const { mutate: generateImage, isPending: isMutationPending } =
     useGenerateImageMutation(
@@ -83,7 +122,7 @@ export default function ImageGenPage() {
       (error) => {
         toast.error(error.message);
         queryClient.invalidateQueries({ queryKey: ["credit"] });
-      }
+      },
     );
 
   const handleStreamGenerate = async () => {
@@ -95,6 +134,7 @@ export default function ImageGenPage() {
       const response = await FetchUtil.postRaw("/api/generate-image", {
         prompt,
         model,
+        categories: selectedCategories,
       });
 
       if (!response.ok) {
@@ -182,6 +222,7 @@ export default function ImageGenPage() {
       generateImage({
         prompt,
         model,
+        categories: selectedCategories,
       });
     }
   };
@@ -238,6 +279,14 @@ export default function ImageGenPage() {
                   isZimageHealthCheckLoading={isZimageHealthCheckLoading}
                 />
               </div>
+
+              {/* 카테고리 선택 */}
+              <CategorySelect
+                selectedCategories={selectedCategories}
+                onCategoriesChange={setSelectedCategories}
+                disabled={isPending}
+                isSuggesting={isSuggestingCategories}
+              />
             </div>
 
             <div className="flex gap-3">

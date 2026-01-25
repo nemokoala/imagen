@@ -23,7 +23,7 @@ const MAX_TOTAL_REQUESTS = 5;
 
 // 스트림 응답 헬퍼 함수
 function streamResponse(
-  generator: AsyncGenerator<string | GenerateImageResponse, void, unknown>
+  generator: AsyncGenerator<string | GenerateImageResponse, void, unknown>,
 ) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
@@ -49,7 +49,7 @@ function streamResponse(
               // Discord 로그 전송
               const resetCount = MAX_TOTAL_REQUESTS - totalRequestCount;
               discordService.sendLog(
-                `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${chunk.imageUrl}`
+                `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${chunk.imageUrl}`,
               );
             } else {
               const payload = JSON.stringify({
@@ -79,7 +79,7 @@ function streamResponse(
     headers: {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive",
+      Connection: "keep-alive",
       "X-Accel-Buffering": "no",
     },
   });
@@ -87,7 +87,7 @@ function streamResponse(
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, model } = await req.json();
+    const { prompt, model, categories } = await req.json();
 
     if (!prompt) {
       throw new ApiError("프롬프트가 필요합니다.", 400, "PROMPT_REQUIRED");
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
       throw new ApiError(
         `테스트 요청 한도에 도달했습니다. (전체 ${MAX_TOTAL_REQUESTS}회)`,
         429,
-        "RATE_LIMIT_EXCEEDED"
+        "RATE_LIMIT_EXCEEDED",
       );
     }
 
@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
         prompt,
         model,
         userId,
+        categorySlugs: categories,
       };
 
       const generator = isZImage
@@ -135,18 +136,21 @@ export async function POST(req: NextRequest) {
         prompt,
         model,
         userId,
+        categorySlugs: categories,
       });
     } else if (model === Model.GOOGLE_IMAGEN) {
       result = await imageService.generateImageByGoogleImagen({
         prompt,
         model,
         userId,
+        categorySlugs: categories,
       });
     } else if (model === Model.NANO_BANANA) {
       result = await imageService.generateImageByNanoBanana({
         prompt,
         model,
         userId,
+        categorySlugs: categories,
       });
     } else {
       // Fallback or Unknown model
@@ -169,7 +173,7 @@ export async function POST(req: NextRequest) {
     // Discord 로그 전송 (비동기, 응답 대기 안 함)
     const resetCount = MAX_TOTAL_REQUESTS - totalRequestCount;
     discordService.sendLog(
-      `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${result.imageUrl}`
+      `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${result.imageUrl}`,
     );
 
     return NextResponse.json(
@@ -178,7 +182,7 @@ export async function POST(req: NextRequest) {
         imageUrl: result.imageUrl,
         remaining: MAX_TOTAL_REQUESTS - totalRequestCount,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: unknown) {
     console.error("Image generation error:", error);

@@ -30,6 +30,7 @@ export interface GenerateImageRequest {
   steps?: number;
   cfg?: number;
   seed?: number;
+  categorySlugs?: string[]; // 카테고리 slug 배열
 }
 
 export interface GenerateImageResponse {
@@ -40,10 +41,10 @@ export interface GenerateImageResponse {
 
 export const imageService = {
   async generateImageByOpenAI(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model, userId } = request;
+      const { prompt, model, userId, categorySlugs } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -75,7 +76,7 @@ export const imageService = {
       // 이미지를 파일시스템에 저장
       const savedImagePath = await imageService.saveImageToFileSystem(
         imageUrl,
-        userId
+        userId,
       );
 
       // 데이터베이스에 이미지 정보 저장
@@ -85,6 +86,7 @@ export const imageService = {
         imageUrl: savedImagePath,
         model,
         size: "1024x1024",
+        categorySlugs,
       });
 
       return {
@@ -105,7 +107,7 @@ export const imageService = {
   },
 
   async generateImageByStableDiffusion(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     const generator = this.generateImageByStableDiffusionStream(request);
     let result: GenerateImageResponse = {
@@ -123,10 +125,10 @@ export const imageService = {
   },
 
   async *generateImageByStableDiffusionStream(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
     try {
-      const { prompt, model, userId } = request;
+      const { prompt, model, userId, categorySlugs } = request;
 
       if (!prompt) {
         yield { success: false, error: "프롬프트가 필요합니다." };
@@ -178,7 +180,7 @@ export const imageService = {
             Authorization: `Basic ${token}`,
           },
           body: JSON.stringify(requestBody),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -200,7 +202,7 @@ export const imageService = {
 
       const savedImagePath = await imageService.saveImageToFileSystem(
         base64ImageUrl,
-        userId
+        userId,
       );
 
       await imageService.saveImageToDatabase({
@@ -209,6 +211,7 @@ export const imageService = {
         imageUrl: savedImagePath,
         model,
         size: "1024x1024",
+        categorySlugs,
       });
 
       yield {
@@ -222,10 +225,10 @@ export const imageService = {
   },
 
   async generateImageByGoogleImagen(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model, userId } = request;
+      const { prompt, model, userId, categorySlugs } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -266,7 +269,7 @@ export const imageService = {
       // 이미지를 파일시스템에 저장
       const savedImagePath = await imageService.saveImageToFileSystem(
         `data:image/jpeg;base64,${imageData}`,
-        userId
+        userId,
       );
 
       // 데이터베이스에 이미지 정보 저장
@@ -276,6 +279,7 @@ export const imageService = {
         imageUrl: savedImagePath,
         model,
         size: "1024x1024",
+        categorySlugs,
       });
 
       return {
@@ -305,7 +309,7 @@ export const imageService = {
   },
 
   async generateImageByZImage(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     const generator = this.generateImageByZImageStream(request);
     let result: GenerateImageResponse = {
@@ -323,7 +327,7 @@ export const imageService = {
   },
 
   async *generateImageByZImageStream(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
     try {
       const {
@@ -336,6 +340,7 @@ export const imageService = {
         steps,
         cfg,
         seed,
+        categorySlugs,
       } = request;
 
       if (!prompt) {
@@ -381,7 +386,7 @@ export const imageService = {
         "lib",
         "services",
         "image",
-        "zimage-workflow.json"
+        "zimage-workflow.json",
       );
       const workflowContent = await readFile(workflowPath, "utf-8");
       const wf = JSON.parse(JSON.stringify(JSON.parse(workflowContent)));
@@ -444,13 +449,13 @@ export const imageService = {
             const errors = responseData.node_errors[nodeId].errors;
             return `노드 ${nodeId}: ${errors
               .map(
-                (e: { message?: string; type?: string }) => e.message || e.type
+                (e: { message?: string; type?: string }) => e.message || e.type,
               )
               .join(", ")}`;
           });
           throw new Error(
             `ComfyUI API 오류: ${promptRes.status}\n` +
-              `에러 노드: ${errorMessages.join("\n")}`
+              `에러 노드: ${errorMessages.join("\n")}`,
           );
         }
         throw new Error(`ComfyUI API 오류: ${promptRes.status}`);
@@ -490,10 +495,11 @@ export const imageService = {
 
       while (pollCount < maxPolls) {
         pollCount++;
-        
+
         // 사용자에게 진행 상태 업데이트 (매 2초 또는 적절한 간격으로)
-        if (pollCount % 2 === 0) { // 약 2초마다
-            yield `이미지 생성 중... (${pollCount}초 경과)`;
+        if (pollCount % 2 === 0) {
+          // 약 2초마다
+          yield `이미지 생성 중... (${pollCount}초 경과)`;
         }
 
         const hRes = await fetch(`${COMFY_URL}/api/history/${prompt_id}`, {
@@ -531,15 +537,15 @@ export const imageService = {
 
       // ComfyUI 이미지 URL
       const imageUrl = `${COMFY_URL}/view?filename=${encodeURIComponent(
-        first.filename
+        first.filename,
       )}&subfolder=${encodeURIComponent(
-        first.subfolder
+        first.subfolder,
       )}&type=${encodeURIComponent(first.type)}`;
 
       // 이미지를 파일시스템에 저장
       const savedImagePath = await imageService.saveImageToFileSystem(
         imageUrl,
-        userId
+        userId,
       );
 
       // 크레딧 차감
@@ -552,6 +558,7 @@ export const imageService = {
         imageUrl: savedImagePath,
         model,
         size: `${width || 1024}x${height || 1024}`,
+        categorySlugs,
       });
 
       console.log("✅ 응답 전송 완료");
@@ -574,10 +581,10 @@ export const imageService = {
   },
 
   async generateImageByNanoBanana(
-    request: GenerateImageRequest
+    request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model, userId } = request;
+      const { prompt, model, userId, categorySlugs } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -643,7 +650,7 @@ export const imageService = {
       // 이미지를 파일시스템에 저장
       const savedImagePath = await imageService.saveImageToFileSystem(
         `data:image/${fileExtension};base64,${imageData}`,
-        userId
+        userId,
       );
 
       // 데이터베이스에 이미지 정보 저장
@@ -653,6 +660,7 @@ export const imageService = {
         imageUrl: savedImagePath,
         model,
         size: "1024x1024",
+        categorySlugs,
       });
 
       return {
@@ -683,7 +691,7 @@ export const imageService = {
 
   async saveImageToFileSystem(
     imageUrl: string,
-    userId: number
+    userId: number,
   ): Promise<string> {
     try {
       let imageBuffer: Buffer;
@@ -692,7 +700,7 @@ export const imageService = {
         const response = await fetch(imageUrl);
         if (!response.ok) {
           throw new Error(
-            `이미지 다운로드 실패: ${response.status} ${response.statusText}`
+            `이미지 다운로드 실패: ${response.status} ${response.statusText}`,
           );
         }
         imageBuffer = Buffer.from(await response.arrayBuffer());
@@ -737,10 +745,26 @@ export const imageService = {
     imageUrl: string;
     model: string;
     size: string;
+    categorySlugs?: string[]; // 카테고리 slug 배열 (선택)
   }) {
     try {
+      const { categorySlugs, ...imageInfo } = imageData;
+
+      // 카테고리가 있으면 연결 데이터 구성
+      const categoryConnect =
+        categorySlugs && categorySlugs.length > 0
+          ? {
+              categories: {
+                connect: categorySlugs.map((slug) => ({ slug })),
+              },
+            }
+          : {};
+
       await prisma.generatedImage.create({
-        data: imageData,
+        data: {
+          ...imageInfo,
+          ...categoryConnect,
+        },
       });
     } catch (error) {
       console.error("Error saving image to database:", error);
@@ -824,7 +848,7 @@ export const imageService = {
       }
 
       discordService.sendLog(
-        `이미지 조회 성공: ${image.id} - ${image.prompt} - ${image.imageUrl}`
+        `이미지 조회 성공: ${image.id} - ${image.prompt} - ${image.imageUrl}`,
       );
 
       return imageService.convertToImageType(image);
@@ -837,7 +861,7 @@ export const imageService = {
   async getAdjacentImages(
     id: number,
     prevCount: number = 2,
-    nextCount: number = 2
+    nextCount: number = 2,
   ): Promise<{ prevImages: ImageType[]; nextImages: ImageType[] }> {
     try {
       // 현재 이미지 정보 가져오기
@@ -946,7 +970,7 @@ export const imageService = {
 
       // Image 타입으로 변환
       const flattenedImages = images.map((image) =>
-        imageService.convertToImageType(image)
+        imageService.convertToImageType(image),
       );
 
       return {
@@ -970,7 +994,7 @@ export const imageService = {
 
       const response = await fetch(
         `${process.env.STABLE_DIFFUSION_API_URL}/user`,
-        { signal: controller.signal }
+        { signal: controller.signal },
       );
 
       clearTimeout(timeoutId);
@@ -1053,7 +1077,7 @@ export const imageService = {
     } catch (error: unknown) {
       console.error("Error deleting image:", error);
       throw new Error(
-        error instanceof Error ? error.message : "이미지 삭제에 실패했습니다."
+        error instanceof Error ? error.message : "이미지 삭제에 실패했습니다.",
       );
     }
   },

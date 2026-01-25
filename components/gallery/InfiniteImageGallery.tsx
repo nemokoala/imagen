@@ -5,6 +5,7 @@ import {
   useGetGalleryImagesInfiniteQuery,
   useGetUserImagesInfiniteQuery,
 } from "@/queries/image/queries";
+import { useGetCategories } from "@/queries/category/queries";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
@@ -13,6 +14,7 @@ import { VirtualRow } from "./VirtualRow";
 import { LoadMoreStatus } from "./LoadMoreStatus";
 import { useScrollStore } from "@/stores/scrollStore";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
+import { CategoryFilter } from "./CategoryFilter";
 
 interface InfiniteImageGalleryProps {
   userId?: number;
@@ -29,8 +31,39 @@ export function InfiniteImageGallery({
 }: InfiniteImageGalleryProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollElement = scrollElementRef || parentRef;
-  const galleryQuery = useGetGalleryImagesInfiniteQuery(20, Boolean(!userId));
-  const userQuery = useGetUserImagesInfiniteQuery(userId || 0, 20);
+
+  // 카테고리 필터 상태 (다중 선택)
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  // 카테고리 토글 핸들러
+  const handleToggleCategory = (slug: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug],
+    );
+  };
+
+  // 전체 선택 (초기화)
+  const handleSelectAll = () => {
+    setSelectedCategories([]);
+  };
+
+  // 카테고리 목록 조회
+  const { data: categories = [] } = useGetCategories();
+
+  // 선택된 카테고리를 콤마로 구분된 문자열로 변환 (비어있으면 undefined)
+  const categoryParam =
+    selectedCategories.length > 0 ? selectedCategories.join(",") : undefined;
+
+  const galleryQuery = useGetGalleryImagesInfiniteQuery(
+    20,
+    Boolean(!userId),
+    categoryParam,
+  );
+  const userQuery = useGetUserImagesInfiniteQuery(
+    userId || 0,
+    20,
+    categoryParam,
+  );
 
   const {
     data,
@@ -167,10 +200,6 @@ export function InfiniteImageGallery({
     isFetchingNextPage || error || (!hasNextPage && images.length > 0);
   const containerHeight = virtualTotalSize + (hasStatus ? 150 : 50);
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
-
   // 공통 콘텐츠
   const content = (
     <div
@@ -212,17 +241,29 @@ export function InfiniteImageGallery({
   if (scrollElementRef) {
     return (
       <div className="w-full" ref={containerRefCallback}>
+        <CategoryFilter
+          categories={categories}
+          selectedCategories={selectedCategories}
+          handleSelectAll={handleSelectAll}
+          handleToggleCategory={handleToggleCategory}
+        />
         {content}
       </div>
     );
   }
 
-  // 자체 스크롤 컨테이너를 사용하는 경우 (기본 동작)
+  // 자체 스크롤 컨테이너를 사용하는 경우
   return (
     <div
       className="w-full flex flex-col flex-1 min-h-0 rounded-lg"
       ref={containerRefCallback}
     >
+      <CategoryFilter
+        categories={categories}
+        selectedCategories={selectedCategories}
+        handleSelectAll={handleSelectAll}
+        handleToggleCategory={handleToggleCategory}
+      />
       <div
         ref={parentRef}
         className="w-full flex-1 min-h-0 overflow-auto rounded-lg scrollbar-hide"

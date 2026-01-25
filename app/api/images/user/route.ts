@@ -12,18 +12,25 @@ export async function GET(req: NextRequest) {
     const userId = searchParams.get("userId");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
+    const categoryParam = searchParams.get("category");
+
+    // 콤마로 구분된 카테고리를 배열로 변환
+    const categories = categoryParam
+      ? categoryParam.split(",").filter((c) => c.trim())
+      : undefined;
 
     if (!userId) {
       return NextResponse.json(
         { error: "사용자 ID가 필요합니다." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const result = await imageService.getUserImages(
       parseInt(userId),
       page,
-      limit
+      limit,
+      categories,
     );
 
     return NextResponse.json(
@@ -31,7 +38,7 @@ export async function GET(req: NextRequest) {
         success: true,
         ...result,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: unknown) {
     console.error("Get user images error:", error);

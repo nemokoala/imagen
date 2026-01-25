@@ -1,11 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { FetchUtil } from "@/lib/Fetch.util";
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-}
+import { Category } from "@/types/image.interfaces";
 
 interface CategoriesResponse {
   success: boolean;

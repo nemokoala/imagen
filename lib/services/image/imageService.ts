@@ -772,10 +772,15 @@ export const imageService = {
     }
   },
 
-  async getUserImages(userId: number, page: number = 1, limit: number = 20) {
+  async getUserImages(
+    userId: number,
+    page: number = 1,
+    limit: number = 20,
+    category?: string[],
+  ) {
     try {
       // getAllImages를 재사용하여 페이지네이션 지원
-      return await imageService.getAllImages(page, limit, userId);
+      return await imageService.getAllImages(page, limit, userId, category);
     } catch (error: unknown) {
       console.error("Error fetching user images:", error);
       throw new Error("사용자 이미지 조회에 실패했습니다.");
@@ -936,14 +941,35 @@ export const imageService = {
     }
   },
 
-  async getAllImages(page: number = 1, limit: number = 20, userId?: number) {
+  async getAllImages(
+    page: number = 1,
+    limit: number = 20,
+    userId?: number,
+    categorySlugs?: string[],
+  ) {
     try {
       const skip = (page - 1) * limit;
-      const whereClause = userId ? { userId } : undefined;
+
+      // whereClause 구성: userId, categorySlugs 필터 적용
+      const whereClause: {
+        userId?: number;
+        categories?: { some: { slug: { in: string[] } } };
+      } = {};
+
+      if (userId) {
+        whereClause.userId = userId;
+      }
+
+      // 다중 카테고리: OR 조건으로 필터링 (해당 카테고리 중 하나라도 포함)
+      if (categorySlugs && categorySlugs.length > 0) {
+        whereClause.categories = {
+          some: { slug: { in: categorySlugs } },
+        };
+      }
 
       const [images, totalCount] = await Promise.all([
         prisma.generatedImage.findMany({
-          where: whereClause,
+          where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
           include: {
             user: {
               select: {
@@ -964,7 +990,7 @@ export const imageService = {
           take: limit,
         }),
         prisma.generatedImage.count({
-          where: whereClause,
+          where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
         }),
       ]);
 

@@ -12,13 +12,13 @@ import { Comment } from "@/types/image.interfaces";
 export const useGetUserImagesQuery = (
   userId: number,
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
 ) => {
   return useQuery({
     queryKey: ["userImages", userId, page, limit],
     queryFn: async (): Promise<GetUserImagesResponse> => {
       const response = (await FetchUtil.get(
-        `/api/images/user?userId=${userId}&page=${page}&limit=${limit}`
+        `/api/images/user?userId=${userId}&page=${page}&limit=${limit}`,
       )) as GetUserImagesResponse;
       return response;
     },
@@ -32,7 +32,7 @@ export const useGetImageByIdQuery = (id: number) => {
     queryFn: async (): Promise<GeneratedImage | null> => {
       try {
         const response = (await FetchUtil.get(
-          `/api/images/${id}`
+          `/api/images/${id}`,
         )) as GetImageByIdResponse;
         return response.image || null;
       } catch (error: unknown) {
@@ -53,13 +53,13 @@ export const useGetImageByIdQuery = (id: number) => {
 
 export const useGetGalleryImagesQuery = (
   page: number = 1,
-  limit: number = 20
+  limit: number = 20,
 ) => {
   return useQuery({
     queryKey: ["galleryImages", page, limit],
     queryFn: async () => {
       const response = (await FetchUtil.get(
-        `/api/images?page=${page}&limit=${limit}`
+        `/api/images?page=${page}&limit=${limit}`,
       )) as GalleryResponse;
       return response;
     },
@@ -68,13 +68,15 @@ export const useGetGalleryImagesQuery = (
 
 export const useGetGalleryImagesInfiniteQuery = (
   limit: number = 20,
-  enabled: boolean = true
+  enabled: boolean = true,
+  category?: string,
 ) => {
   return useInfiniteQuery({
-    queryKey: ["galleryImagesInfinite", limit],
+    queryKey: ["galleryImagesInfinite", limit, category],
     queryFn: async ({ pageParam = 1 }) => {
+      const categoryParam = category ? `&category=${category}` : "";
       const response = (await FetchUtil.get(
-        `/api/images?page=${pageParam}&limit=${limit}`
+        `/api/images?page=${pageParam}&limit=${limit}${categoryParam}`,
       )) as GalleryResponse;
       return response;
     },
@@ -88,13 +90,15 @@ export const useGetGalleryImagesInfiniteQuery = (
 
 export const useGetUserImagesInfiniteQuery = (
   userId: number,
-  limit: number = 20
+  limit: number = 20,
+  category?: string,
 ) => {
   return useInfiniteQuery({
-    queryKey: ["userImagesInfinite", userId, limit],
+    queryKey: ["userImagesInfinite", userId, limit, category],
     queryFn: async ({ pageParam = 1 }) => {
+      const categoryParam = category ? `&category=${category}` : "";
       const response = (await FetchUtil.get(
-        `/api/images/user?userId=${userId}&page=${pageParam}&limit=${limit}`
+        `/api/images/user?userId=${userId}&page=${pageParam}&limit=${limit}${categoryParam}`,
       )) as GetUserImagesResponse;
       return response;
     },
@@ -139,7 +143,7 @@ export const useGetCommentsQuery = (imageId: number | null) => {
     queryFn: async (): Promise<Comment[]> => {
       if (!imageId) return [];
       const response = (await FetchUtil.get(
-        `/api/images/${imageId}/comments`
+        `/api/images/${imageId}/comments`,
       )) as { success: boolean; comments: Comment[] };
       return response.success ? response.comments : [];
     },

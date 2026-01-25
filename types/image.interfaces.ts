@@ -87,3 +87,9 @@ export interface Comment {
   };
   replies: Comment[];
 }
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+}

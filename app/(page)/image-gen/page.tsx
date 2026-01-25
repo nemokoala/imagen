@@ -75,7 +75,7 @@ export default function ImageGenPage() {
   const debouncedSuggestCategories = useMemo(
     () =>
       debounce((promptText: string) => {
-        if (promptText.trim().length > 5) {
+        if (promptText.trim().length > 3) {
           suggestCategories(promptText, {
             onSuccess: (suggestedSlugs) => {
               if (suggestedSlugs.length > 0) {

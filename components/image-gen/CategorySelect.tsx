@@ -83,7 +83,6 @@ export function CategorySelect({
       {selectedCategories.length > 0 && (
         <p className="text-xs text-muted-foreground">
           {selectedCategories.length}개 카테고리 선택됨
-          <span className="ml-1 text-purple-500">(AI 추천)</span>
         </p>
       )}
     </div>

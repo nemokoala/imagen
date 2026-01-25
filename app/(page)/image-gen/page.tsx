@@ -69,38 +69,27 @@ export default function ImageGenPage() {
 
   // AI 카테고리 추천
   const { mutate: suggestCategories, isPending: isSuggestingCategories } =
-    useSuggestCategories();
+    useSuggestCategories((suggestedSlugs) => {
+      if (suggestedSlugs.length > 0) {
+        setSelectedCategories(suggestedSlugs);
+      }
+    });
 
   // 디바운스된 카테고리 추천 함수
   const debouncedSuggestCategories = useMemo(
     () =>
       debounce((promptText: string) => {
         if (promptText.trim().length > 3) {
-          suggestCategories(promptText, {
-            onSuccess: (suggestedSlugs) => {
-              if (suggestedSlugs.length > 0) {
-                setSelectedCategories(suggestedSlugs);
-              }
-            },
-          });
+          suggestCategories(promptText);
         }
       }, 1000),
     [suggestCategories],
   );
 
-  // 프롬프트 변경 시 디바운스 카테고리 추천
-  useEffect(() => {
-    if (!prompt) {
-      setSelectedCategories([]);
-      return;
-    }
-    debouncedSuggestCategories(prompt);
-
-    // cleanup: 컴포넌트 언마운트 시 디바운스 취소
-    return () => {
-      debouncedSuggestCategories.cancel();
-    };
-  }, [prompt, debouncedSuggestCategories]);
+  const handleClickRecommendPrompt = (prompt: string) => {
+    suggestCategories(prompt);
+    setPrompt(prompt);
+  };
 
   const { mutate: generateImage, isPending: isMutationPending } =
     useGenerateImageMutation(
@@ -258,13 +247,16 @@ export default function ImageGenPage() {
                 <Textarea
                   placeholder="원하는 이미지를 자세히 설명해주세요... 예: 귀여운 고양이가 라면을 먹는 모습, 카툰 스타일, 밝은 색상"
                   value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
+                  onChange={(e) => {
+                    setPrompt(e.target.value);
+                    debouncedSuggestCategories(e.target.value);
+                  }}
                   className="min-h-[120px] resize-none border-2 focus:border-purple-500 transition-colors"
                   disabled={isPending}
                 />
                 <RecommendPrompt
                   ref={recommendPromptRef}
-                  setPrompt={setPrompt}
+                  setPrompt={handleClickRecommendPrompt}
                 />
               </div>
 
@@ -298,7 +290,7 @@ export default function ImageGenPage() {
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {generationProgress || "생성 중..."}
+                    생성 중...
                   </>
                 ) : (
                   <>

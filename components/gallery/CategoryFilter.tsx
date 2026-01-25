@@ -15,8 +15,8 @@ export function CategoryFilter({
   handleToggleCategory,
 }: CategoryFilterProps) {
   return (
-    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-3 -mx-1 px-2">
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2.5 -mx-2 px-2">
+      <div className="flex gap-2 overflow-x-auto scrollbar-hide">
         <Button
           onClick={handleSelectAll}
           variant={selectedCategories.length === 0 ? "gradient" : "outline"}

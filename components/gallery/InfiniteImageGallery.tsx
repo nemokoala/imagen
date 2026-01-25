@@ -114,14 +114,14 @@ export function InfiniteImageGallery({
   // width나 columnCount 변경 시 크기 재측정
   useEffect(() => {
     if (containerRef.current) {
-      const measuredWidth = containerRef.current.clientWidth;
+      const measuredWidth = containerRef.current.getBoundingClientRect().width;
       setContainerWidth((prev) =>
         measuredWidth !== prev ? measuredWidth : prev,
       );
     } else if (width > 0) {
       setContainerWidth((prev) => (width !== prev ? width : prev));
     }
-  }, [width, columnCount, gap, selectedCategories]);
+  }, [width, columnCount, gap, images]);
 
   // 컬럼별로 이미지를 그룹화
   const rows = useMemo(() => {

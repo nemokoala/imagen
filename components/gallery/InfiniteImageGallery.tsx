@@ -121,7 +121,7 @@ export function InfiniteImageGallery({
     } else if (width > 0) {
       setContainerWidth((prev) => (width !== prev ? width : prev));
     }
-  }, [width, columnCount, gap]);
+  }, [width, columnCount, gap, selectedCategories]);
 
   // 컬럼별로 이미지를 그룹화
   const rows = useMemo(() => {

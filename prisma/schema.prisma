@@ -68,9 +68,10 @@ model GeneratedImage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  // 좋아요와 댓글 관계
+  // 좋아요, 댓글, 카테고리 관계
   likes     ImageLike[]
   comments  ImageComment[]
+  categories Category[]
 
   @@index([userId])
   @@index([createdAt])
@@ -122,4 +123,16 @@ model CreditSettings {
   updatedAt DateTime @updatedAt
 
   @@map("credit_settings")
+}
+
+// 카테고리 모델
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique  // 카테고리 이름 (예: "풍경", "인물", "추상화")
+  slug      String   @unique  // URL-friendly 이름 (예: "landscape", "portrait")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // 이미지와의 관계 (암묵적 다대다)
+  images    GeneratedImage[]
 }

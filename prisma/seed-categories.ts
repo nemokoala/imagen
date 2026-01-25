@@ -13,6 +13,12 @@ const defaultCategories = [
   { name: "건축", slug: "architecture" },
   { name: "자연", slug: "nature" },
   { name: "아트", slug: "art" },
+  { name: "애니메이션", slug: "anime" },
+  { name: "실사", slug: "realistic" },
+  { name: "3D 렌더링", slug: "3d-render" },
+  { name: "사이버펑크", slug: "cyberpunk" },
+  { name: "캐릭터", slug: "character" },
+  { name: "픽셀 아트", slug: "pixel-art" },
 ];
 
 async function seedCategories() {
@@ -38,3 +44,6 @@ seedCategories()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
+// 아래 명령어 실행 시 카테고리 추가.
+// npx tsx prisma/seed-categories.ts

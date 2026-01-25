@@ -1,6 +1,6 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { useGetCategories } from "@/queries/category/queries";
 import { cn } from "@/lib/utils";
 
@@ -62,21 +62,20 @@ export function CategorySelect({
         {categories.map((category: Category) => {
           const isSelected = selectedCategories.includes(category.slug);
           return (
-            <Badge
+            <Button
               key={category.id}
-              variant={isSelected ? "default" : "outline"}
+              type="button"
+              variant={isSelected ? "gradient" : "outline"}
+              size="sm"
               className={cn(
-                "cursor-pointer transition-all duration-200 select-none",
-                isSelected
-                  ? "bg-purple-600 hover:bg-purple-700 text-white border-purple-600"
-                  : "hover:bg-purple-50 hover:border-purple-300 text-muted-foreground",
+                "rounded-full h-8 px-3 text-xs transition-all duration-200",
+
                 disabled && "opacity-50 cursor-not-allowed",
               )}
               onClick={() => handleToggleCategory(category.slug)}
             >
               {category.name}
-              {isSelected && <X className="h-3 w-3 ml-1" />}
-            </Badge>
+            </Button>
           );
         })}
       </div>

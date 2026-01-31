@@ -11,6 +11,8 @@ import {
   Trash2,
   ArrowLeft,
   User,
+  Languages,
+  Tag,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -75,7 +77,7 @@ export function ImageDetail({
         cancelable: true,
         confirmText: "삭제",
       },
-      handleDelete
+      handleDelete,
     );
   };
 
@@ -164,6 +166,42 @@ export function ImageDetail({
                   </p>
                 </div>
               </div>
+
+              {/* 번역된 프롬프트 */}
+              {imageData.translatedPrompt && (
+                <div className="space-y-3">
+                  <div className="font-semibold text-lg text-foreground flex items-center gap-2">
+                    <Languages className="h-5 w-5 text-blue-600" />
+                    번역된 프롬프트
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
+                    <p className="text-foreground leading-relaxed text-sm">
+                      {imageData.translatedPrompt}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* 카테고리 */}
+              {imageData.categories && imageData.categories.length > 0 && (
+                <div className="space-y-3">
+                  <div className="font-semibold text-lg text-foreground flex items-center gap-2">
+                    <Tag className="h-5 w-5 text-green-600" />
+                    카테고리
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {imageData.categories.map((category) => (
+                      <Badge
+                        key={category.id}
+                        variant="outline"
+                        className="bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors cursor-pointer"
+                      >
+                        {category.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
               {/* 이미지 정보 */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">

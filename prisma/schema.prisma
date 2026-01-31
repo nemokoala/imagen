@@ -60,6 +60,7 @@ model GeneratedImage {
   userId    Int
   user      User     @relation(fields: [userId], references: [id])
   prompt    String   @db.Text
+  translatedPrompt String? @db.Text  // 번역된 프롬프트 (번역이 된 경우에만 저장)
   imageUrl  String
   model     String
   size      String   @default("1024x1024")

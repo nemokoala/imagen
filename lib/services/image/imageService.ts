@@ -208,6 +208,8 @@ export const imageService = {
       await imageService.saveImageToDatabase({
         userId,
         prompt,
+        translatedPrompt:
+          translatedPrompt !== prompt ? translatedPrompt : undefined,
         imageUrl: savedImagePath,
         model,
         size: "1024x1024",
@@ -555,6 +557,8 @@ export const imageService = {
       await imageService.saveImageToDatabase({
         userId,
         prompt,
+        translatedPrompt:
+          translatedPrompt !== prompt ? translatedPrompt : undefined,
         imageUrl: savedImagePath,
         model,
         size: `${width || 1024}x${height || 1024}`,
@@ -742,6 +746,7 @@ export const imageService = {
   async saveImageToDatabase(imageData: {
     userId: number;
     prompt: string;
+    translatedPrompt?: string; // 번역된 프롬프트 (번역이 된 경우에만)
     imageUrl: string;
     model: string;
     size: string;
@@ -794,6 +799,7 @@ export const imageService = {
     id: number;
     userId: number;
     prompt: string;
+    translatedPrompt: string | null;
     imageUrl: string;
     model: string;
     size: string;
@@ -806,12 +812,17 @@ export const imageService = {
       nickname: string;
       profileImageUrl: string | null;
     };
+    categories: {
+      id: number;
+      name: string;
+      slug: string;
+    }[];
     _count: {
       likes: number;
       comments: number;
     };
   }): ImageType {
-    const { _count, createdAt, updatedAt, ...imageData } = image;
+    const { _count, createdAt, updatedAt, categories, ...imageData } = image;
     return {
       ...imageData,
       createdAt: createdAt.toISOString(),
@@ -821,6 +832,11 @@ export const imageService = {
         nickname: image.user.nickname,
         profileImageUrl: image.user.profileImageUrl,
       },
+      categories: categories.map((cat) => ({
+        id: cat.id,
+        name: cat.name,
+        slug: cat.slug,
+      })),
       likeCount: _count.likes,
       commentCount: _count.comments,
     };
@@ -836,6 +852,13 @@ export const imageService = {
               id: true,
               nickname: true,
               profileImageUrl: true,
+            },
+          },
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
             },
           },
           _count: {
@@ -894,6 +917,13 @@ export const imageService = {
               profileImageUrl: true,
             },
           },
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+            },
+          },
           _count: {
             select: {
               likes: true,
@@ -918,6 +948,13 @@ export const imageService = {
               id: true,
               nickname: true,
               profileImageUrl: true,
+            },
+          },
+          categories: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
             },
           },
           _count: {
@@ -976,6 +1013,13 @@ export const imageService = {
                 id: true,
                 nickname: true,
                 profileImageUrl: true,
+              },
+            },
+            categories: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
               },
             },
             _count: {

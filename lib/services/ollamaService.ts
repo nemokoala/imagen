@@ -27,7 +27,7 @@ export const ollamaService = {
   - Add quality boosters: highly detailed, sharp focus, well composed.
   - For humans: add realistic anatomy.
   - Never add artist names, brands, or celebrities.
-  - Always respond in JSON format: { "promt": "<final positive prompt text only>" }
+  - Always respond in JSON format: { "prompt": "<final positive prompt text only>" }
   
   User input:
   ${userPrompt}
@@ -53,7 +53,21 @@ export const ollamaService = {
       throw new Error("Failed to translate text");
     }
 
-    return data.response;
+    // JSON 응답 파싱
+    try {
+      const jsonMatch = data.response.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        // JSON이 없으면 원본 응답 반환
+        return data.response;
+      }
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      return parsed.prompt || parsed.promt || userPrompt; // 'promt' 오타도 핸들링
+    } catch (parseError) {
+      console.error("Failed to parse AI response:", parseError);
+      // 파싱 실패시 원본 프롬프트 반환
+      return userPrompt;
+    }
   },
 
   /**

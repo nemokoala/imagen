@@ -56,17 +56,18 @@ model LoginAttempt {
 }
 
 model GeneratedImage {
-  id             Int      @id @default(autoincrement())
-  userId         Int
-  user           User     @relation(fields: [userId], references: [id])
-  prompt         String   @db.Text
-  imageUrl       String
-  model          String
-  size           String   @default("1024x1024")
-  editData       String?  @db.Text
-  editedImageUrl String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  prompt           String   @db.Text
+  translatedPrompt String?  @db.Text // 번역된 프롬프트 (번역이 된 경우에만 저장)
+  imageUrl         String
+  model            String
+  size             String   @default("1024x1024")
+  editData         String?  @db.Text
+  editedImageUrl   String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   // 좋아요, 댓글, 카테고리 관계
   likes      ImageLike[]

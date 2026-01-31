@@ -3714,6 +3714,7 @@ export namespace Prisma {
     id: number | null
     userId: number | null
     prompt: string | null
+    translatedPrompt: string | null
     imageUrl: string | null
     model: string | null
     size: string | null
@@ -3727,6 +3728,7 @@ export namespace Prisma {
     id: number | null
     userId: number | null
     prompt: string | null
+    translatedPrompt: string | null
     imageUrl: string | null
     model: string | null
     size: string | null
@@ -3740,6 +3742,7 @@ export namespace Prisma {
     id: number
     userId: number
     prompt: number
+    translatedPrompt: number
     imageUrl: number
     model: number
     size: number
@@ -3765,6 +3768,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     prompt?: true
+    translatedPrompt?: true
     imageUrl?: true
     model?: true
     size?: true
@@ -3778,6 +3782,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     prompt?: true
+    translatedPrompt?: true
     imageUrl?: true
     model?: true
     size?: true
@@ -3791,6 +3796,7 @@ export namespace Prisma {
     id?: true
     userId?: true
     prompt?: true
+    translatedPrompt?: true
     imageUrl?: true
     model?: true
     size?: true
@@ -3891,6 +3897,7 @@ export namespace Prisma {
     id: number
     userId: number
     prompt: string
+    translatedPrompt: string | null
     imageUrl: string
     model: string
     size: string
@@ -3923,6 +3930,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     prompt?: boolean
+    translatedPrompt?: boolean
     imageUrl?: boolean
     model?: boolean
     size?: boolean
@@ -3943,6 +3951,7 @@ export namespace Prisma {
     id?: boolean
     userId?: boolean
     prompt?: boolean
+    translatedPrompt?: boolean
     imageUrl?: boolean
     model?: boolean
     size?: boolean
@@ -3952,7 +3961,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "imageUrl" | "model" | "size" | "editData" | "editedImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
+  export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "translatedPrompt" | "imageUrl" | "model" | "size" | "editData" | "editedImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
   export type GeneratedImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     likes?: boolean | GeneratedImage$likesArgs<ExtArgs>
@@ -3973,6 +3982,7 @@ export namespace Prisma {
       id: number
       userId: number
       prompt: string
+      translatedPrompt: string | null
       imageUrl: string
       model: string
       size: string
@@ -4356,6 +4366,7 @@ export namespace Prisma {
     readonly id: FieldRef<"GeneratedImage", 'Int'>
     readonly userId: FieldRef<"GeneratedImage", 'Int'>
     readonly prompt: FieldRef<"GeneratedImage", 'String'>
+    readonly translatedPrompt: FieldRef<"GeneratedImage", 'String'>
     readonly imageUrl: FieldRef<"GeneratedImage", 'String'>
     readonly model: FieldRef<"GeneratedImage", 'String'>
     readonly size: FieldRef<"GeneratedImage", 'String'>
@@ -8809,6 +8820,7 @@ export namespace Prisma {
     id: 'id',
     userId: 'userId',
     prompt: 'prompt',
+    translatedPrompt: 'translatedPrompt',
     imageUrl: 'imageUrl',
     model: 'model',
     size: 'size',
@@ -8905,6 +8917,7 @@ export namespace Prisma {
 
   export const GeneratedImageOrderByRelevanceFieldEnum: {
     prompt: 'prompt',
+    translatedPrompt: 'translatedPrompt',
     imageUrl: 'imageUrl',
     model: 'model',
     size: 'size',
@@ -9152,6 +9165,7 @@ export namespace Prisma {
     id?: IntFilter<"GeneratedImage"> | number
     userId?: IntFilter<"GeneratedImage"> | number
     prompt?: StringFilter<"GeneratedImage"> | string
+    translatedPrompt?: StringNullableFilter<"GeneratedImage"> | string | null
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
@@ -9169,6 +9183,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     prompt?: SortOrder
+    translatedPrompt?: SortOrderInput | SortOrder
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
@@ -9190,6 +9205,7 @@ export namespace Prisma {
     NOT?: GeneratedImageWhereInput | GeneratedImageWhereInput[]
     userId?: IntFilter<"GeneratedImage"> | number
     prompt?: StringFilter<"GeneratedImage"> | string
+    translatedPrompt?: StringNullableFilter<"GeneratedImage"> | string | null
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
@@ -9207,6 +9223,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     prompt?: SortOrder
+    translatedPrompt?: SortOrderInput | SortOrder
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
@@ -9228,6 +9245,7 @@ export namespace Prisma {
     id?: IntWithAggregatesFilter<"GeneratedImage"> | number
     userId?: IntWithAggregatesFilter<"GeneratedImage"> | number
     prompt?: StringWithAggregatesFilter<"GeneratedImage"> | string
+    translatedPrompt?: StringNullableWithAggregatesFilter<"GeneratedImage"> | string | null
     imageUrl?: StringWithAggregatesFilter<"GeneratedImage"> | string
     model?: StringWithAggregatesFilter<"GeneratedImage"> | string
     size?: StringWithAggregatesFilter<"GeneratedImage"> | string
@@ -9671,6 +9689,7 @@ export namespace Prisma {
 
   export type GeneratedImageCreateInput = {
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -9688,6 +9707,7 @@ export namespace Prisma {
     id?: number
     userId: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -9702,6 +9722,7 @@ export namespace Prisma {
 
   export type GeneratedImageUpdateInput = {
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -9719,6 +9740,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -9735,6 +9757,7 @@ export namespace Prisma {
     id?: number
     userId: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -9746,6 +9769,7 @@ export namespace Prisma {
 
   export type GeneratedImageUpdateManyMutationInput = {
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -9759,6 +9783,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -10333,6 +10358,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     prompt?: SortOrder
+    translatedPrompt?: SortOrder
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
@@ -10351,6 +10377,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     prompt?: SortOrder
+    translatedPrompt?: SortOrder
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
@@ -10364,6 +10391,7 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     prompt?: SortOrder
+    translatedPrompt?: SortOrder
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
@@ -11325,6 +11353,7 @@ export namespace Prisma {
 
   export type GeneratedImageCreateWithoutUserInput = {
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -11340,6 +11369,7 @@ export namespace Prisma {
   export type GeneratedImageUncheckedCreateWithoutUserInput = {
     id?: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -11464,6 +11494,7 @@ export namespace Prisma {
     id?: IntFilter<"GeneratedImage"> | number
     userId?: IntFilter<"GeneratedImage"> | number
     prompt?: StringFilter<"GeneratedImage"> | string
+    translatedPrompt?: StringNullableFilter<"GeneratedImage"> | string | null
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
@@ -11861,6 +11892,7 @@ export namespace Prisma {
 
   export type GeneratedImageCreateWithoutLikesInput = {
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -11877,6 +11909,7 @@ export namespace Prisma {
     id?: number
     userId: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -11950,6 +11983,7 @@ export namespace Prisma {
 
   export type GeneratedImageUpdateWithoutLikesInput = {
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -11966,6 +12000,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12017,6 +12052,7 @@ export namespace Prisma {
 
   export type GeneratedImageCreateWithoutCommentsInput = {
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -12033,6 +12069,7 @@ export namespace Prisma {
     id?: number
     userId: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -12159,6 +12196,7 @@ export namespace Prisma {
 
   export type GeneratedImageUpdateWithoutCommentsInput = {
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12175,6 +12213,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12234,6 +12273,7 @@ export namespace Prisma {
 
   export type GeneratedImageCreateWithoutCategoriesInput = {
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -12250,6 +12290,7 @@ export namespace Prisma {
     id?: number
     userId: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -12294,6 +12335,7 @@ export namespace Prisma {
   export type GeneratedImageCreateManyUserInput = {
     id?: number
     prompt: string
+    translatedPrompt?: string | null
     imageUrl: string
     model: string
     size?: string
@@ -12346,6 +12388,7 @@ export namespace Prisma {
 
   export type GeneratedImageUpdateWithoutUserInput = {
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12361,6 +12404,7 @@ export namespace Prisma {
   export type GeneratedImageUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12376,6 +12420,7 @@ export namespace Prisma {
   export type GeneratedImageUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12552,6 +12597,7 @@ export namespace Prisma {
 
   export type GeneratedImageUpdateWithoutCategoriesInput = {
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12568,6 +12614,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
@@ -12583,6 +12630,7 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
     prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string

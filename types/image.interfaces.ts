@@ -47,6 +47,7 @@ export interface Image {
   id: number;
   userId: number;
   prompt: string;
+  translatedPrompt: string | null; // 번역된 프롬프트
   imageUrl: string;
   model: string;
   size: string;
@@ -59,6 +60,7 @@ export interface Image {
     nickname: string;
     profileImageUrl: string | null;
   };
+  categories: Category[]; // 카테고리 목록
   likeCount: number;
   commentCount: number;
 }

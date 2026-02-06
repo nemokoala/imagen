@@ -136,4 +136,15 @@ export const notificationService = {
       where: { id: notificationId },
     });
   },
+
+  /**
+   * 모든 알림 삭제
+   */
+  async deleteAllNotifications(userId: number) {
+    await prisma.notification.deleteMany({
+      where: {
+        userId,
+      },
+    });
+  },
 };

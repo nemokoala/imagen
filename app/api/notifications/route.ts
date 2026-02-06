@@ -41,3 +41,20 @@ export async function PATCH(req: NextRequest) {
     return errorHandler(error);
   }
 }
+
+// 모든 알림 삭제
+export async function DELETE(req: NextRequest) {
+  try {
+    const cookieStore = await cookies();
+    const userId = await authService.getUserIdFromCookie(cookieStore);
+
+    await notificationService.deleteAllNotifications(userId);
+
+    return NextResponse.json({
+      success: true,
+      message: "모든 알림을 삭제했습니다.",
+    });
+  } catch (error: unknown) {
+    return errorHandler(error);
+  }
+}

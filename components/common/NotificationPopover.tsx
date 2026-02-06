@@ -102,7 +102,7 @@ export function NotificationPopover() {
                     </div>
                     <div className="flex-1 space-y-1 min-w-0">
                       <p className="text-sm line-clamp-2 leading-snug">
-                        <span className="text-muted-foreground">
+                        <span className="text-foreground">
                           {notification.message}
                         </span>
                       </p>

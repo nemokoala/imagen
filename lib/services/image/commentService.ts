@@ -99,8 +99,9 @@ export const commentService = {
     }
 
     // 대댓글인 경우 부모 댓글 확인
+    let parentComment = null;
     if (parentId) {
-      const parentComment = await prisma.imageComment.findUnique({
+      parentComment = await prisma.imageComment.findUnique({
         where: { id: parentId },
       });
 
@@ -138,16 +139,37 @@ export const commentService = {
       },
     });
 
-    // 알림 생성 (자신의 게시물이 아닌 경우에만)
-    if (image.userId !== userId) {
-      await notificationService.createNotification({
-        userId: image.userId, // 받는 사람 (이미지 주인)
-        actorId: userId, // 보낸 사람 (댓글 작성자)
-        type: NotificationType.COMMENT,
-        imageId: imageId,
-        commentId: comment.id,
-        message: `${comment.user.nickname}님이 회원님의 이미지에 댓글을 남겼습니다.`,
-      });
+    try {
+      // 알림 생성
+      // 1. 대댓글인 경우 부모 댓글 작성자에게 알림
+      if (parentComment && parentComment.userId !== userId) {
+        await notificationService.createNotification({
+          userId: parentComment.userId, // 받는 사람 (부모 댓글 작성자)
+          actorId: userId, // 보낸 사람 (대댓글 작성자)
+          type: NotificationType.COMMENT,
+          imageId: imageId,
+          commentId: comment.id,
+          message: `${comment.user.nickname}님이 회원님의 댓글에 답글을 남겼습니다.`,
+        });
+      }
+
+      // 2. 이미지 주인에게 알림 (부모 댓글 작성자와 다른 경우에만)
+      const isParentCommentAuthorImageOwner =
+        parentComment?.userId === image.userId;
+
+      if (image.userId !== userId && !isParentCommentAuthorImageOwner) {
+        await notificationService.createNotification({
+          userId: image.userId, // 받는 사람 (이미지 주인)
+          actorId: userId, // 보낸 사람 (댓글 작성자)
+          type: NotificationType.COMMENT,
+          imageId: imageId,
+          commentId: comment.id,
+          message: `${comment.user.nickname}님이 회원님의 이미지에 댓글을 남겼습니다.`,
+        });
+      }
+    } catch (error) {
+      console.error("알림 생성 중 오류 발생:", error);
+      // 알림 생성 실패가 댓글 작성을 막지 않도록 함
     }
 
     return comment as CommentWithUser;

@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/lib/errors/AppError";
+import { NotificationType } from "@/lib/generated/prisma";
+import { notificationService } from "@/lib/services/notification/notificationService";
 
 export interface LikeStatus {
   likeCount: number;
@@ -12,7 +14,7 @@ export const likeService = {
    */
   async toggleLike(
     userId: number,
-    imageId: number
+    imageId: number,
   ): Promise<{
     liked: boolean;
   }> {
@@ -56,6 +58,24 @@ export const likeService = {
           imageId,
         },
       });
+
+      // 알림 생성 (자신의 게시물이 아닌 경우에만)
+      if (image.userId !== userId) {
+        const actor = await prisma.user.findUnique({
+          where: { id: userId },
+          select: { nickname: true },
+        });
+
+        if (actor) {
+          await notificationService.createNotification({
+            userId: image.userId, // 받는 사람 (이미지 주인)
+            actorId: userId, // 보낸 사람 (좋아요 누른 사람)
+            type: NotificationType.LIKE,
+            imageId: imageId,
+            message: `${actor.nickname}님이 회원님의 이미지를 좋아합니다.`,
+          });
+        }
+      }
 
       return { liked: true };
     }

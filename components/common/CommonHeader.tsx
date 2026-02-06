@@ -9,6 +9,7 @@ import { useLogoutMutation } from "@/queries/auth/mutations";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
+import { NotificationPopover } from "./NotificationPopover";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,6 +97,9 @@ export const Header = () => {
                 <Sparkles className="w-4 h-4" />
               </Button>
             </Link>
+
+            {/* 알림 */}
+            <NotificationPopover />
 
             {/* 테마 토글 */}
             <ThemeToggle />

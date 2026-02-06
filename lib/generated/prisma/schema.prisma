@@ -25,21 +25,23 @@ enum AuthProvider {
 }
 
 model User {
-  id              Int              @id @default(autoincrement())
-  email           String           @unique
-  password        String?
-  nickname        String           @unique
-  credits         Int              @default(100) // 기본 100 크레딧
-  role            UserRole         @default(user)
-  provider        AuthProvider     @default(local)
-  kakaoId         String?          @unique // 카카오 고유 ID
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  profileImageUrl String?
-  loginAttempts   LoginAttempt[]
-  generatedImages GeneratedImage[]
-  imageLikes      ImageLike[]
-  imageComments   ImageComment[]
+  id                     Int              @id @default(autoincrement())
+  email                  String           @unique
+  password               String?
+  nickname               String           @unique
+  credits                Int              @default(100) // 기본 100 크레딧
+  role                   UserRole         @default(user)
+  provider               AuthProvider     @default(local)
+  kakaoId                String?          @unique // 카카오 고유 ID
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  profileImageUrl        String?
+  loginAttempts          LoginAttempt[]
+  generatedImages        GeneratedImage[]
+  imageLikes             ImageLike[]
+  imageComments          ImageComment[]
+  notifications          Notification[]   @relation("UserNotifications")
+  triggeredNotifications Notification[]   @relation("NotificationActor")
 }
 
 model LoginAttempt {
@@ -70,9 +72,10 @@ model GeneratedImage {
   updatedAt        DateTime @updatedAt
 
   // 좋아요, 댓글, 카테고리 관계
-  likes      ImageLike[]
-  comments   ImageComment[]
-  categories Category[]
+  likes         ImageLike[]
+  comments      ImageComment[]
+  categories    Category[]
+  notifications Notification[]
 
   @@index([userId])
   @@index([createdAt])
@@ -96,17 +99,19 @@ model ImageLike {
 
 // 이미지 댓글 모델
 model ImageComment {
-  id        Int            @id @default(autoincrement())
-  userId    Int
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  imageId   Int
-  image     GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  content   String         @db.Text
-  parentId  Int? // 대댓글을 위한 부모 댓글 ID
-  parent    ImageComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   ImageComment[] @relation("CommentReplies")
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
+  id            Int            @id @default(autoincrement())
+  userId        Int
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageId       Int
+  image         GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  content       String         @db.Text
+  parentId      Int? // 대댓글을 위한 부모 댓글 ID
+  parent        ImageComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       ImageComment[] @relation("CommentReplies")
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([imageId])
   @@index([userId])
@@ -136,4 +141,28 @@ model Category {
 
   // 이미지와의 관계 (암묵적 다대다)
   images GeneratedImage[]
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+}
+
+model Notification {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  actorId   Int
+  actor     User             @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  message   String?
+  isRead    Boolean          @default(false)
+  imageId   Int?
+  image     GeneratedImage?  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  commentId Int?
+  comment   ImageComment?    @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([isRead])
 }

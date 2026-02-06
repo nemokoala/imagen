@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/lib/errors/AppError";
+import { NotificationType } from "@/lib/generated/prisma";
+import { notificationService } from "@/lib/services/notification/notificationService";
 
 export interface CreateCommentData {
   userId: number;
@@ -136,6 +138,18 @@ export const commentService = {
       },
     });
 
+    // 알림 생성 (자신의 게시물이 아닌 경우에만)
+    if (image.userId !== userId) {
+      await notificationService.createNotification({
+        userId: image.userId, // 받는 사람 (이미지 주인)
+        actorId: userId, // 보낸 사람 (댓글 작성자)
+        type: NotificationType.COMMENT,
+        imageId: imageId,
+        commentId: comment.id,
+        message: `${comment.user.nickname}님이 회원님의 이미지에 댓글을 남겼습니다.`,
+      });
+    }
+
     return comment as CommentWithUser;
   },
 
@@ -145,7 +159,7 @@ export const commentService = {
   async updateComment(
     commentId: number,
     userId: number,
-    data: UpdateCommentData
+    data: UpdateCommentData,
   ): Promise<CommentWithUser> {
     if (isNaN(commentId)) {
       throw new ApiError("유효하지 않은 댓글 ID입니다.", 400);

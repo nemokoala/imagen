@@ -97,7 +97,7 @@ export function ImageDetail({
 
   return (
     <Layout.Content className="py-8 px-4 md:px-8 lg:px-12">
-      <div className="max-w-8xl mx-auto w-full">
+      <div className="max-w-7xl mx-auto w-full">
         {/* 뒤로가기 버튼 */}
         <Button
           variant="outline"

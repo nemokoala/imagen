@@ -9,12 +9,13 @@ import { useGetCategories } from "@/queries/category/queries";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { VirtualRow } from "./VirtualRow";
 import { LoadMoreStatus } from "./LoadMoreStatus";
 import { useScrollStore } from "@/stores/scrollStore";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
 import { CategoryFilter } from "./CategoryFilter";
+import { Skeleton } from "../ui/skeleton";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 interface InfiniteImageGalleryProps {
   userId?: number;
@@ -32,20 +33,14 @@ export function InfiniteImageGallery({
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollElement = scrollElementRef || parentRef;
 
-  // 카테고리 필터 상태 (다중 선택)
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const { getParam, setParam, removeParam } = useUrlParams();
 
-  // 카테고리 토글 핸들러
-  const handleToggleCategory = (slug: string) => {
-    setSelectedCategories((prev) =>
-      prev.includes(slug) ? prev.filter((c) => c !== slug) : [...prev, slug],
-    );
-  };
-
-  // 전체 선택 (초기화)
-  const handleSelectAll = () => {
-    setSelectedCategories([]);
-  };
+  // URL에서 카테고리 상태 가져오기
+  const categoryStr = getParam("categories");
+  const selectedCategories = useMemo(
+    () => categoryStr?.split(",").filter(Boolean) || [],
+    [categoryStr],
+  );
 
   // 카테고리 목록 조회
   const { data: categories = [] } = useGetCategories();
@@ -77,7 +72,7 @@ export function InfiniteImageGallery({
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const { scrollPos, setScrollPos } = useScrollStore();
+  const { setScrollPos, scrollPos } = useScrollStore();
   const [containerWidth, setContainerWidth] = useState(0);
 
   // 모든 페이지의 이미지를 하나의 배열로 합치기
@@ -98,6 +93,31 @@ export function InfiniteImageGallery({
     if (width >= 768) return 2; // md
     return 2;
   }, [width]);
+
+  // 카테고리 토글 핸들러 (URL 업데이트)
+  const handleToggleCategory = useCallback(
+    (slug: string) => {
+      const newCategories = selectedCategories.includes(slug)
+        ? selectedCategories.filter((c) => c !== slug)
+        : [...selectedCategories, slug];
+
+      setParam("categories", newCategories.join(","));
+    },
+    [selectedCategories, setParam],
+  );
+
+  // 전체 선택 (초기화)
+  const handleSelectAll = useCallback(() => {
+    removeParam("categories");
+  }, [removeParam]);
+
+  // 카테고리 변경 시 스크롤 위치 컨테이너 상단으로 이동
+  useEffect(() => {
+    scrollElement.current?.scrollTo({
+      top: containerRef.current?.offsetTop,
+      behavior: "smooth",
+    });
+  }, [selectedCategories]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지
   const containerRefCallback = useCallback((node: HTMLDivElement | null) => {
@@ -140,7 +160,7 @@ export function InfiniteImageGallery({
     return Math.floor(cardWidth); // 소수점 제거로 정확한 픽셀 계산
   }, [containerWidth, columnCount]);
 
-  // 가상 스크롤 설정 - 높이 직접 계산 (measureElement 제거로 떨림 방지)
+  // 가상 스크롤 설정
   const rowVirtualizer = useVirtualizer({
     count: rows.length,
     getScrollElement: () => scrollElement.current,
@@ -176,7 +196,7 @@ export function InfiniteImageGallery({
       },
       {
         root: scrollEl,
-        rootMargin: "200px", // 뷰포트 끝에서 200px 전에 미리 로드
+        rootMargin: "200px",
         threshold: 0,
       },
     );
@@ -205,24 +225,33 @@ export function InfiniteImageGallery({
     <div
       style={{
         height: `${containerHeight}px`,
+        minHeight: "100dvh",
         width: "100%",
         position: "relative",
         marginTop: "0.5rem",
       }}
     >
-      {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-        const row = rows[virtualRow.index];
-        if (!row) return null;
+      {isLoading ? (
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+          {[...Array(20)].map((_, i) => (
+            <Skeleton key={i} className="aspect-square rounded-xl" />
+          ))}
+        </div>
+      ) : (
+        rowVirtualizer.getVirtualItems().map((virtualRow) => {
+          const row = rows[virtualRow.index];
+          if (!row) return null;
 
-        return (
-          <VirtualRow
-            key={virtualRow.key}
-            virtualRow={virtualRow}
-            row={row}
-            columnCount={columnCount}
-          />
-        );
-      })}
+          return (
+            <VirtualRow
+              key={virtualRow.key}
+              virtualRow={virtualRow}
+              row={row}
+              columnCount={columnCount}
+            />
+          );
+        })
+      )}
 
       <LoadMoreStatus
         isFetchingNextPage={isFetchingNextPage}

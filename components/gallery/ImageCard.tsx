@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +10,7 @@ import { Download, Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { Image as ImageType } from "@/types/image.interfaces";
 import { downloadImage } from "@/lib/utils";
+import { Skeleton } from "../ui/skeleton";
 
 interface ImageCardProps {
   image: ImageType;
@@ -18,6 +19,7 @@ interface ImageCardProps {
 export function ImageCard({ image }: ImageCardProps) {
   const router = useRouter();
   const prefetchedRef = useRef(false); // 중복 prefetch 방지
+  const [isLoaded, setIsLoaded] = useState(false);
 
   // 호버 시 router.prefetch 호출 - App Router에서 동적 라우트도 정상 동작
   const handleMouseEnter = useCallback(() => {
@@ -34,8 +36,9 @@ export function ImageCard({ image }: ImageCardProps) {
       onMouseEnter={handleMouseEnter}
       className="block"
     >
-      <Card className="overflow-hidden hover:shadow-2xl aspect-square transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 shadow-xl gap-1 p-0">
+      <Card className="overflow-hidden aspect-square transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 gap-1 p-0">
         <div className="relative h-full">
+          {!isLoaded && <Skeleton className="absolute inset-0 z-10" />}
           <Image
             src={image.imageUrl}
             alt={image.prompt}
@@ -44,6 +47,7 @@ export function ImageCard({ image }: ImageCardProps) {
             loading="eager"
             priority={true}
             sizes="33vw"
+            onLoad={() => setIsLoaded(true)}
           />
           <div className="absolute top-3 right-3">
             <Badge

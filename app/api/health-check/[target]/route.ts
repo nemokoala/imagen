@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ollamaService } from "@/lib/services/ollamaService";
 import { imageService } from "@/lib/services/image/imageService";
+import { errorHandler } from "@/lib/errors/errorHandler";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ target: string }> }
+  { params }: { params: Promise<{ target: string }> },
 ) {
   const resolvedParams = await params;
   const target = resolvedParams.target;
@@ -29,7 +30,7 @@ export async function GET(
             error:
               'Invalid target. Use "ollama", "stable", "comfyui", or "zimage"',
           },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -39,7 +40,7 @@ export async function GET(
         status: response ? "healthy" : "unhealthy",
         healthy: response,
       },
-      { status: response ? 200 : 500 }
+      { status: response ? 200 : 400 },
     );
   } catch (error) {
     console.error(`Health check failed for ${target}:`, error);
@@ -50,7 +51,7 @@ export async function GET(
         healthy: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

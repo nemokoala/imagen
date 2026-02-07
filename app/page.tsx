@@ -4,6 +4,8 @@ import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery"
 import { WelcomeTitle } from "@/components/home/WelcomeTitle";
 import { Layout } from "@/components/layout/Layout";
 import { ImageCreatButton } from "@/components/home/ImageCreatButton";
+import { FeaturedImages } from "@/components/home/FeaturedImages";
+import { MonthlyRanking } from "@/components/home/MonthlyRanking";
 import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -34,6 +36,8 @@ export default function Home() {
       ref={scrollContainerRef}
     >
       <WelcomeTitle />
+      <FeaturedImages />
+      <MonthlyRanking />
       <InfiniteImageGallery
         onScrollChange={handleScrollChange}
         maintainScrollPosition={true}

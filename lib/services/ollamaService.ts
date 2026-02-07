@@ -1,4 +1,5 @@
 import { prisma } from "../prisma";
+import { ApiError } from "@/lib/errors/AppError";
 
 export interface TranslateAndClassifyResult {
   prompt: string;
@@ -44,13 +45,13 @@ export const ollamaService = {
     });
 
     if (!response.ok) {
-      throw new Error("Failed to translate text");
+      throw new ApiError("텍스트 번역에 실패했습니다.", response.status);
     }
 
     const data = await response.json();
 
     if (!data.response) {
-      throw new Error("Failed to translate text");
+      throw new ApiError("텍스트 번역 응답이 올바르지 않습니다.", 500);
     }
 
     // JSON 응답 파싱
@@ -119,13 +120,13 @@ ${userPrompt}
     });
 
     if (!response.ok) {
-      throw new Error("Failed to translate and classify");
+      throw new ApiError("번역 및 분류 요청에 실패했습니다.", response.status);
     }
 
     const data = await response.json();
 
     if (!data.response) {
-      throw new Error("Failed to translate and classify");
+      throw new ApiError("번역 및 분류 응답이 올바르지 않습니다.", 500);
     }
 
     // JSON 응답 파싱
@@ -133,7 +134,7 @@ ${userPrompt}
       // 응답에서 JSON 부분만 추출
       const jsonMatch = data.response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
-        throw new Error("No JSON found in response");
+        throw new ApiError("AI 응답에서 JSON을 찾을 수 없습니다.", 500);
       }
 
       const parsed = JSON.parse(jsonMatch[0]);
@@ -168,16 +169,20 @@ ${userPrompt}
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        throw new Error("Failed to check health");
+        throw new ApiError(
+          "AI 서비스 상태 확인에 실패했습니다.",
+          response.status,
+        );
       }
 
       return response.ok;
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error && error.name === "AbortError") {
-        throw new Error("Health check timeout");
+        throw new ApiError("AI 서비스 연결 시간이 초과되었습니다.", 408);
       }
-      throw error;
+      if (error instanceof ApiError) throw error;
+      throw new ApiError("AI 서비스 상태 확인 중 오류가 발생했습니다.", 500);
     }
   },
 };

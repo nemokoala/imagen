@@ -3,6 +3,7 @@ import {
   GeneratedImage,
   GetUserImagesResponse,
   GetImageByIdResponse,
+  Image,
 } from "../../types/image.interfaces";
 import { HealthCheckResponse } from "../../types/common.interfaces";
 import { GalleryResponse } from "../../types/image.interfaces";
@@ -148,5 +149,29 @@ export const useGetCommentsQuery = (imageId: number | null) => {
       return response.success ? response.comments : [];
     },
     enabled: !!imageId,
+  });
+};
+
+export const useGetTopLikedImagesQuery = (limit: number = 10) => {
+  return useQuery({
+    queryKey: ["topLikedImages", limit],
+    queryFn: async () => {
+      const response = (await FetchUtil.get(
+        `/api/images/ranking/top-liked?limit=${limit}`,
+      )) as { success: boolean; images: Image[] };
+      return response.images;
+    },
+  });
+};
+
+export const useGetMonthlyRankingQuery = (limit: number = 10) => {
+  return useQuery({
+    queryKey: ["monthlyRanking", limit],
+    queryFn: async () => {
+      const response = (await FetchUtil.get(
+        `/api/images/ranking/monthly?limit=${limit}`,
+      )) as { success: boolean; images: Image[] };
+      return response.images;
+    },
   });
 };

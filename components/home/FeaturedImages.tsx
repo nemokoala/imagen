@@ -10,12 +10,12 @@ export function FeaturedImages() {
 
   if (isLoading) {
     return (
-      <div className="w-full px-4 py-8 max-w-7xl mx-auto">
+      <div className="w-full py-8 max-w-7xl mx-auto">
         <div className="flex items-center gap-2 mb-6">
           <Skeleton className="h-8 w-8 rounded-full" />
           <Skeleton className="h-8 w-48" />
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}
@@ -27,7 +27,7 @@ export function FeaturedImages() {
   if (!images || images.length === 0) return null;
 
   return (
-    <section className="w-full px-4 py-6 max-w-7xl mx-auto">
+    <section className="w-full py-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-2 mb-6">
         <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
           <Flame className="w-5 h-5 text-red-500 dark:text-red-400 fill-red-500/20" />
@@ -37,7 +37,7 @@ export function FeaturedImages() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {images.map((image) => (
           <ImageCard key={image.id} image={image} />
         ))}

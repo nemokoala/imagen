@@ -15,7 +15,7 @@ export function CategoryFilter({
   handleToggleCategory,
 }: CategoryFilterProps) {
   return (
-    <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-2.5 -mx-2 px-2">
+    <div className="sticky top-2 z-10 bg-white dark:bg-gray-800 backdrop-blur-sm py-2.5 px-2 w-fit max-w-[calc(100dvw-2rem)] overflow-x-auto mx-auto rounded-4xl">
       <div className="flex gap-2 overflow-x-auto scrollbar-hide">
         <Button
           onClick={handleSelectAll}

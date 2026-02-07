@@ -10,12 +10,12 @@ export function MonthlyRanking() {
 
   if (isLoading) {
     return (
-      <div className="w-full px-4 py-8 max-w-7xl mx-auto">
+      <div className="w-full py-8 max-w-7xl mx-auto">
         <div className="flex items-center gap-2 mb-6">
           <Skeleton className="h-8 w-8 rounded-full" />
           <Skeleton className="h-8 w-48" />
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}
@@ -27,7 +27,7 @@ export function MonthlyRanking() {
   if (!images || images.length === 0) return null;
 
   return (
-    <section className="w-full px-4 py-6 max-w-7xl mx-auto">
+    <section className="w-full py-6 max-w-7xl mx-auto">
       <div className="flex items-center gap-2 mb-6">
         <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-full">
           <Trophy className="w-5 h-5 text-yellow-500 dark:text-yellow-400 fill-yellow-500/20" />
@@ -37,7 +37,7 @@ export function MonthlyRanking() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
         {images.map((image) => (
           <ImageCard key={image.id} image={image} />
         ))}

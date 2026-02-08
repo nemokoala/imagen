@@ -4,7 +4,7 @@ module.exports = {
       name: "imagen-app",
       cwd: "/home/koala/actions-runner/_work/imagen/imagen",
       script: ".next/standalone/server.js",
-      instances: "max",
+      instances: 2,
       exec_mode: "cluster",
       kill_timeout: 3000,
       wait_ready: true,

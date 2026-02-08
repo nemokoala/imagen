@@ -6,6 +6,10 @@ export const initFirebaseAdmin = () => {
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
     const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
+    console.log("projectId", projectId);
+    console.log("clientEmail", clientEmail);
+    console.log("privateKey", privateKey);
+
     if (!projectId || !clientEmail || !privateKey) {
       console.error(
         "❌ Firebase Admin 초기화 실패: 필수 환경 변수가 누락되었습니다.",

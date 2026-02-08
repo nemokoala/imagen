@@ -48,6 +48,7 @@ export function createMetadata({
     creator: siteConfig.name,
     publisher: siteConfig.name,
     metadataBase: new URL(siteConfig.url),
+    manifest: "/manifest.json",
     icons: {
       icon: [
         { url: "/icon.png", sizes: "any" },
@@ -60,6 +61,10 @@ export function createMetadata({
       ],
       shortcut: "/icon.png",
     },
+    themeColor: [
+      { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+      { media: "(prefers-color-scheme: dark)", color: "#000000" },
+    ],
     alternates: {
       canonical: fullUrl,
     },

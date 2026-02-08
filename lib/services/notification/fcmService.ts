@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import admin from "@/lib/firebaseAdmin";
+import admin, { initFirebaseAdmin } from "@/lib/firebaseAdmin";
 import { NotificationType } from "@/lib/generated/prisma";
 
 export const fcmService = {
@@ -26,25 +26,28 @@ export const fcmService = {
     if (type === NotificationType.COMMENT) title = "댓글 알림";
 
     try {
-      await admin.messaging().send({
-        token: user.fcmToken,
-        data: {
-          title,
-          body: message,
-          icon: "/icon.png",
-          link: link || "",
-        },
-        android: {
-          priority: "high",
-        },
-        apns: {
-          payload: {
-            aps: {
-              contentAvailable: true,
+      // Lazy init to ensure "The default Firebase app does not exist" error is avoided
+      await initFirebaseAdmin()
+        .messaging()
+        .send({
+          token: user.fcmToken,
+          data: {
+            title,
+            body: message,
+            icon: "/icon.png",
+            link: link || "",
+          },
+          android: {
+            priority: "high",
+          },
+          apns: {
+            payload: {
+              aps: {
+                contentAvailable: true,
+              },
             },
           },
-        },
-      });
+        });
     } catch (error) {
       console.error("FCM Send Error:", error);
       // TODO: 토큰이 유효하지 않은 경우 처리 로직 (예: DB에서 토큰 삭제)

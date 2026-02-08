@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "imagen-app",
-      cwd: process.env.APP_CWD || "/home/koala/imagen", // ← 기본값은 유지 (fallback)
+      cwd: "/home/koala/actions-runner/_work/imagen/imagen",
       script: ".next/standalone/server.js",
       instances: "max",
       exec_mode: "cluster",

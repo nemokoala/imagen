@@ -98,7 +98,7 @@ jobs:
 
           # 1. 프로세스가 떠 있으면 Reload(무중단), 없으면 Start
           # --update-env: 환경변수가 바뀌었을 경우를 대비해 갱신
-          pm2 restart ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
+          pm2 reload ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
 
           # 2. 설정 저장 (재부팅 대비)
           pm2 save

@@ -63,10 +63,8 @@ const refreshToken = async (): Promise<boolean> => {
   isRefreshing = true;
 
   try {
-    // 상대 경로 사용 (www/non-www 모두 동일한 도메인으로 요청)
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "";
-
-    const response = await fetch(`${apiUrl}/api/auth/refresh`, {
+    // 항상 상대 경로 사용 (크로스 오리진 CORS 문제 방지)
+    const response = await fetch(`/api/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

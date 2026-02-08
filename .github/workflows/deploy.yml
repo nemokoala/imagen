@@ -41,7 +41,9 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           set -a
-          . ~/.env.next || true   # DATABASE_URL 로드
+          # 쌍따옴표/단따옴표 제거 후 로드 (값의 시작과 끝 따옴표만 제거)
+          sed -E "s/^([^=]+)=[\"'](.*)[\"']$/\1=\2/" ~/.env.next > /tmp/.env.next.clean 2>/dev/null || cp ~/.env.next /tmp/.env.next.clean
+          . /tmp/.env.next.clean || true
           set +a
           npx prisma migrate deploy
 
@@ -50,7 +52,9 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           set -a
-          . ~/.env.next || true   # 🔸 서버 런타임 비밀 주입
+          # 쌍따옴표/단따옴표 제거 후 로드 (값의 시작과 끝 따옴표만 제거)
+          sed -E "s/^([^=]+)=[\"'](.*)[\"']$/\1=\2/" ~/.env.next > /tmp/.env.next.clean 2>/dev/null || cp ~/.env.next /tmp/.env.next.clean
+          . /tmp/.env.next.clean || true
           set +a
           npm run build
 
@@ -70,7 +74,9 @@ jobs:
       - name: Ensure uploads directory exists
         run: |
           set -a
-          . ~/.env.next || true
+          # 쌍따옴표/단따옴표 제거 후 로드 (값의 시작과 끝 따옴표만 제거)
+          sed -E "s/^([^=]+)=[\"'](.*)[\"']$/\1=\2/" ~/.env.next > /tmp/.env.next.clean 2>/dev/null || cp ~/.env.next /tmp/.env.next.clean
+          . /tmp/.env.next.clean || true
           set +a
           # UPLOAD_PATH가 설정되어 있으면 해당 경로 사용, 없으면 기본 경로
           UPLOAD_DIR="${UPLOAD_PATH:-$HOME/uploads}"
@@ -81,23 +87,25 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           set -a
-          . ~/.env.next || true
+          # 쌍따옴표/단따옴표 제거 후 로드 (값의 시작과 끝 따옴표만 제거)
+          sed -E "s/^([^=]+)=[\"'](.*)[\"']$/\1=\2/" ~/.env.next > /tmp/.env.next.clean 2>/dev/null || cp ~/.env.next /tmp/.env.next.clean
+          . /tmp/.env.next.clean || true
           set +a
 
           # Firebase 환경 변수 확인 및 이스케이프 처리
-          # .env.next에서 로드된 값이 따옴표로 감싸져 있을 수 있으므로 처리
+          # \n 이스케이프를 실제 줄바꿈으로 변환
           if [ -n "$FIREBASE_PRIVATE_KEY" ]; then
-            # 따옴표 제거 및 \n 이스케이프를 실제 줄바꿈으로 변환
-            export FIREBASE_PRIVATE_KEY=$(echo "$FIREBASE_PRIVATE_KEY" | sed "s/^[\"']//;s/[\"']$//" | sed 's/\\n/\n/g')
+            export FIREBASE_PRIVATE_KEY=$(echo "$FIREBASE_PRIVATE_KEY" | sed 's/\\n/\n/g')
           fi
 
           echo "🔄 PM2 Reloading..."
 
-          # 1. 프로세스가 떠 있으면 Reload(무중단), 없으면 Start
-          # --update-env: 환경변수가 바뀌었을 경우를 대비해 갱신
-          pm2 reload ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
+          # instances 수가 변경된 경우를 대비해 완전 재시작
+          # pm2 reload는 instances 수 변경을 반영하지 않으므로 delete 후 start 사용
+          pm2 delete imagen-app 2>/dev/null || true
+          pm2 start ecosystem.config.js --env production
 
-          # 2. 설정 저장 (재부팅 대비)
+          # 설정 저장 (재부팅 대비)
           pm2 save
 
           echo "✅ Deploy Complete!"

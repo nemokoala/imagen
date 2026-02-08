@@ -28,10 +28,7 @@ jobs:
       - name: Create .env.production from ~/.env.next
         working-directory: ${{ github.workspace }}
         run: |
-          set -a
-          . ~/.env.next || true
-          set +a
-          # NEXT_PUBLIC_*로 시작하는 변수만 추출
+          # NEXT_PUBLIC_*로 시작하는 변수만 추출 (set -a 없이 직접 grep)
           grep -E '^NEXT_PUBLIC_' ~/.env.next > .env.production 2>/dev/null || true
           echo "✅ Created .env.production with NEXT_PUBLIC_* variables"
 

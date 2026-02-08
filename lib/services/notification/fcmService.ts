@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
-import admin, { initFirebaseAdmin } from "@/lib/firebaseAdmin";
+import { initFirebaseAdmin } from "@/lib/firebaseAdmin";
 import { NotificationType } from "@/lib/generated/prisma";
+import { ApiError } from "@/lib/errors/AppError";
 
 export const fcmService = {
   /**
@@ -58,6 +59,17 @@ export const fcmService = {
    * 사용자 FCM 토큰 업데이트
    */
   async updateFCMToken(userId: number, token: string) {
+    if (!token) {
+      throw new ApiError("토큰이 없습니다.", 400);
+    }
+
+    // 이미 사용 중인 토큰 삭제
+    await prisma.user.updateMany({
+      where: { fcmToken: token },
+      data: { fcmToken: null },
+    });
+
+    // 토큰 업데이트
     await prisma.user.update({
       where: { id: userId },
       data: { fcmToken: token },

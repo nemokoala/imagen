@@ -87,6 +87,13 @@ jobs:
           . ~/.env.next || true
           set +a
 
+          # Firebase 환경 변수 확인 및 이스케이프 처리
+          # .env.next에서 로드된 값이 따옴표로 감싸져 있을 수 있으므로 처리
+          if [ -n "$FIREBASE_PRIVATE_KEY" ]; then
+            # 따옴표 제거 및 \n 이스케이프를 실제 줄바꿈으로 변환
+            export FIREBASE_PRIVATE_KEY=$(echo "$FIREBASE_PRIVATE_KEY" | sed "s/^[\"']//;s/[\"']$//" | sed 's/\\n/\n/g')
+          fi
+
           echo "🔄 PM2 Reloading..."
 
           # 1. 프로세스가 떠 있으면 Reload(무중단), 없으면 Start

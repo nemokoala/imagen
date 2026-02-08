@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "ImageGen",
   "short_name": "ImageGen",
   "description": "AI로 이미지를 생성하고 공유하는 서비스",
@@ -8,6 +9,12 @@
   "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "585x574",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "/icon.png",
       "sizes": "192x192",
@@ -34,7 +41,7 @@
     },
     {
       "src": "/images/favicon.png",
-      "sizes": "32x32",
+      "sizes": "585x574",
       "type": "image/png"
     }
   ],

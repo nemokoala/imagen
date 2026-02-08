@@ -7,7 +7,6 @@ module.exports = {
       instances: "2",
       exec_mode: "cluster",
       kill_timeout: 3000,
-      wait_ready: true,
       args: ".next/standalone/server.js",
       env_production: {
         NODE_ENV: "production",

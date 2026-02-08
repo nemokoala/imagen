@@ -6,6 +6,7 @@ import { Header } from "@/components/common/CommonHeader";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import AuthProvider from "@/providers/AuthProviders";
 import { ModalProvider } from "@/providers/ModalProvider";
+import { NotificationProvider } from "@/providers/NotificationProvider";
 import { Suspense } from "react";
 import { defaultMetadata } from "@/lib/metadata";
 import { StructuredData } from "@/components/seo/StructuredData";
@@ -38,10 +39,12 @@ export default function RootLayout({
           <QueryProviders>
             <AuthProvider>
               <ModalProvider>
-                <Suspense fallback={null}>
-                  <Header />
-                  {children}
-                </Suspense>
+                <NotificationProvider>
+                  <Suspense fallback={null}>
+                    <Header />
+                    {children}
+                  </Suspense>
+                </NotificationProvider>
               </ModalProvider>
             </AuthProvider>
           </QueryProviders>

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/lib/errors/AppError";
-
+import { fcmService } from "./fcmService";
 import { NotificationType } from "@/lib/generated/prisma";
 
 interface CreateNotificationData {
@@ -34,6 +34,16 @@ export const notificationService = {
         commentId,
       },
     });
+
+    // FCM 전송 (비동기 처리, 실패해도 무방함)
+    let link = "/";
+    if (imageId) {
+      link = `/image/${imageId}`;
+    }
+
+    fcmService
+      .sendFCM(userId, type, message, link)
+      .catch((err) => console.error("FCM 전송 실패:", err));
   },
 
   /**

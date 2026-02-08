@@ -1718,6 +1718,7 @@ export namespace Prisma {
     role: $Enums.UserRole | null
     provider: $Enums.AuthProvider | null
     kakaoId: string | null
+    fcmToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
     profileImageUrl: string | null
@@ -1732,6 +1733,7 @@ export namespace Prisma {
     role: $Enums.UserRole | null
     provider: $Enums.AuthProvider | null
     kakaoId: string | null
+    fcmToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
     profileImageUrl: string | null
@@ -1746,6 +1748,7 @@ export namespace Prisma {
     role: number
     provider: number
     kakaoId: number
+    fcmToken: number
     createdAt: number
     updatedAt: number
     profileImageUrl: number
@@ -1772,6 +1775,7 @@ export namespace Prisma {
     role?: true
     provider?: true
     kakaoId?: true
+    fcmToken?: true
     createdAt?: true
     updatedAt?: true
     profileImageUrl?: true
@@ -1786,6 +1790,7 @@ export namespace Prisma {
     role?: true
     provider?: true
     kakaoId?: true
+    fcmToken?: true
     createdAt?: true
     updatedAt?: true
     profileImageUrl?: true
@@ -1800,6 +1805,7 @@ export namespace Prisma {
     role?: true
     provider?: true
     kakaoId?: true
+    fcmToken?: true
     createdAt?: true
     updatedAt?: true
     profileImageUrl?: true
@@ -1901,6 +1907,7 @@ export namespace Prisma {
     role: $Enums.UserRole
     provider: $Enums.AuthProvider
     kakaoId: string | null
+    fcmToken: string | null
     createdAt: Date
     updatedAt: Date
     profileImageUrl: string | null
@@ -1934,6 +1941,7 @@ export namespace Prisma {
     role?: boolean
     provider?: boolean
     kakaoId?: boolean
+    fcmToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     profileImageUrl?: boolean
@@ -1957,12 +1965,13 @@ export namespace Prisma {
     role?: boolean
     provider?: boolean
     kakaoId?: boolean
+    fcmToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     profileImageUrl?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "role" | "provider" | "kakaoId" | "createdAt" | "updatedAt" | "profileImageUrl", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "nickname" | "credits" | "role" | "provider" | "kakaoId" | "fcmToken" | "createdAt" | "updatedAt" | "profileImageUrl", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     loginAttempts?: boolean | User$loginAttemptsArgs<ExtArgs>
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
@@ -1992,6 +2001,7 @@ export namespace Prisma {
       role: $Enums.UserRole
       provider: $Enums.AuthProvider
       kakaoId: string | null
+      fcmToken: string | null
       createdAt: Date
       updatedAt: Date
       profileImageUrl: string | null
@@ -2378,6 +2388,7 @@ export namespace Prisma {
     readonly role: FieldRef<"User", 'UserRole'>
     readonly provider: FieldRef<"User", 'AuthProvider'>
     readonly kakaoId: FieldRef<"User", 'String'>
+    readonly fcmToken: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
     readonly profileImageUrl: FieldRef<"User", 'String'>
@@ -10111,6 +10122,7 @@ export namespace Prisma {
     role: 'role',
     provider: 'provider',
     kakaoId: 'kakaoId',
+    fcmToken: 'fcmToken',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     profileImageUrl: 'profileImageUrl'
@@ -10232,6 +10244,7 @@ export namespace Prisma {
     password: 'password',
     nickname: 'nickname',
     kakaoId: 'kakaoId',
+    fcmToken: 'fcmToken',
     profileImageUrl: 'profileImageUrl'
   };
 
@@ -10357,6 +10370,7 @@ export namespace Prisma {
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     provider?: EnumAuthProviderFilter<"User"> | $Enums.AuthProvider
     kakaoId?: StringNullableFilter<"User"> | string | null
+    fcmToken?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     profileImageUrl?: StringNullableFilter<"User"> | string | null
@@ -10377,6 +10391,7 @@ export namespace Prisma {
     role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrderInput | SortOrder
+    fcmToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profileImageUrl?: SortOrderInput | SortOrder
@@ -10401,6 +10416,7 @@ export namespace Prisma {
     credits?: IntFilter<"User"> | number
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
     provider?: EnumAuthProviderFilter<"User"> | $Enums.AuthProvider
+    fcmToken?: StringNullableFilter<"User"> | string | null
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     profileImageUrl?: StringNullableFilter<"User"> | string | null
@@ -10421,6 +10437,7 @@ export namespace Prisma {
     role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrderInput | SortOrder
+    fcmToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profileImageUrl?: SortOrderInput | SortOrder
@@ -10443,6 +10460,7 @@ export namespace Prisma {
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
     provider?: EnumAuthProviderWithAggregatesFilter<"User"> | $Enums.AuthProvider
     kakaoId?: StringNullableWithAggregatesFilter<"User"> | string | null
+    fcmToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     profileImageUrl?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -10969,6 +10987,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -10989,6 +11008,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -11008,6 +11028,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11028,6 +11049,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11048,6 +11070,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -11061,6 +11084,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11075,6 +11099,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -11712,6 +11737,7 @@ export namespace Prisma {
     role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrder
+    fcmToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profileImageUrl?: SortOrder
@@ -11731,6 +11757,7 @@ export namespace Prisma {
     role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrder
+    fcmToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profileImageUrl?: SortOrder
@@ -11745,6 +11772,7 @@ export namespace Prisma {
     role?: SortOrder
     provider?: SortOrder
     kakaoId?: SortOrder
+    fcmToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     profileImageUrl?: SortOrder
@@ -13593,6 +13621,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -13612,6 +13641,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -13646,6 +13676,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13665,6 +13696,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13683,6 +13715,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -13702,6 +13735,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -13839,6 +13873,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13858,6 +13893,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -13951,6 +13987,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -13970,6 +14007,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14042,6 +14080,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14061,6 +14100,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14123,6 +14163,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14142,6 +14183,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14302,6 +14344,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14321,6 +14364,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14501,6 +14545,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14520,6 +14565,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14543,6 +14589,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14562,6 +14609,7 @@ export namespace Prisma {
     role?: $Enums.UserRole
     provider?: $Enums.AuthProvider
     kakaoId?: string | null
+    fcmToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     profileImageUrl?: string | null
@@ -14660,6 +14708,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14679,6 +14728,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14708,6 +14758,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
@@ -14727,6 +14778,7 @@ export namespace Prisma {
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
     kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null

@@ -57,9 +57,10 @@ export const NotificationProvider = ({
         let registration;
         if ("serviceWorker" in navigator) {
           try {
-            registration = await navigator.serviceWorker.register(
-              "/firebase-messaging-sw.js",
-            );
+            await navigator.serviceWorker.register("/firebase-messaging-sw.js");
+            // 등록 직후 즉시 사용 가능한 상태(Active)가 될 때까지 대기
+            registration = await navigator.serviceWorker.ready;
+
             console.log(
               "Service Worker registered with scope:",
               registration.scope,

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import QueryProviders from "../providers/QueryProviders";
@@ -18,6 +18,13 @@ const pretendard = localFont({
 });
 
 export const metadata: Metadata = defaultMetadata;
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#9f54ff" },
+    { media: "(prefers-color-scheme: dark)", color: "#7d26f0" },
+  ],
+};
 
 export default function RootLayout({
   children,

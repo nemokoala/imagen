@@ -38,7 +38,7 @@ messaging.onBackgroundMessage((payload) => {
     "[firebase-messaging-sw.js] Received background message ",
     payload,
   );
-  const notificationTitle = "background" + payload.data.title;
+  const notificationTitle = payload.data.title;
   const notificationOptions = {
     body: payload.data.body,
     icon: "/icon.png", // public 폴더 내 아이콘 경로

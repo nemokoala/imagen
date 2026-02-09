@@ -80,16 +80,10 @@ jobs:
       - name: Reload PM2 process (Zero Downtime)
         working-directory: ${{ github.workspace }}
         run: |
-          set -a
-          . ~/.env.next || true
-          set +a
-
-          # 디버깅: 키가 로드되었는지 앞 10글자만 확인 
-          echo "🔑 Key Check: ${FIREBASE_PRIVATE_KEY:0:10}..."
-
           echo "🔄 PM2 Reloading..."
 
-          # 기존 로직
+          # --update-env 옵션을 유지하되, ecosystem.config.js의 env_file 설정이 우선 적용됩니다.
           pm2 reload ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
+
           pm2 save
           echo "✅ Deploy Complete!"

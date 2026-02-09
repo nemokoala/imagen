@@ -84,21 +84,12 @@ jobs:
           . ~/.env.next || true
           set +a
 
-          # Firebase 환경 변수 확인 및 이스케이프 처리
-          # .env.next에서 로드된 값이 따옴표로 감싸져 있을 수 있으므로 처리
-          if [ -n "$FIREBASE_PRIVATE_KEY" ]; then
-            # 따옴표 제거 및 \n 이스케이프를 실제 줄바꿈으로 변환
-            export FIREBASE_PRIVATE_KEY=$(echo "$FIREBASE_PRIVATE_KEY" | sed "s/^[\"']//;s/[\"']$//" | sed 's/\\n/\n/g')
-          fi
+          # 디버깅: 키가 로드되었는지 앞 10글자만 확인 
+          echo "🔑 Key Check: ${FIREBASE_PRIVATE_KEY:0:10}..."
 
           echo "🔄 PM2 Reloading..."
 
-          # instances 수가 변경된 경우를 대비해 완전 재시작
-          # pm2 reload는 instances 수 변경을 반영하지 않으므로 delete 후 start 사용
-          pm2 delete imagen-app 2>/dev/null || true
-          pm2 start ecosystem.config.js --env production
-
-          # 설정 저장 (재부팅 대비)
+          # 기존 로직
+          pm2 reload ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
           pm2 save
-
           echo "✅ Deploy Complete!"

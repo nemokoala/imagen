@@ -7,7 +7,7 @@
     "local-dev": "env-cmd -f .env.local next dev --turbopack",
     "local-prd": "env-cmd -f .env.production next dev --turbopack",
     "dev": "env-cmd -f .env.development next dev --turbopack",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -78,7 +78,6 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@ducanh2912/next-pwa": "^10.2.9",
     "@eslint/eslintrc": "^3",
     "@next/eslint-plugin-next": "^16.0.3",
     "@tailwindcss/postcss": "^4",

@@ -55,6 +55,7 @@ export function NotificationPopover() {
       }
 
       if (permission === "granted") {
+        await requestPermission();
         toast.success("이미 웹 푸시 권한이 활성화되었습니다.");
         return;
       }

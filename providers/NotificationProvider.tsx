@@ -113,6 +113,7 @@ export const NotificationProvider = ({
     // Initial permission state check
     if (typeof window !== "undefined" && "Notification" in window) {
       setPermission(Notification.permission);
+      requestPermission();
     }
   }, []);
 
@@ -125,16 +126,10 @@ export const NotificationProvider = ({
   }, [fcmToken]);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && messaging) {
+    // fcmToken이 생성된 후에만 포그라운드 메시지 리스너 등록
+    if (typeof window !== "undefined" && messaging && fcmToken) {
       const unsubscribe = onMessage(messaging, (payload) => {
         console.log("Foreground Message received. ", payload);
-
-        // 탭이 활성화되어 있지 않을 때(다른 탭을 보고 있을 때)는 중복 알림 방지
-        // 서비스 워커가 백그라운드 메시지를 처리함
-        if (document.visibilityState === "hidden") {
-          console.log("App is hidden, skipping foreground notification");
-          return;
-        }
 
         const { title, body, icon } = payload.data || {};
         if (title) {
@@ -154,7 +149,7 @@ export const NotificationProvider = ({
       });
       return () => unsubscribe();
     }
-  }, [router]);
+  }, [router, fcmToken]);
 
   return (
     <NotificationContext.Provider

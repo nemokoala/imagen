@@ -9,12 +9,6 @@ module.exports = {
       env_file: "/home/koala/.env.next",
       kill_timeout: 3000,
       wait_ready: true,
-      env_production: {
-        NODE_ENV: "production",
-        PORT: "3000",
-        HOSTNAME: "0.0.0.0",
-        UPLOAD_PATH: process.env.UPLOAD_PATH || `${process.env.HOME}/uploads`,
-      },
     },
   ],
 };

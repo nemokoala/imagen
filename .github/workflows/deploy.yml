@@ -80,10 +80,14 @@ jobs:
       - name: Reload PM2 process (Zero Downtime)
         working-directory: ${{ github.workspace }}
         run: |
+          echo "📂 Copying env file to standalone directory..."
+          cp ~/.env.next .next/standalone/.env.production
+
           echo "🔄 PM2 Reloading..."
 
-          # --update-env 옵션을 유지하되, ecosystem.config.js의 env_file 설정이 우선 적용됩니다.
-          pm2 reload ecosystem.config.js --env production --update-env || pm2 start ecosystem.config.js --env production
+          # [변경] --update-env 옵션 제거 (이제 PM2가 주입할 필요 없음)
+          # 그냥 재시작하면 Next.js가 알아서 옆에 있는 .env.production을 읽음
+          pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
 
           pm2 save
           echo "✅ Deploy Complete!"

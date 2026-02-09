@@ -10,13 +10,14 @@ import React, {
 import { useRouter } from "next/navigation";
 import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "@/lib/firebase";
-import { useUserStore } from "@/stores/userStore";
 import { FetchUtil } from "@/lib/Fetch.util";
 
 interface NotificationContextType {
   fcmToken: string | null;
   permission: NotificationPermission;
   requestPermission: () => Promise<void>;
+  checkPermission: () => NotificationPermission | null;
+  notificationContent: { title: string; body: string } | null;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -32,7 +33,22 @@ export const NotificationProvider = ({
   const [fcmToken, setFcmToken] = useState<string | null>(null);
   const [permission, setPermission] =
     useState<NotificationPermission>("default");
-  const { user } = useUserStore();
+  const [notificationContent, setNotificationContent] = useState<{
+    title: string;
+    body: string;
+  } | null>(null);
+
+  const checkPermission = useCallback((): NotificationPermission | null => {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      console.log("This browser does not support desktop notification");
+      return null;
+    }
+
+    const currentPermission = Notification.permission;
+    setPermission(currentPermission);
+    console.log("checkPermission", currentPermission);
+    return currentPermission;
+  }, []);
 
   const requestPermission = useCallback(async () => {
     try {
@@ -101,12 +117,6 @@ export const NotificationProvider = ({
   }, []);
 
   useEffect(() => {
-    if (user) {
-      requestPermission();
-    }
-  }, [user]);
-
-  useEffect(() => {
     if (fcmToken) {
       FetchUtil.post("/api/fcm", {
         token: fcmToken,
@@ -132,7 +142,7 @@ export const NotificationProvider = ({
             body,
             icon: icon || "/icon.png",
           });
-
+          setNotificationContent({ title, body });
           notification.onclick = (event) => {
             event.preventDefault(); // 브라우저가 알림 탭을 포커스하는 기본 동작 방지
             const link = payload.data?.link;
@@ -148,7 +158,13 @@ export const NotificationProvider = ({
 
   return (
     <NotificationContext.Provider
-      value={{ fcmToken, permission, requestPermission }}
+      value={{
+        fcmToken,
+        permission,
+        requestPermission,
+        checkPermission,
+        notificationContent,
+      }}
     >
       {children}
     </NotificationContext.Provider>

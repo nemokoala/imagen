@@ -9,6 +9,6 @@ export const useGetNotificationsQuery = () => {
       const response = await FetchUtil.get("/api/notifications");
       return response as NotificationsResponse;
     },
-    refetchInterval: 30000, // 30초마다 폴링
+    refetchInterval: 60000, // 60초마다 폴링
   });
 };

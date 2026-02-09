@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { initFirebaseAdmin } from "@/lib/firebaseAdmin";
 import { NotificationType } from "@/lib/generated/prisma";
 import { ApiError } from "@/lib/errors/AppError";
+import { discordService } from "../logs/logService";
 
 export const fcmService = {
   /**
@@ -49,6 +50,8 @@ export const fcmService = {
             },
           },
         });
+      console.log("FCM Send: ${userId} - ${type} - ${message}");
+      discordService.sendLog(`FCM Send: ${userId} - ${type} - ${message}`);
     } catch (error) {
       console.error("FCM Send Error:", error);
       // TODO: 토큰이 유효하지 않은 경우 처리 로직 (예: DB에서 토큰 삭제)
@@ -62,6 +65,9 @@ export const fcmService = {
     if (!token) {
       throw new ApiError("토큰이 없습니다.", 400);
     }
+
+    console.log("updateFCMToken", userId, "-", token);
+    discordService.sendLog(`updateFCMToken: ${userId} - ${token}`);
 
     // 이미 사용 중인 토큰 삭제
     await prisma.user.updateMany({

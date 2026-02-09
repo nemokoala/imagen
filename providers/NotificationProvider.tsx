@@ -58,9 +58,10 @@ export const NotificationProvider = ({
 
     try {
       // 이미 등록된 Service Worker가 있는지 확인
-      const existingRegistration = await navigator.serviceWorker.getRegistration(
-        "/firebase-messaging-sw.js",
-      );
+      const existingRegistration =
+        await navigator.serviceWorker.getRegistration(
+          "/firebase-messaging-sw.js",
+        );
 
       if (existingRegistration) {
         console.log(
@@ -79,10 +80,7 @@ export const NotificationProvider = ({
       // 등록 직후 즉시 사용 가능한 상태(Active)가 될 때까지 대기
       await navigator.serviceWorker.ready;
 
-      console.log(
-        "Service Worker registered with scope:",
-        registration.scope,
-      );
+      console.log("Service Worker registered with scope:", registration.scope);
       return registration;
     } catch (err) {
       console.error("Service Worker registration failed:", err);
@@ -111,7 +109,11 @@ export const NotificationProvider = ({
 
       if (token) {
         console.log("FCM Token:", token);
+
         setFcmToken(token);
+        await FetchUtil.post("/api/fcm", {
+          token: token,
+        });
       } else {
         console.log(
           "No registration token available. Request permission to generate one.",
@@ -180,14 +182,6 @@ export const NotificationProvider = ({
   }, [getFCMToken, requestPermission]);
 
   useEffect(() => {
-    if (fcmToken) {
-      FetchUtil.post("/api/fcm", {
-        token: fcmToken,
-      });
-    }
-  }, [fcmToken]);
-
-  useEffect(() => {
     // fcmToken이 생성된 후에만 포그라운드 메시지 리스너 등록
     if (typeof window !== "undefined" && messaging && fcmToken) {
       const unsubscribe = onMessage(messaging, (payload) => {
@@ -195,7 +189,7 @@ export const NotificationProvider = ({
 
         const { title, body, icon } = payload.data || {};
         if (title) {
-          const notification = new Notification("foreground" + title, {
+          const notification = new Notification(title, {
             body,
             icon: icon || "/icon.png",
           });

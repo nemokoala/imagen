@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useGetCategories } from "@/queries/category/queries";
 import { cn } from "@/lib/utils";
 
@@ -15,6 +15,7 @@ interface CategorySelectProps {
   onCategoriesChange: (categories: string[]) => void;
   disabled?: boolean;
   isSuggesting?: boolean; // 외부에서 전달받는 로딩 상태
+  isSuggestingCategoriesError?: boolean; // 외부에서 전달받는 에러 상태
 }
 
 export function CategorySelect({
@@ -22,6 +23,7 @@ export function CategorySelect({
   onCategoriesChange,
   disabled = false,
   isSuggesting = false,
+  isSuggestingCategoriesError = false,
 }: CategorySelectProps) {
   const { data: categories = [], isLoading: isCategoriesLoading } =
     useGetCategories();
@@ -50,11 +52,18 @@ export function CategorySelect({
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-subtitle">카테고리</p>
-        {isSuggesting && (
+        {isSuggesting ? (
           <div className="flex items-center gap-1 text-xs text-purple-600">
             <Loader2 className="h-3 w-3 animate-spin" />
             <span>AI 분석 중...</span>
           </div>
+        ) : (
+          isSuggestingCategoriesError && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <AlertCircle className="h-3 w-3" />
+              <span>지금은 카테고리 추천을 할 수 없습니다.</span>
+            </div>
+          )
         )}
       </div>
 

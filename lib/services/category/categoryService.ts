@@ -1,3 +1,4 @@
+import { ApiError } from "@/lib/errors/AppError";
 import { prisma } from "../../prisma";
 
 export interface CategoryDto {
@@ -66,8 +67,7 @@ export const categoryService = {
       const result = await ollamaService.translateAndClassify(prompt);
       return result.categories;
     } catch (error) {
-      console.error("Category suggestion failed:", error);
-      return [];
+      throw new ApiError("카테고리 추천에 실패했습니다." + error, 400);
     }
   },
 };

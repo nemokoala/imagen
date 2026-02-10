@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { categoryService } from "@/lib/services/category/categoryService";
+import { errorHandler } from "@/lib/errors/errorHandler";
 
 /**
  * POST /api/categories/suggest
@@ -25,10 +26,6 @@ export async function POST(request: NextRequest) {
       data: suggestedCategories,
     });
   } catch (error) {
-    console.error("Error suggesting categories:", error);
-    return NextResponse.json(
-      { success: false, error: "카테고리 추천에 실패했습니다." },
-      { status: 500 },
-    );
+    errorHandler(error);
   }
 }

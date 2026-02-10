@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import debounce from "lodash/debounce";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +23,7 @@ import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { downloadImage } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
-import { useSuggestCategories } from "@/queries/category/queries";
+import { useSuggestCategories } from "@/queries/category/mutations";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
@@ -68,12 +68,15 @@ export default function ImageGenPage() {
   };
 
   // AI 카테고리 추천
-  const { mutate: suggestCategories, isPending: isSuggestingCategories } =
-    useSuggestCategories((suggestedSlugs) => {
-      if (suggestedSlugs.length > 0) {
-        setSelectedCategories(suggestedSlugs);
-      }
-    });
+  const {
+    mutate: suggestCategories,
+    isPending: isSuggestingCategories,
+    isError: isSuggestingCategoriesError,
+  } = useSuggestCategories((suggestedSlugs) => {
+    if (suggestedSlugs.length > 0) {
+      setSelectedCategories(suggestedSlugs);
+    }
+  });
 
   // 디바운스된 카테고리 추천 함수
   const debouncedSuggestCategories = useMemo(
@@ -180,8 +183,10 @@ export default function ImageGenPage() {
           }
         }
       }
-    } catch (error: any) {
-      toast.error(error.message || "이미지 생성 중 오류가 발생했습니다.");
+    } catch (error: unknown) {
+      toast.error(
+        (error as Error)?.message || "이미지 생성 중 오류가 발생했습니다.",
+      );
       setGenerationProgress(null);
     } finally {
       setIsStreaming(false);
@@ -278,6 +283,7 @@ export default function ImageGenPage() {
                   onCategoriesChange={setSelectedCategories}
                   disabled={isPending}
                   isSuggesting={isSuggestingCategories}
+                  isSuggestingCategoriesError={isSuggestingCategoriesError}
                 />
               </div>
 

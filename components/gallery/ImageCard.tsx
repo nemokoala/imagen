@@ -36,7 +36,7 @@ export function ImageCard({ image }: ImageCardProps) {
       onMouseEnter={handleMouseEnter}
       className="block"
     >
-      <Card className="overflow-hidden aspect-square transition-all duration-300 cursor-pointer group bg-white/80 backdrop-blur-sm border-0 gap-1 p-0">
+      <Card className="overflow-hidden aspect-square transition-all duration-300 cursor-pointer group bg-background backdrop-blur-sm border-0 gap-1 p-0">
         <div className="relative h-full">
           {!isLoaded && <Skeleton className="absolute inset-0 z-10" />}
           <Image

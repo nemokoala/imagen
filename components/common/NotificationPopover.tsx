@@ -141,9 +141,12 @@ export function NotificationPopover() {
                   <Link
                     href={`/image/${notification.image?.id}`}
                     className="flex-1 flex items-start gap-3 p-3 transition-colors min-w-0"
-                    onClick={() =>
-                      !notification.isRead && markAsRead(notification.id)
-                    }
+                    onClick={() => {
+                      if (!notification.isRead) {
+                        markAsRead(notification.id);
+                      }
+                      setOpen(false);
+                    }}
                   >
                     <div className="relative h-8 w-8 flex-shrink-0 mr-1">
                       <ProfileAvatar

@@ -27,6 +27,19 @@ export const useMarkAsReadMutation = () => {
   });
 };
 
+export const useMarkAsReadByImageIdMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (imageId: number) => {
+      return FetchUtil.patch(`/api/notifications/image/${imageId}`, undefined);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+};
+
 export const useDeleteNotificationMutation = () => {
   const queryClient = useQueryClient();
 

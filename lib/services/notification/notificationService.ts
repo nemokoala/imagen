@@ -113,6 +113,20 @@ export const notificationService = {
   },
 
   /**
+   * 특정 이미지와 관련된 알림 읽음 처리
+   */
+  async markAsReadByImageId(imageId: number, userId: number) {
+    await prisma.notification.updateMany({
+      where: {
+        userId,
+        imageId,
+        isRead: false,
+      },
+      data: { isRead: true },
+    });
+  },
+
+  /**
    * 읽지 않은 알림 개수 조회
    */
   async getUnreadCount(userId: number) {

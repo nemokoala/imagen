@@ -34,6 +34,7 @@ import { ProfileAvatar } from "../auth/ProfileAvatar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageCard } from "./ImageCard";
 import { Separator } from "@/components/ui/separator";
+import { useMarkAsReadByImageIdMutation } from "@/queries/notification/mutations";
 
 interface ImageDetailProps {
   image: ImageType;
@@ -58,9 +59,23 @@ export function ImageDetail({
     }
   }, [initialImage]);
 
+  // 이미지 상세 페이지 진입 시 관련 알림 읽음 처리
+  useEffect(() => {
+    if (imageData?.id && user) {
+      markAsReadByImageIdMutation.mutate(imageData.id, {
+        onError: (error) => {
+          // 알림 읽음 처리 실패는 조용히 처리 (사용자 경험에 영향 없음)
+          console.error("알림 읽음 처리 실패:", error);
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageData?.id, user?.id]);
+
   // TanStack Query hooks
   const { data: comments = [] } = useGetCommentsQuery(imageData?.id ?? null);
   const deleteImageMutation = useDeleteImageMutation();
+  const markAsReadByImageIdMutation = useMarkAsReadByImageIdMutation();
 
   // 삭제 권한 확인: 본인 이미지이거나 어드민인 경우
   const canDelete =

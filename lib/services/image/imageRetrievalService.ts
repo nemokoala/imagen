@@ -6,7 +6,7 @@ import { unlink } from "fs/promises";
 import { existsSync } from "fs";
 import { join } from "path";
 
-const commonImageInclude = {
+const getImageInclude = (currentUserId?: number) => ({
   user: {
     select: {
       id: true,
@@ -21,13 +21,20 @@ const commonImageInclude = {
       slug: true,
     },
   },
+  // 현재 사용자가 좋아요를 눌렀는지 확인
+  likes: currentUserId
+    ? {
+        where: { userId: currentUserId },
+        select: { userId: true },
+      }
+    : false,
   _count: {
     select: {
       likes: true,
       comments: true,
     },
   },
-};
+});
 
 export const imageRetrievalService = {
   /**
@@ -55,6 +62,7 @@ export const imageRetrievalService = {
       name: string;
       slug: string;
     }[];
+    likes?: { userId: number }[]; // 현재 사용자의 좋아요 여부 확인용
     _count: {
       likes: number;
       comments: number;
@@ -77,6 +85,7 @@ export const imageRetrievalService = {
       })),
       likeCount: _count.likes,
       commentCount: _count.comments,
+      isLiked: image.likes && image.likes.length > 0 ? true : false,
     };
   },
 
@@ -85,6 +94,7 @@ export const imageRetrievalService = {
     page: number = 1,
     limit: number = 20,
     category?: string[],
+    currentUserId?: number,
   ) {
     try {
       // getAllImages를 재사용하여 페이지네이션 지원
@@ -93,6 +103,7 @@ export const imageRetrievalService = {
         limit,
         userId,
         category,
+        currentUserId,
       );
     } catch (error: unknown) {
       console.error("Error fetching user images:", error);
@@ -101,11 +112,14 @@ export const imageRetrievalService = {
     }
   },
 
-  async getImageById(id: number): Promise<ImageType | null> {
+  async getImageById(
+    id: number,
+    currentUserId?: number,
+  ): Promise<ImageType | null> {
     try {
       const image = await prisma.generatedImage.findUnique({
         where: { id },
-        include: commonImageInclude,
+        include: getImageInclude(currentUserId),
       });
 
       if (!image) {
@@ -129,6 +143,7 @@ export const imageRetrievalService = {
     id: number,
     prevCount: number = 2,
     nextCount: number = 2,
+    currentUserId?: number,
   ): Promise<{ prevImages: ImageType[]; nextImages: ImageType[] }> {
     try {
       // 현재 이미지 정보 가져오기
@@ -148,7 +163,7 @@ export const imageRetrievalService = {
             lt: id,
           },
         },
-        include: commonImageInclude,
+        include: getImageInclude(currentUserId),
         orderBy: { id: "desc" },
         take: prevCount,
       });
@@ -160,7 +175,7 @@ export const imageRetrievalService = {
             gt: id,
           },
         },
-        include: commonImageInclude,
+        include: getImageInclude(currentUserId),
         orderBy: { id: "asc" },
         take: nextCount,
       });
@@ -181,6 +196,7 @@ export const imageRetrievalService = {
     limit: number = 20,
     userId?: number,
     categorySlugs?: string[],
+    currentUserId?: number,
   ) {
     try {
       const skip = (page - 1) * limit;
@@ -205,7 +221,7 @@ export const imageRetrievalService = {
       const [images, totalCount] = await Promise.all([
         prisma.generatedImage.findMany({
           where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
-          include: commonImageInclude,
+          include: getImageInclude(currentUserId),
           orderBy: { createdAt: "desc" },
           skip,
           take: limit,
@@ -282,10 +298,13 @@ export const imageRetrievalService = {
     }
   },
 
-  async getTopLikedImages(limit: number = 10): Promise<ImageType[]> {
+  async getTopLikedImages(
+    limit: number = 10,
+    currentUserId?: number,
+  ): Promise<ImageType[]> {
     try {
       const images = await prisma.generatedImage.findMany({
-        include: commonImageInclude,
+        include: getImageInclude(currentUserId),
         orderBy: {
           likes: {
             _count: "desc",
@@ -301,7 +320,10 @@ export const imageRetrievalService = {
     }
   },
 
-  async getMonthlyRankingImages(limit: number = 10): Promise<ImageType[]> {
+  async getMonthlyRankingImages(
+    limit: number = 10,
+    currentUserId?: number,
+  ): Promise<ImageType[]> {
     try {
       const now = new Date();
       const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -312,7 +334,7 @@ export const imageRetrievalService = {
             gte: firstDayOfMonth,
           },
         },
-        include: commonImageInclude,
+        include: getImageInclude(currentUserId),
         orderBy: {
           likes: {
             _count: "desc",
@@ -320,8 +342,6 @@ export const imageRetrievalService = {
         },
         take: limit,
       });
-
-      console.log("images", images);
 
       return images.map(imageRetrievalService.convertToImageType);
     } catch (error) {

@@ -9,15 +9,15 @@ import { Comment } from "@/types/image.interfaces";
 
 export const useGenerateImageMutation = (
   onSuccess: (data: GenerateImageResponse) => void,
-  onError: (error: ErrorResponse) => void
+  onError: (error: ErrorResponse) => void,
 ) => {
   return useMutation({
     mutationFn: async (
-      data: GenerateImageRequest
+      data: GenerateImageRequest,
     ): Promise<GenerateImageResponse> => {
       const response = await FetchUtil.post<GenerateImageRequest>(
         "/api/generate-image",
-        data
+        data,
       );
       return response as GenerateImageResponse;
     },
@@ -38,12 +38,49 @@ export const useToggleLikeMutation = (imageId: number | null) => {
       if (!imageId) throw new Error("이미지 ID가 필요합니다.");
       const response = await FetchUtil.post<Record<string, never>>(
         `/api/images/${imageId}/like`,
-        {}
+        {},
       );
       return response as { success: boolean; liked: boolean; message: string };
     },
-    onSuccess: () => {
-      // 좋아요 상태 쿼리 무효화 및 재조회
+    onMutate: async () => {
+      if (!imageId) return;
+      // 낙관적 업데이트를 덮어쓰지 않도록 기존 쿼리 취소
+      await queryClient.cancelQueries({ queryKey: ["likeStatus", imageId] });
+
+      // 이전 상태 스냅샷 저장
+      const previousLikeStatus = queryClient.getQueryData([
+        "likeStatus",
+        imageId,
+      ]);
+
+      // 새로운 값으로 낙관적 업데이트
+      queryClient.setQueryData(
+        ["likeStatus", imageId],
+        (old: { success: boolean; likeCount: number; liked: boolean }) => {
+          if (!old) return old;
+          const newLiked = !old.liked;
+          return {
+            ...old,
+            liked: newLiked,
+            likeCount: newLiked ? old.likeCount + 1 : old.likeCount - 1,
+          };
+        },
+      );
+
+      // 스냅샷된 값을 컨텍스트로 반환
+      return { previousLikeStatus };
+    },
+    onError: (err, newTodo, context) => {
+      // 에러 발생 시 onMutate에서 반환된 컨텍스트를 사용하여 롤백
+      if (context?.previousLikeStatus) {
+        queryClient.setQueryData(
+          ["likeStatus", imageId],
+          context.previousLikeStatus,
+        );
+      }
+    },
+    onSettled: () => {
+      // 성공/실패 여부와 관계없이 항상 최신 데이터로 갱신
       if (imageId) {
         queryClient.invalidateQueries({ queryKey: ["likeStatus", imageId] });
       }
@@ -90,7 +127,7 @@ export const useUpdateCommentMutation = (imageId: number | null) => {
       if (!imageId) throw new Error("이미지 ID가 필요합니다.");
       const response = await FetchUtil.put<{ content: string }>(
         `/api/images/${imageId}/comments/${data.commentId}`,
-        { content: data.content }
+        { content: data.content },
       );
       return response as {
         success: boolean;
@@ -112,12 +149,12 @@ export const useDeleteCommentMutation = (imageId: number | null) => {
 
   return useMutation({
     mutationFn: async (
-      commentId: number
+      commentId: number,
     ): Promise<{ success: boolean; message: string }> => {
       if (!imageId) throw new Error("이미지 ID가 필요합니다.");
       const response = await FetchUtil.delete<Record<string, never>>(
         `/api/images/${imageId}/comments/${commentId}`,
-        {}
+        {},
       );
       return response as { success: boolean; message: string };
     },
@@ -135,11 +172,11 @@ export const useDeleteImageMutation = () => {
 
   return useMutation({
     mutationFn: async (
-      imageId: number
+      imageId: number,
     ): Promise<{ success: boolean; message: string }> => {
       const response = await FetchUtil.delete<Record<string, never>>(
         `/api/images/${imageId}`,
-        {}
+        {},
       );
       return response as { success: boolean; message: string };
     },

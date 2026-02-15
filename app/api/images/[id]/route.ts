@@ -11,33 +11,43 @@ export const fetchCache = "force-no-store";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const resolvedParams = await params;
     const id = resolvedParams.id;
+    const imageId = parseInt(id);
 
     if (!id) {
       return NextResponse.json(
         { error: "이미지 ID가 필요합니다." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const image = await imageService.getImageById(parseInt(id));
+    const cookieStore = await cookies();
+    let currentUserId: number | undefined;
+    try {
+      currentUserId = await authService.getUserIdFromCookie(cookieStore);
+    } catch {
+      // 로그인하지 않은 경우 무시
+    }
+
+    const image = await imageService.getImageById(imageId, currentUserId);
 
     if (!image) {
       return NextResponse.json(
         { error: "이미지를 찾을 수 없습니다." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // 이전/다음 이미지 가져오기
     const { prevImages, nextImages } = await imageService.getAdjacentImages(
-      parseInt(id),
+      imageId,
       3,
-      3
+      3,
+      currentUserId,
     );
 
     return NextResponse.json(
@@ -47,7 +57,7 @@ export async function GET(
         prevImages,
         nextImages,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: unknown) {
     console.error("Get image by id error:", error);
@@ -57,7 +67,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const resolvedParams = await params;
@@ -66,7 +76,7 @@ export async function DELETE(
     if (!id) {
       return NextResponse.json(
         { error: "이미지 ID가 필요합니다." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -85,7 +95,7 @@ export async function DELETE(
     if (!image) {
       return NextResponse.json(
         { error: "이미지를 찾을 수 없습니다." },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -104,7 +114,7 @@ export async function DELETE(
         success: true,
         message: "이미지가 삭제되었습니다.",
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: unknown) {
     console.error("Delete image error:", error);

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { imageService } from "@/lib/services/image/imageService";
 import { errorHandler } from "@/lib/errors/errorHandler";
 
+import { cookies } from "next/headers";
+import { authService } from "@/lib/services/auth/authService";
+
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
@@ -18,11 +21,20 @@ export async function GET(req: NextRequest) {
       ? categoryParam.split(",").filter((c) => c.trim())
       : undefined;
 
+    const cookieStore = await cookies();
+    let currentUserId: number | undefined;
+    try {
+      currentUserId = await authService.getUserIdFromCookie(cookieStore);
+    } catch {
+      // 로그인하지 않은 경우 무시
+    }
+
     const result = await imageService.getAllImages(
       page,
       limit,
       undefined,
       categories,
+      currentUserId,
     );
 
     return NextResponse.json(

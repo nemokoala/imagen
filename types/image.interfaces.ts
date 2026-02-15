@@ -63,6 +63,7 @@ export interface Image {
   categories: Category[]; // 카테고리 목록
   likeCount: number;
   commentCount: number;
+  isLiked: boolean;
 }
 
 export interface GalleryResponse {

@@ -122,7 +122,10 @@ export const useHealthCheckQuery = ({ target }: { target: string }) => {
   });
 };
 
-export const useGetLikeStatusQuery = (imageId: number | null) => {
+export const useGetLikeStatusQuery = (
+  imageId: number | null,
+  initialData?: { success: boolean; likeCount: number; liked: boolean },
+) => {
   return useQuery({
     queryKey: ["likeStatus", imageId],
     queryFn: async () => {
@@ -135,6 +138,7 @@ export const useGetLikeStatusQuery = (imageId: number | null) => {
       return response.success ? response : null;
     },
     enabled: !!imageId,
+    initialData: initialData,
   });
 };
 

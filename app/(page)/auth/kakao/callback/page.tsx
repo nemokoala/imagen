@@ -45,9 +45,8 @@ function KakaoCallbackContent() {
       toast.success("카카오 로그인이 완료되었습니다!", {
         description: "환영합니다!",
       });
-      setTimeout(() => {
-        router.replace("/");
-      }, 500);
+
+      router.replace("/");
     }
   }, [kakaoLogin, userInfo, error, setUser, router]);
 

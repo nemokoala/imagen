@@ -204,7 +204,7 @@ export const authService = {
 
   async createNewAccessToken(userId: number): Promise<string> {
     return jwt.sign({ userId }, process.env.JWT_SECRET as string, {
-      expiresIn: "15m",
+      expiresIn: "30m",
     });
   },
 
@@ -227,7 +227,7 @@ export const authService = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 15 * 60,
+      maxAge: 30 * 60,
     });
 
     return newAccessToken;

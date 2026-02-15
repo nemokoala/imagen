@@ -34,10 +34,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(
         new URL(
           `/auth/login?error=${encodeURIComponent(
-            "카카오 로그인이 취소되었습니다."
+            "카카오 로그인이 취소되었습니다.",
           )}`,
-          req.url
-        )
+          req.url,
+        ),
       );
     }
 
@@ -46,8 +46,8 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("인증 코드를 받을 수 없습니다."),
-          req.url
-        )
+          req.url,
+        ),
       );
     }
 
@@ -61,8 +61,8 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("카카오 OAuth 설정이 완료되지 않았습니다."),
-          req.url
-        )
+          req.url,
+        ),
       );
     }
 
@@ -88,8 +88,8 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("카카오 토큰을 받을 수 없습니다."),
-          req.url
-        )
+          req.url,
+        ),
       );
     }
 
@@ -110,8 +110,8 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("카카오 사용자 정보를 가져올 수 없습니다."),
-          req.url
-        )
+          req.url,
+        ),
       );
     }
 
@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
         `kakao_${kakaoUserInfo.id}@kakao.com`,
       nickname:
         kakaoUserInfo.kakao_account.profile?.nickname ||
-        `카카오사용자_${kakaoUserInfo.id}`,
+        `카카오_${kakaoUserInfo.id}`,
       profileImageUrl:
         kakaoUserInfo.kakao_account.profile?.profile_image_url || null,
     });
@@ -138,8 +138,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `/auth/kakao/callback?kakao_login=success&user_id=${user.id}`,
-        baseUrl
-      )
+        baseUrl,
+      ),
     );
   } catch (error) {
     console.error("카카오 로그인 콜백 오류:", error);
@@ -147,8 +147,8 @@ export async function GET(req: NextRequest) {
       new URL(
         "/auth/login?error=" +
           encodeURIComponent("카카오 로그인 중 오류가 발생했습니다."),
-        req.url
-      )
+        req.url,
+      ),
     );
   }
 }

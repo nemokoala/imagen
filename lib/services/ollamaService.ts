@@ -34,40 +34,60 @@ export const ollamaService = {
   ${userPrompt}
   `;
 
-    const response = await fetch(`${process.env.OLLAMA_API_URL}/api/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gemma3:4b",
-        prompt: systemPrompt,
-        stream: false,
-      }),
-    });
+    // 먼저 헬스 체크 실행 (서버 다운 시 빠른 실패를 위함)
+    await this.healthCheck();
 
-    if (!response.ok) {
-      throw new ApiError("텍스트 번역에 실패했습니다.", response.status);
-    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60초 타임아웃
 
-    const data = await response.json();
-
-    if (!data.response) {
-      throw new ApiError("텍스트 번역 응답이 올바르지 않습니다.", 500);
-    }
-
-    // JSON 응답 파싱
     try {
+      const response = await fetch(
+        `${process.env.OLLAMA_API_URL}/api/generate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "gemma3:4b",
+            prompt: systemPrompt,
+            stream: false,
+          }),
+          signal: controller.signal,
+        },
+      );
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new ApiError("텍스트 번역에 실패했습니다.", response.status);
+      }
+
+      const data = await response.json();
+
+      if (!data.response) {
+        throw new ApiError("텍스트 번역 응답이 올바르지 않습니다.", 500);
+      }
+
+      // JSON 응답 파싱
       const jsonMatch = data.response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         // JSON이 없으면 원본 응답 반환
         return data.response;
       }
 
-      const parsed = JSON.parse(jsonMatch[0]);
-      return parsed.prompt || parsed.promt || userPrompt; // 'promt' 오타도 핸들링
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", parseError);
-      // 파싱 실패시 원본 프롬프트 반환
-      return userPrompt;
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return parsed.prompt || parsed.promt || userPrompt; // 'promt' 오타도 핸들링
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", parseError);
+        // 파싱 실패시 원본 프롬프트 반환
+        return userPrompt;
+      }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ApiError("AI 배포 서버 응답 시간이 초과되었습니다.", 408);
+      }
+      if (error instanceof ApiError) throw error;
+      throw new ApiError("AI 배포 서버 연결 중 오류가 발생했습니다.", 500);
     }
   },
 
@@ -109,52 +129,77 @@ User input:
 ${userPrompt}
 `;
 
-    const response = await fetch(`${process.env.OLLAMA_API_URL}/api/generate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "gemma3:4b",
-        prompt: systemPrompt,
-        stream: false,
-      }),
-    });
+    // 먼저 헬스 체크 실행 (서버 다운 시 빠른 실패를 위함)
+    await this.healthCheck();
 
-    if (!response.ok) {
-      throw new ApiError("번역 및 분류 요청에 실패했습니다.", response.status);
-    }
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000); // 60초 타임아웃
 
-    const data = await response.json();
-
-    if (!data.response) {
-      throw new ApiError("번역 및 분류 응답이 올바르지 않습니다.", 500);
-    }
-
-    // JSON 응답 파싱
     try {
-      // 응답에서 JSON 부분만 추출
+      const response = await fetch(
+        `${process.env.OLLAMA_API_URL}/api/generate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "gemma3:4b",
+            prompt: systemPrompt,
+            stream: false,
+          }),
+          signal: controller.signal,
+        },
+      );
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new ApiError(
+          "번역 및 분류 요청에 실패했습니다.",
+          response.status,
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.response) {
+        throw new ApiError("번역 및 분류 응답이 올바르지 않습니다.", 500);
+      }
+
+      // JSON 응답 파싱
       const jsonMatch = data.response.match(/\{[\s\S]*\}/);
       if (!jsonMatch) {
         throw new ApiError("AI 응답에서 JSON을 찾을 수 없습니다.", 500);
       }
 
-      const parsed = JSON.parse(jsonMatch[0]);
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
 
-      // categories 유효성 검사 - 허용된 카테고리만 필터링
-      const validCategories = (parsed.categories || []).filter((cat: string) =>
-        availableCategories.includes(cat.toLowerCase().trim()),
-      );
+        // categories 유효성 검사 - 허용된 카테고리만 필터링
+        const validCategories = (parsed.categories || []).filter(
+          (cat: string) =>
+            availableCategories.includes(cat.toLowerCase().trim()),
+        );
 
-      return {
-        prompt: parsed.prompt || parsed.promt || userPrompt, // 'promt' 오타도 핸들링
-        categories: validCategories.map((c: string) => c.toLowerCase().trim()),
-      };
-    } catch (parseError) {
-      console.error("Failed to parse AI response:", parseError);
-      // 파싱 실패시 원본 프롬프트와 빈 카테고리 반환
-      return {
-        prompt: userPrompt,
-        categories: [],
-      };
+        return {
+          prompt: parsed.prompt || parsed.promt || userPrompt, // 'promt' 오타도 핸들링
+          categories: validCategories.map((c: string) =>
+            c.toLowerCase().trim(),
+          ),
+        };
+      } catch (parseError) {
+        console.error("Failed to parse AI response:", parseError);
+        // 파싱 실패시 원본 프롬프트와 빈 카테고리 반환
+        return {
+          prompt: userPrompt,
+          categories: [],
+        };
+      }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ApiError("AI 배포 서버 응답 시간이 초과되었습니다.", 408);
+      }
+      if (error instanceof ApiError) throw error;
+      throw new ApiError("AI 배포 서버 연결 중 오류가 발생했습니다.", 500);
     }
   },
 
@@ -163,9 +208,12 @@ ${userPrompt}
     const timeoutId = setTimeout(() => controller.abort(), 2000);
 
     try {
-      const response = await fetch(`${process.env.OLLAMA_API_URL}`, {
-        signal: controller.signal,
-      });
+      const response = await fetch(
+        `${process.env.OLLAMA_API_URL || "http://localhost:11434"}`,
+        {
+          signal: controller.signal,
+        },
+      );
       clearTimeout(timeoutId);
 
       if (!response.ok) {

@@ -7,7 +7,6 @@ import { Skeleton } from "../ui/skeleton";
 import Image from "next/image";
 import { useLogoutMutation } from "@/queries/auth/mutations";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationPopover } from "./NotificationPopover";
 import {
@@ -22,13 +21,12 @@ import { ProfileAvatar } from "../auth/ProfileAvatar";
 
 export const Header = () => {
   const { isAuthenticated, isLoading, logout, user } = useUserStore();
-  const router = useRouter();
 
   const logoutMutation = useLogoutMutation(
     () => {
       logout();
       toast.success("로그아웃이 완료되었습니다.");
-      router.push("/");
+      window.location.href = "/";
     },
     (error) => {
       toast.error("로그아웃 중 오류가 발생했습니다.");

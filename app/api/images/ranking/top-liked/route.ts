@@ -11,12 +11,8 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "10", 10);
 
     const cookieStore = await cookies();
-    let currentUserId: number | undefined;
-    try {
-      currentUserId = await authService.getUserIdFromCookie(cookieStore);
-    } catch {
-      // ignore
-    }
+    const currentUserId =
+      await authService.tryGetUserFromCookieOrRefresh(cookieStore);
 
     const images = await imageService.getTopLikedImages(limit, currentUserId);
 

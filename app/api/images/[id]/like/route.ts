@@ -11,7 +11,7 @@ export const fetchCache = "force-no-store";
 // 좋아요 추가/제거 (토글)
 export async function POST(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const cookieStore = await cookies();
@@ -35,24 +35,19 @@ export async function POST(
 // 좋아요 상태 확인
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const cookieStore = await cookies();
     const { id } = await params;
     const imageId = parseInt(id);
 
-    // 로그인한 사용자 ID 확인 (선택적)
-    let userId: number | undefined;
-    try {
-      userId = await authService.getUserIdFromCookie(cookieStore);
-    } catch {
-      // 로그인하지 않은 경우 userId는 undefined로 유지
-    }
+    const currentUserId =
+      await authService.tryGetUserFromCookieOrRefresh(cookieStore);
 
     const { likeCount, liked } = await likeService.getLikeStatus(
       imageId,
-      userId
+      currentUserId,
     );
 
     return NextResponse.json({

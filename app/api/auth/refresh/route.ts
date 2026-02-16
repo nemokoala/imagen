@@ -12,12 +12,13 @@ export async function POST(_req: NextRequest) {
     if (!refreshToken) {
       return NextResponse.json(
         { message: "리프레시 토큰이 없습니다." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // authService를 사용하여 새로운 액세스 토큰 생성
-    const newAccessToken = await authService.refreshAccessToken(refreshToken);
+    const { accessToken: newAccessToken } =
+      await authService.refreshAccessToken(refreshToken);
     console.log("newAccessToken", newAccessToken);
 
     return NextResponse.json(
@@ -25,7 +26,7 @@ export async function POST(_req: NextRequest) {
         message: "액세스 토큰이 갱신되었습니다.",
         accessToken: newAccessToken,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("토큰 갱신 에러:", error);

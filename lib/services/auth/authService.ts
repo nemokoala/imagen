@@ -208,7 +208,9 @@ export const authService = {
     });
   },
 
-  async refreshAccessToken(refreshToken: string): Promise<string> {
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<{ accessToken: string; userId: number }> {
     // 리프레시 토큰 검증
     const decoded = await this.verifyRefreshToken(refreshToken);
 
@@ -230,7 +232,27 @@ export const authService = {
       maxAge: 30 * 60,
     });
 
-    return newAccessToken;
+    return { accessToken: newAccessToken, userId: user.id };
+  },
+
+  async tryGetUserFromCookieOrRefresh(
+    cookieStore: Awaited<ReturnType<typeof cookies>>,
+  ): Promise<number | undefined> {
+    try {
+      return await this.getUserIdFromCookie(cookieStore);
+    } catch {
+      // 액세스 토큰 만료/오류 시 리프레시 시도
+      try {
+        const refreshToken = cookieStore.get("refreshToken")?.value;
+        if (refreshToken) {
+          const { userId } = await this.refreshAccessToken(refreshToken);
+          return userId;
+        }
+      } catch {
+        // 리프레시 실패 시 무시 (비로그인 상태)
+      }
+    }
+    return undefined;
   },
 
   async login(

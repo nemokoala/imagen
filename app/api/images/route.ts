@@ -22,12 +22,8 @@ export async function GET(req: NextRequest) {
       : undefined;
 
     const cookieStore = await cookies();
-    let currentUserId: number | undefined;
-    try {
-      currentUserId = await authService.getUserIdFromCookie(cookieStore);
-    } catch {
-      // 로그인하지 않은 경우 무시
-    }
+    const currentUserId =
+      await authService.tryGetUserFromCookieOrRefresh(cookieStore);
 
     const result = await imageService.getAllImages(
       page,

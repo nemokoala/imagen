@@ -113,10 +113,11 @@ export function InfiniteImageGallery({
 
   // 카테고리 변경 시 스크롤 위치 컨테이너 상단으로 이동
   useEffect(() => {
-    scrollElement.current?.scrollTo({
-      top: containerRef.current?.offsetTop,
-      behavior: "smooth",
-    });
+    if (selectedCategories)
+      scrollElement.current?.scrollTo({
+        top: containerRef.current?.offsetTop,
+        behavior: "smooth",
+      });
   }, [selectedCategories]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지

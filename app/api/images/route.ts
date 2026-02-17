@@ -12,6 +12,8 @@ export const fetchCache = "force-no-store";
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
+    const userIdParam = searchParams.get("userId");
+    const userId = userIdParam ? parseInt(userIdParam) : undefined;
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const categoryParam = searchParams.get("category");
@@ -28,7 +30,7 @@ export async function GET(req: NextRequest) {
     const result = await imageService.getAllImages(
       page,
       limit,
-      undefined,
+      userId,
       categories,
       currentUserId,
     );
@@ -41,7 +43,7 @@ export async function GET(req: NextRequest) {
       { status: 200 },
     );
   } catch (error: unknown) {
-    console.error("Get all images error:", error);
+    console.error("Get images error:", error);
     return errorHandler(error);
   }
 }

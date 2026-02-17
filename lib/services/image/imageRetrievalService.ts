@@ -89,29 +89,6 @@ export const imageRetrievalService = {
     };
   },
 
-  async getUserImages(
-    userId: number,
-    page: number = 1,
-    limit: number = 20,
-    category?: string[],
-    currentUserId?: number,
-  ) {
-    try {
-      // getAllImages를 재사용하여 페이지네이션 지원
-      return await imageRetrievalService.getAllImages(
-        page,
-        limit,
-        userId,
-        category,
-        currentUserId,
-      );
-    } catch (error: unknown) {
-      console.error("Error fetching user images:", error);
-      if (error instanceof ApiError) throw error;
-      throw new ApiError("사용자 이미지 조회에 실패했습니다.", 500);
-    }
-  },
-
   async getImageById(
     id: number,
     currentUserId?: number,

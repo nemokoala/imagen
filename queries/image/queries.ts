@@ -19,7 +19,7 @@ export const useGetUserImagesQuery = (
     queryKey: ["userImages", userId, page, limit],
     queryFn: async (): Promise<GetUserImagesResponse> => {
       const response = (await FetchUtil.get(
-        `/api/images/user?userId=${userId}&page=${page}&limit=${limit}`,
+        `/api/images?userId=${userId}&page=${page}&limit=${limit}`,
       )) as GetUserImagesResponse;
       return response;
     },
@@ -99,7 +99,7 @@ export const useGetUserImagesInfiniteQuery = (
     queryFn: async ({ pageParam = 1 }) => {
       const categoryParam = category ? `&category=${category}` : "";
       const response = (await FetchUtil.get(
-        `/api/images/user?userId=${userId}&page=${pageParam}&limit=${limit}${categoryParam}`,
+        `/api/images?userId=${userId}&page=${pageParam}&limit=${limit}${categoryParam}`,
       )) as GetUserImagesResponse;
       return response;
     },

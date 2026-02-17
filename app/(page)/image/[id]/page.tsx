@@ -39,6 +39,10 @@ export async function generateMetadata({
     return {
       title: "이미지를 찾을 수 없습니다",
       metadataBase: new URL(baseUrl),
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -49,23 +53,39 @@ export async function generateMetadata({
       return {
         title: "이미지를 찾을 수 없습니다",
         metadataBase: new URL(baseUrl),
+        robots: {
+          index: false,
+          follow: false,
+        },
       };
     }
 
     const prompt = image.prompt || "AI 생성 이미지";
     const truncatedPrompt =
-      prompt.length > 60 ? prompt.substring(0, 60) + "..." : prompt;
+      prompt.length > 50 ? prompt.substring(0, 50) + "..." : prompt;
     const absoluteImageUrl = getAbsoluteImageUrl(image.imageUrl);
     const creator = image.user?.nickname || "익명";
     const pageUrl = `${baseUrl}/image/${id}`;
 
+    // 키워드 생성
+    const keywords = [
+      "AI 이미지",
+      "ImageGen",
+      "Stable Diffusion",
+      "AI Art",
+      image.model,
+      creator,
+      ...prompt.split(" ").slice(0, 10), // 프롬프트 앞부분을 키워드로 추가
+    ].filter(Boolean);
+
     return {
-      title: `${truncatedPrompt} - ImageGen`,
-      description: `AI로 생성된 이미지입니다. 프롬프트: ${prompt}. 생성자: ${creator}. 모델: ${image.model}`,
+      title: `${truncatedPrompt} - AI Image ${id} | ImageGen`,
+      description: `AI로 생성된 고해상도 이미지입니다. 프롬프트: "${prompt}". 생성자: ${creator}, 모델: ${image.model}. ImageGen에서 더 많은 AI 아트를 확인하세요.`,
+      keywords: keywords,
       metadataBase: new URL(baseUrl),
       openGraph: {
-        title: `${truncatedPrompt} - ImageGen`,
-        description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
+        title: `${truncatedPrompt} - AI Image ${id} | ImageGen`,
+        description: `AI로 생성된 이미지입니다. 생성자: ${creator}. 프롬프트: ${prompt}`,
         type: "website",
         url: pageUrl,
         siteName: "ImageGen",
@@ -82,7 +102,7 @@ export async function generateMetadata({
       },
       twitter: {
         card: "summary_large_image",
-        title: `${truncatedPrompt} - ImageGen`,
+        title: `${truncatedPrompt} - AI Image ${id} | ImageGen`,
         description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
         images: [absoluteImageUrl],
       },
@@ -117,6 +137,10 @@ export async function generateMetadata({
     return {
       title: "이미지를 찾을 수 없습니다",
       metadataBase: new URL(baseUrl),
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 }

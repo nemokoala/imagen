@@ -42,6 +42,16 @@ export function InfiniteImageGallery({
     [categoryStr],
   );
 
+  // URL에서 검색어 상태 가져오기
+  const search = getParam("search") || "";
+  const setSearch = (value: string) => {
+    if (value) {
+      setParam("search", value);
+    } else {
+      removeParam("search");
+    }
+  };
+
   // 카테고리 목록 조회
   const { data: categories = [] } = useGetCategories();
 
@@ -53,11 +63,13 @@ export function InfiniteImageGallery({
     20,
     Boolean(!userId),
     categoryParam,
+    search || undefined,
   );
   const userQuery = useGetUserImagesInfiniteQuery(
     userId || 0,
     20,
     categoryParam,
+    search || undefined,
   );
 
   const {
@@ -111,14 +123,14 @@ export function InfiniteImageGallery({
     removeParam("categories");
   }, [removeParam]);
 
-  // 카테고리 변경 시 스크롤 위치 컨테이너 상단으로 이동
+  // 카테고리, 검색어 변경 시 스크롤 위치 컨테이너 상단으로 이동
   useEffect(() => {
-    if (selectedCategories)
+    if (selectedCategories || search)
       scrollElement.current?.scrollTo({
         top: containerRef.current?.offsetTop,
         behavior: "smooth",
       });
-  }, [selectedCategories]);
+  }, [selectedCategories, search]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지
   const containerRefCallback = useCallback((node: HTMLDivElement | null) => {
@@ -276,6 +288,8 @@ export function InfiniteImageGallery({
           selectedCategories={selectedCategories}
           handleSelectAll={handleSelectAll}
           handleToggleCategory={handleToggleCategory}
+          search={search}
+          setSearch={setSearch}
         />
         {content}
       </div>
@@ -293,6 +307,8 @@ export function InfiniteImageGallery({
         selectedCategories={selectedCategories}
         handleSelectAll={handleSelectAll}
         handleToggleCategory={handleToggleCategory}
+        search={search}
+        setSearch={setSearch}
       />
       <div
         ref={parentRef}

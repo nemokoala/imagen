@@ -174,37 +174,51 @@ export const imageRetrievalService = {
     userId?: number,
     categorySlugs?: string[],
     currentUserId?: number,
+    search?: string,
   ) {
     try {
       const skip = (page - 1) * limit;
 
-      // whereClause 구성: userId, categorySlugs 필터 적용
-      const whereClause: {
-        userId?: number;
-        categories?: { some: { slug: { in: string[] } } };
-      } = {};
+      // whereClause 구성
+      const whereClause: any = {};
+      const conditions = [];
 
       if (userId) {
-        whereClause.userId = userId;
+        conditions.push({ userId });
       }
 
       // 다중 카테고리: OR 조건으로 필터링 (해당 카테고리 중 하나라도 포함)
       if (categorySlugs && categorySlugs.length > 0) {
-        whereClause.categories = {
-          some: { slug: { in: categorySlugs } },
-        };
+        conditions.push({
+          categories: { some: { slug: { in: categorySlugs } } },
+        });
+      }
+
+      // 검색어 필터링: 프롬프트, 번역된 프롬프트, 작성자 닉네임
+      if (search) {
+        conditions.push({
+          OR: [
+            { prompt: { contains: search } },
+            { translatedPrompt: { contains: search } },
+            { user: { nickname: { contains: search } } },
+          ],
+        });
+      }
+
+      if (conditions.length > 0) {
+        whereClause.AND = conditions;
       }
 
       const [images, totalCount] = await Promise.all([
         prisma.generatedImage.findMany({
-          where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
+          where: whereClause,
           include: getImageInclude(currentUserId),
           orderBy: { createdAt: "desc" },
           skip,
           take: limit,
         }),
         prisma.generatedImage.count({
-          where: Object.keys(whereClause).length > 0 ? whereClause : undefined,
+          where: whereClause,
         }),
       ]);
 

@@ -25,8 +25,12 @@ export function VirtualRow({ virtualRow, row, columnCount }: VirtualRowProps) {
       }}
     >
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
-        {row.map((image: Image) => (
-          <ImageCard key={image.id} image={image} />
+        {row.map((image: Image, colIndex: number) => (
+          <ImageCard
+            key={image.id}
+            image={image}
+            index={virtualRow.index * columnCount + colIndex}
+          />
         ))}
         {/* 빈 공간 채우기 (마지막 행이 컬럼 수보다 적을 때) */}
         {row.length < columnCount &&

@@ -31,7 +31,7 @@ export function LoadMoreStatus({
           backgroundColor: "transparent",
           position: "absolute",
           height: `${rowHeight}px`,
-          bottom: `${rowHeight * 3}px`, // 여유 있는 탐지 높이
+          bottom: `${rowHeight * 6}px`, // 여유 있는 탐지 높이
           left: 0,
           right: 0,
         }}

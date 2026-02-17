@@ -20,7 +20,15 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// 브라우저 환경에서만 초기화하며, 메시징의 경우 서비스 워커 지원 여부(Secure Context 등)를 확인합니다.
 const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
-const messaging = typeof window !== "undefined" ? getMessaging(app) : null;
+const messaging =
+  typeof window !== "undefined" &&
+  "serviceWorker" in navigator &&
+  "Notification" in window &&
+  window.isSecureContext
+    ? getMessaging(app)
+    : null;
 
 export { app, analytics, messaging };

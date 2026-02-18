@@ -15,17 +15,6 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      # 🔸 청크 백업 (외부 경로인 $HOME에 백업)
-      - name: Backup previous static files
-        run: |
-          if [ -d ".next/standalone/.next/static" ]; then
-            echo "📦 Backing up previous static files to $HOME/next_static_backup..."
-            rm -rf $HOME/next_static_backup
-            mkdir -p $HOME/next_static_backup
-            # cp -r 대신 rsync -a를 사용하여 타임스탬프 보존 (오래된 파일 정리 위해 필수)
-            rsync -a .next/standalone/.next/static/ $HOME/next_static_backup/
-          fi
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -39,7 +28,6 @@ jobs:
       - name: Create .env.production from ~/.env.next
         working-directory: ${{ github.workspace }}
         run: |
-          # NEXT_PUBLIC_*로 시작하는 변수만 추출 (set -a 없이 직접 grep)
           grep -E '^NEXT_PUBLIC_' ~/.env.next > .env.production 2>/dev/null || true
           echo "✅ Created .env.production with NEXT_PUBLIC_* variables"
 
@@ -52,41 +40,52 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: |
           set -a
-          . ~/.env.next || true   # DATABASE_URL 로드
+          . ~/.env.next || true
           set +a
           npx prisma migrate deploy
 
-      # Build Next.js project
+      # ====================================================
+      # 🔸 여기서부터 빌드: PM2는 여전히 이전 빌드를 서빙 중
+      #    ($HOME/imagen-app symlink → 이전 빌드 디렉토리)
+      # ====================================================
+
       - name: Build Next.js project
         working-directory: ${{ github.workspace }}
         run: |
           set -a
-          . ~/.env.next || true   # 🔸 서버 런타임 비밀 주입
+          . ~/.env.next || true
           set +a
           npm run build
 
-      - name: Copy static files and public folder for standalone
+      # 🔸 타임스탬프 기반 배포 디렉토리 준비
+      - name: Prepare deployment directory
         working-directory: ${{ github.workspace }}
         run: |
-          # .next/static을 standalone/.next/static으로 복사
-          mkdir -p .next/standalone/.next
-          rsync -a .next/static .next/standalone/.next/
+          DEPLOY_DIR=$HOME/imagen-builds/$(date +%s)
+          echo "DEPLOY_DIR=$DEPLOY_DIR" >> $GITHUB_ENV
+          mkdir -p $DEPLOY_DIR
 
-          # 🔸 백업해둔 이전 파일 복구 (새 파일 덮어쓰기 금지)
-          if [ -d "$HOME/next_static_backup" ]; then
-            echo "♻️ Restoring previous static files..."
-            rsync -a --ignore-existing $HOME/next_static_backup/ .next/standalone/.next/static/
-            rm -rf $HOME/next_static_backup
+          # 1. standalone 출력을 배포 디렉토리로 복사
+          cp -a .next/standalone/. $DEPLOY_DIR/
+
+          # 2. 새 빌드의 static 파일 복사
+          mkdir -p $DEPLOY_DIR/.next
+          rsync -a .next/static/ $DEPLOY_DIR/.next/static/
+
+          # 3. 이전 빌드의 static 청크 복원 (이전 빌드 해시를 참조하는 유저 지원)
+          CURRENT_TARGET=$(readlink -f $HOME/imagen-app 2>/dev/null || echo "")
+          if [ -n "$CURRENT_TARGET" ] && [ -d "$CURRENT_TARGET/.next/static" ]; then
+            echo "♻️ Restoring previous build's static chunks..."
+            rsync -a --ignore-existing $CURRENT_TARGET/.next/static/ $DEPLOY_DIR/.next/static/
           fi
 
-          # 🔸 오래된 정적 파일 정리 (7일 이상 된 파일 삭제) - 무한 누적 방지
-          echo "🧹 Cleaning up old static files..."
-          find .next/standalone/.next/static -type f -mtime +7 -delete
+          # 4. public 폴더 복사
+          rsync -a public/ $DEPLOY_DIR/public/ || true
 
-          # public 폴더를 standalone/public으로 복사
-          rsync -a public .next/standalone/ || true
+          # 5. .env.production 복사 (서버 런타임 비밀 포함)
+          cp ~/.env.next $DEPLOY_DIR/.env.production
 
-          echo "✅ Static files and public folder copied to standalone"
+          echo "✅ Deployment directory prepared: $DEPLOY_DIR"
 
       # 🔸 외부 uploads 디렉토리 생성 (없을 경우)
       - name: Ensure uploads directory exists
@@ -94,22 +93,45 @@ jobs:
           set -a
           . ~/.env.next || true
           set +a
-          # UPLOAD_PATH가 설정되어 있으면 해당 경로 사용, 없으면 기본 경로
           UPLOAD_DIR="${UPLOAD_PATH:-$HOME/uploads}"
           mkdir -p "$UPLOAD_DIR"
           echo "✅ Uploads directory: $UPLOAD_DIR"
 
+      # ====================================================
+      # 🔸 핵심: 심볼릭 링크를 원자적으로 교체
+      #    ln -sfn은 atomic operation이므로 전환 순간 다운타임 없음
+      # ====================================================
+
+      - name: Switch to new deployment (atomic symlink swap)
+        run: |
+          # ln -sfn: 기존 심볼릭 링크를 원자적으로 새 경로로 교체
+          ln -sfn ${{ env.DEPLOY_DIR }} $HOME/imagen-app
+          echo "✅ Symlink updated: $HOME/imagen-app → ${{ env.DEPLOY_DIR }}"
+
       - name: Reload PM2 process (Zero Downtime)
         working-directory: ${{ github.workspace }}
         run: |
-          echo "📂 Copying env file to standalone directory..."
-          cp ~/.env.next .next/standalone/.env.production
-
           echo "🔄 PM2 Reloading..."
 
-          # [변경] --update-env 옵션 제거 (이제 PM2가 주입할 필요 없음)
-          # 그냥 재시작하면 Next.js가 알아서 옆에 있는 .env.production을 읽음
-          pm2 reload ecosystem.config.js || pm2 start ecosystem.config.js
+          # pm2 reload: 클러스터 모드에서 워커를 하나씩 재시작 (rolling restart)
+          # 새 워커는 심볼릭 링크를 통해 새 빌드 디렉토리에서 실행됨
+          # 이전 워커는 이전 빌드에서 계속 서빙하다가 점진적으로 교체
+          pm2 reload ecosystem.config.js || {
+            echo "⚠️ Reload failed, performing fresh start..."
+            pm2 delete imagen-app 2>/dev/null || true
+            pm2 start ecosystem.config.js
+          }
 
           pm2 save
           echo "✅ Deploy Complete!"
+
+      # 🔸 오래된 빌드 정리 (최근 3개만 유지)
+      - name: Cleanup old deployments
+        run: |
+          if [ -d "$HOME/imagen-builds" ]; then
+            echo "🧹 Cleaning up old deployments..."
+            cd $HOME/imagen-builds
+            # 최근 3개 디렉토리만 유지, 나머지 삭제
+            ls -dt */ 2>/dev/null | tail -n +4 | xargs rm -rf -- 2>/dev/null || true
+            echo "✅ Kept latest 3 builds, removed older ones"
+          fi

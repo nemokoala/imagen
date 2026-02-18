@@ -130,7 +130,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
             {/* 좋아요, 댓글*/}
             <div className="flex gap-2 absolute bottom-2 left-2 z-20">
               <Button
-                className={`flex items-center gap-1.5 cursor-pointer rounded-full backdrop-blur-md transition-all duration-300 bg-black/30 border border-white/10`}
+                className={`flex items-center gap-1.5 cursor-pointer rounded-full backdrop-blur-md transition-all duration-300 bg-black/30 border hover:bg-black/60 border-white/10`}
                 onClick={handleLike}
                 size="sm"
               >
@@ -148,7 +148,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
                 </span>
               </Button>
               <Button
-                className="flex items-center gap-1.5 px-2 py-3 rounded-full backdrop-blur-md border bg-black/30 border-white/10"
+                className="flex items-center gap-1.5 px-2 py-3 rounded-full backdrop-blur-md border bg-black/30 hover:bg-black/60 border-white/10"
                 size="sm"
               >
                 <MessageCircle className="h-3.5 w-3.5 text-white" />
@@ -163,7 +163,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
               <Button
                 size="sm"
                 variant="ghost"
-                className="h-8 w-8 p-0 rounded-full bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 text-white shadow-sm"
+                className="h-8 w-8 p-0 rounded-full bg-black/30 hover:bg-black/60 hover:text-white backdrop-blur-md border border-white/10 text-white shadow-sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();

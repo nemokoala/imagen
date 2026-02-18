@@ -27,3 +27,13 @@ export interface PublicUser {
   nickname: string;
   profileImageUrl: string | null;
 }
+
+export interface UsersListResponse {
+  users: User[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}

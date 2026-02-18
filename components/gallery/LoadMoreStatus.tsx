@@ -34,6 +34,7 @@ export function LoadMoreStatus({
           bottom: `${rowHeight * 6}px`, // 여유 있는 탐지 높이
           left: 0,
           right: 0,
+          pointerEvents: "none",
         }}
       />
       <div
@@ -44,6 +45,7 @@ export function LoadMoreStatus({
           right: 0,
           paddingTop: "2rem",
           paddingBottom: "2rem",
+          pointerEvents: "none",
         }}
         className="flex justify-center"
       >

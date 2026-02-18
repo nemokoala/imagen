@@ -113,14 +113,24 @@ jobs:
         run: |
           echo "🔄 PM2 Reloading..."
 
-          # pm2 reload: 클러스터 모드에서 워커를 하나씩 재시작 (rolling restart)
-          # 새 워커는 심볼릭 링크를 통해 새 빌드 디렉토리에서 실행됨
-          # 이전 워커는 이전 빌드에서 계속 서빙하다가 점진적으로 교체
-          pm2 reload ecosystem.config.js || {
-            echo "⚠️ Reload failed, performing fresh start..."
+          EXPECTED_CWD="/home/koala/imagen-app"
+
+          # PM2에 등록된 앱의 현재 cwd 확인
+          CURRENT_CWD=$(pm2 jlist 2>/dev/null | \
+            python3 -c "import sys,json; apps=json.load(sys.stdin); print(next((a['pm2_env']['pm_cwd'] for a in apps if a['name']=='imagen-app'), ''))" \
+            2>/dev/null || echo "")
+
+          if [ "$CURRENT_CWD" = "$EXPECTED_CWD" ]; then
+            # cwd가 동일 → rolling restart (zero downtime)
+            echo "✅ PM2 cwd matches. Performing rolling reload..."
+            pm2 reload ecosystem.config.js
+          else
+            # cwd가 다름 (최초 배포 또는 설정 변경) → 강제 재시작
+            echo "⚠️ PM2 cwd mismatch: '$CURRENT_CWD' ≠ '$EXPECTED_CWD'"
+            echo "🔸 Performing fresh start with new config..."
             pm2 delete imagen-app 2>/dev/null || true
             pm2 start ecosystem.config.js
-          }
+          fi
 
           pm2 save
           echo "✅ Deploy Complete!"

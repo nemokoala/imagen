@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,12 +10,12 @@ import { Share2, Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { Image as ImageType } from "@/types/image.interfaces";
 import { Skeleton } from "../ui/skeleton";
-import { useGetLikeStatusQuery } from "@/queries/image/queries";
 import { useToggleLikeMutation } from "@/queries/image/mutations";
 import { useUserStore } from "@/stores/userStore";
 import { toast } from "sonner";
 
 import { motion } from "framer-motion";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 interface ImageCardProps {
   image: ImageType;
@@ -27,16 +27,20 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
   const prefetchedRef = useRef(false); // 중복 prefetch 방지
   const [isLoaded, setIsLoaded] = useState(false);
   const { isAuthenticated } = useUserStore();
+  const { getParam } = useUrlParams();
+  const category = getParam("category");
+  const search = getParam("search");
 
-  const { data: likeStatus } = useGetLikeStatusQuery(image.id, {
-    success: true,
-    likeCount: image.likeCount,
-    liked: image.isLiked,
-  });
   const likeMutation = useToggleLikeMutation(image.id);
 
-  const likeCount = likeStatus?.likeCount ?? 0;
-  const liked = likeStatus?.liked ?? false;
+  const [liked, setLiked] = useState(image.isLiked);
+  const [likeCount, setLikeCount] = useState(image.likeCount);
+
+  // props가 변경되면 상태 동기화 (예: 리스트 새로고침 시)
+  useEffect(() => {
+    setLiked(image.isLiked);
+    setLikeCount(image.likeCount);
+  }, [image.isLiked, image.likeCount]);
 
   // 호버 시 router.prefetch 호출 - App Router에서 동적 라우트도 정상 동작
   const handleMouseEnter = useCallback(() => {
@@ -55,12 +59,25 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
       return;
     }
 
+    // 낙관적 업데이트
+    const prevLiked = liked;
+    const prevCount = likeCount;
+
+    setLiked(!prevLiked);
+    setLikeCount(prevLiked ? prevCount - 1 : prevCount + 1);
+
     try {
       const response = await likeMutation.mutateAsync();
-      if (response.success) {
-        toast.success(response.message);
+      if (!response.success) {
+        // 실패 시 롤백
+        setLiked(prevLiked);
+        setLikeCount(prevCount);
+        toast.error(response.message || "좋아요 처리에 실패했습니다.");
       }
     } catch (error: unknown) {
+      // 에러 시 롤백
+      setLiked(prevLiked);
+      setLikeCount(prevCount);
       const message =
         error instanceof Error
           ? error.message
@@ -71,10 +88,9 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
 
   return (
     <motion.div
-      key={`${image.id}-${index}`}
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
+      key={`${category}-${search}`}
+      initial={{ scale: 0.9 }}
+      animate={{ scale: 1 }}
       transition={{
         duration: 0.3,
         delay: Math.min(index * 0.05, 0.3),
@@ -87,7 +103,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
         onMouseEnter={handleMouseEnter}
         className="block"
       >
-        <Card className="overflow-hidden aspect-square transition-all duration-300 cursor-pointer group bg-background backdrop-blur-sm border-0 gap-1 p-0">
+        <Card className="overflow-hidden aspect-square cursor-pointer group bg-background-plus border-0 gap-1 p-0">
           <div className="relative h-full">
             {!isLoaded && <Skeleton className="absolute inset-0 z-10" />}
             <Image
@@ -97,7 +113,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
               className="object-cover transition-transform duration-300 aspect-square"
               loading="eager"
               priority={true}
-              sizes="33vw"
+              sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               onLoad={() => setIsLoaded(true)}
             />
 

@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button";
 import { User as UserIcon, Pencil } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery";
 import { useGetUserImagesInfiniteQuery } from "@/queries/image/queries";
 import { ProfileAvatar } from "../auth/ProfileAvatar";
 import { ProfileEditDialog } from "./ProfileEditDialog";
+import { UserCommentList } from "./UserCommentList";
+import { useGetUserCommentsInfiniteQuery } from "@/queries/user/queries";
 
 interface ProfileContentProps {
   targetUserId?: number | null;
@@ -41,6 +44,12 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
 
   const { data: userImagesData, isLoading: imagesLoading } =
     useGetUserImagesInfiniteQuery(userInfo?.id || 0, 20);
+
+  // 댓글 쿼리 (탭이 'comments'일 때만 fetching)
+  const { data: userCommentsData } = useGetUserCommentsInfiniteQuery(
+    userInfo?.id || 0,
+    10,
+  );
 
   if ((isOwnProfile && storeLoading) || userInfoLoading) {
     return (
@@ -98,44 +107,74 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
           )}
         </Card>
 
-        {/* 이미지 갤러리 헤더 */}
-        <div className="mb-4 mt-4 self-start">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
-            유저가 생성한 이미지
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 ">
-            총 {userImagesData?.pages[0]?.totalCount || 0}개의 이미지
-          </p>
-        </div>
-      </div>
+        <Tabs
+          defaultValue="images"
+          className="w-full flex flex-col items-center"
+        >
+          <TabsList className="w-full max-w-md bg-gray-100 dark:bg-gray-800 p-1 h-auto mb-8">
+            <TabsTrigger value="images" className="flex-1 py-2">
+              생성한 이미지
+            </TabsTrigger>
+            <TabsTrigger value="comments" className="flex-1 py-2">
+              작성한 댓글
+            </TabsTrigger>
+          </TabsList>
 
-      {/* 이미지 갤러리 */}
-      {!imagesLoading &&
-      userImagesData &&
-      userImagesData.pages[0]?.images.length === 0 ? (
-        <div className="container mx-auto px-4 max-w-6xl flex-shrink-0">
-          <Card className="p-12 text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
-            <UserIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {isOwnProfile
-                ? "아직 생성한 이미지가 없습니다."
-                : `${userInfo.nickname}님이 아직 생성한 이미지가 없습니다.`}
-            </p>
-            {isOwnProfile && (
-              <Link href="/image-gen">
-                <Button variant="gradient">이미지 생성하기</Button>
-              </Link>
-            )}
-          </Card>
-        </div>
-      ) : (
-        <div className="px-2 pb-8 w-full max-w-6xl">
-          <InfiniteImageGallery
-            userId={userInfo?.id}
-            scrollElementRef={scrollContainerRef}
-          />
-        </div>
-      )}
+          <TabsContent value="images" className="w-full max-w-6xl px-2 pb-8">
+            <div className="container mx-auto px-2 max-w-6xl">
+              <div className="mb-4 self-start w-full">
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  유저가 생성한 이미지
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 ">
+                  총 {userImagesData?.pages[0]?.totalCount || 0}개의 이미지
+                </p>
+              </div>
+
+              {!imagesLoading &&
+              userImagesData &&
+              userImagesData.pages[0]?.images.length === 0 ? (
+                <div className="container mx-auto max-w-6xl flex-shrink-0">
+                  <Card className="p-12 text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
+                    <UserIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      {isOwnProfile
+                        ? "아직 생성한 이미지가 없습니다."
+                        : `${userInfo.nickname}님이 아직 생성한 이미지가 없습니다.`}
+                    </p>
+                    {isOwnProfile && (
+                      <Link href="/image-gen">
+                        <Button variant="gradient">이미지 생성하기</Button>
+                      </Link>
+                    )}
+                  </Card>
+                </div>
+              ) : (
+                <InfiniteImageGallery
+                  userId={userInfo?.id}
+                  scrollElementRef={scrollContainerRef}
+                />
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="comments" className="w-full max-w-6xl px-2 pb-8">
+            <div className="container mx-auto px-2 max-w-6xl">
+              <div className="mb-4 self-start w-full">
+                <h2 className="text-2xl font-bold text-foreground mb-2">
+                  유저가 작성한 댓글
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400 ">
+                  {userCommentsData?.pages[0]?.totalCount
+                    ? `총 ${userCommentsData.pages[0].totalCount}개의 댓글`
+                    : "작성한 댓글 목록"}
+                </p>
+              </div>
+              <UserCommentList userId={userInfo.id} />
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
       {ownUserInfo && isOwnProfile && (
         <ProfileEditDialog
           user={ownUserInfo}

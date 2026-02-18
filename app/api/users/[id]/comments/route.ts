@@ -8,11 +8,24 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const comments = await commentService.getCommentsByUserId(parseInt(id));
+    const searchParams = req.nextUrl.searchParams;
+    const page = parseInt(searchParams.get("page") || "1");
+    const limit = parseInt(searchParams.get("limit") || "10");
+
+    const result = await commentService.getCommentsByUserId(
+      parseInt(id),
+      page,
+      limit,
+    );
 
     return NextResponse.json({
       success: true,
-      comments,
+      comments: result.comments,
+      totalCount: result.totalCount,
+      currentPage: result.currentPage,
+      totalPages: result.totalPages,
+      hasNextPage: result.hasNextPage,
+      hasPrevPage: result.hasPrevPage,
     });
   } catch (error) {
     return errorHandler(error);

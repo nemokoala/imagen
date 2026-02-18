@@ -9,7 +9,7 @@ interface LoadMoreStatusProps {
   imagesLength: number;
   totalImages: number;
   onRetry: () => void;
-  loadMoreRef: React.RefObject<HTMLDivElement | null>;
+  loadMoreRef: (node?: Element | null) => void;
   rowHeight: number;
 }
 

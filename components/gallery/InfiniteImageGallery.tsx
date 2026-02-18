@@ -16,6 +16,7 @@ import { useScrollObserver } from "@/hooks/use-scroll-observer";
 import { CategoryFilter } from "./CategoryFilter";
 import { Skeleton } from "../ui/skeleton";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { useInView } from "react-intersection-observer";
 
 interface InfiniteImageGalleryProps {
   userId?: number;
@@ -82,7 +83,11 @@ export function InfiniteImageGallery({
     refetch,
   } = userId ? userQuery : galleryQuery;
 
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const { ref: inViewRef, inView } = useInView({
+    root: scrollElement.current,
+    rootMargin: "200px",
+  });
+
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { setScrollPos, scrollPos } = useScrollStore();
   const [containerWidth, setContainerWidth] = useState(0);
@@ -194,38 +199,12 @@ export function InfiniteImageGallery({
     rowVirtualizer.measure();
   }, [width, rowHeight, rowVirtualizer]);
 
-  // IntersectionObserver로 다음 페이지 로드
+  // useInView로 다음 페이지 로드
   useEffect(() => {
-    const sentinel = loadMoreRef.current;
-    const scrollEl = scrollElement.current;
-    if (!sentinel || !scrollEl || !hasNextPage || isFetchingNextPage) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (entry?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      {
-        root: scrollEl,
-        rootMargin: "200px",
-        threshold: 0,
-      },
-    );
-
-    observer.observe(sentinel);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [
-    hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
-    rows.length,
-    scrollElement,
-  ]);
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // 가상화된 전체 높이
   const virtualTotalSize = rowVirtualizer.getTotalSize();
@@ -273,7 +252,7 @@ export function InfiniteImageGallery({
         imagesLength={images.length}
         totalImages={totalImages}
         onRetry={refetch}
-        loadMoreRef={loadMoreRef}
+        loadMoreRef={inViewRef}
         rowHeight={rowHeight}
       />
     </div>

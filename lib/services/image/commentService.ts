@@ -28,6 +28,10 @@ export interface CommentWithUser {
     profileImageUrl: string | null;
   };
   replies: CommentWithUser[];
+  image?: {
+    id: number;
+    imageUrl: string;
+  };
 }
 
 export const commentService = {
@@ -76,34 +80,56 @@ export const commentService = {
   },
 
   /**
-   * 특정 유저가 작성한 댓글 목록 조회
+   * 특정 유저가 작성한 댓글 목록 조회 (페이지네이션 적용)
    */
-  async getCommentsByUserId(userId: number) {
-    const comments = await prisma.imageComment.findMany({
-      where: {
-        userId,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            nickname: true,
-            profileImageUrl: true,
-          },
-        },
-        image: {
-          select: {
-            id: true,
-            imageUrl: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+  async getCommentsByUserId(
+    userId: number,
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    const skip = (page - 1) * limit;
 
-    return comments;
+    const [total, comments] = await Promise.all([
+      prisma.imageComment.count({
+        where: { userId },
+      }),
+      prisma.imageComment.findMany({
+        where: {
+          userId,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              nickname: true,
+              profileImageUrl: true,
+            },
+          },
+          image: {
+            select: {
+              id: true,
+              imageUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        skip,
+        take: limit,
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      comments,
+      totalCount: total,
+      currentPage: page,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    };
   },
 
   /**

@@ -1,27 +1,29 @@
+import { CommentWithUser } from "@/lib/services/image/commentService";
+
+export interface UserCommentsResponse {
+  success: boolean;
+  comments: CommentWithUser[];
+  totalCount: number;
+  currentPage: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 export interface User {
   id: number;
   email: string;
-  credits: number;
-  profileImageUrl: string | null;
   nickname: string;
-  role?: "user" | "admin";
-  provider?: "local" | "kakao";
+  profileImageUrl: string | null;
+  credits: number;
+  role: "user" | "admin";
+  provider: "local" | "kakao";
   createdAt: string;
   updatedAt: string;
 }
 
 export interface PublicUser {
   id: number;
-  profileImageUrl: string | null;
   nickname: string;
-}
-
-export interface UsersListResponse {
-  users: User[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
+  profileImageUrl: string | null;
 }

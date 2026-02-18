@@ -130,11 +130,12 @@ export function InfiniteImageGallery({
 
   // 카테고리, 검색어 변경 시 스크롤 위치 컨테이너 상단으로 이동
   useEffect(() => {
-    if (selectedCategories || search)
+    if (selectedCategories.length > 0 || search) {
       scrollElement.current?.scrollTo({
         top: containerRef.current?.offsetTop,
         behavior: "smooth",
       });
+    }
   }, [selectedCategories, search]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지

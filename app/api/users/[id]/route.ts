@@ -4,15 +4,15 @@ import { errorHandler } from "@/lib/errors/errorHandler";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const param = await params;
-    const userId = parseInt(param.userId, 10);
+    const userId = parseInt(param.id, 10);
     if (isNaN(userId)) {
       return NextResponse.json(
         { error: "유효하지 않은 사용자 ID입니다." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

@@ -18,7 +18,7 @@ export const useGetUserInfo = ({ enabled }: { enabled: boolean }) => {
   return useQuery<User>({
     queryKey: ["userInfo"],
     queryFn: async (): Promise<User> => {
-      const response = await FetchUtil.get("/api/auth/user");
+      const response = await FetchUtil.get("/api/users/me");
       return response as User;
     },
     enabled,
@@ -29,7 +29,7 @@ export const useGetPublicUserById = (userId: number | null) => {
   return useQuery<PublicUser>({
     queryKey: ["user", userId],
     queryFn: async (): Promise<PublicUser> => {
-      const response = await FetchUtil.get(`/api/auth/user/${userId}`);
+      const response = await FetchUtil.get(`/api/users/${userId}`);
       return response as PublicUser;
     },
     enabled: !!userId,

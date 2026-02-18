@@ -76,6 +76,37 @@ export const commentService = {
   },
 
   /**
+   * 특정 유저가 작성한 댓글 목록 조회
+   */
+  async getCommentsByUserId(userId: number) {
+    const comments = await prisma.imageComment.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            nickname: true,
+            profileImageUrl: true,
+          },
+        },
+        image: {
+          select: {
+            id: true,
+            imageUrl: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return comments;
+  },
+
+  /**
    * 댓글 작성
    */
   async createComment(data: CreateCommentData): Promise<CommentWithUser> {

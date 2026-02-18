@@ -72,7 +72,7 @@ export const useUpdateProfile = (
 
   return useMutation({
     mutationFn: async (data: FormData) => {
-      const response = await FetchUtil.patch("/api/auth/user", data);
+      const response = await FetchUtil.patch("/api/users/me", data);
       return response as User;
     },
     onSuccess: (updatedUser) => {

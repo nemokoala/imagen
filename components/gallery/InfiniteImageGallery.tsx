@@ -17,6 +17,7 @@ import { CategoryFilter } from "./CategoryFilter";
 import { Skeleton } from "../ui/skeleton";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { useInView } from "react-intersection-observer";
+import { Search } from "lucide-react";
 
 interface InfiniteImageGalleryProps {
   userId?: number;
@@ -229,6 +230,34 @@ export function InfiniteImageGallery({
           {[...Array(20)].map((_, i) => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}
+        </div>
+      ) : images.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <div className="relative mb-6">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-25"></div>
+            <div className="relative p-6 rounded-full bg-white dark:bg-gray-900 shadow-xl">
+              <Search className="w-12 h-12 text-purple-600" />
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+            이미지를 찾지 못했어요
+          </h3>
+          <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+            {search ? (
+              <>
+                <span className="font-semibold text-purple-600">
+                  "{search}"
+                </span>
+                에 대한 검색 결과가 없습니다.
+                <br />
+                다른 검색어나 카테고리를 선택해보세요.
+              </>
+            ) : selectedCategories.length > 0 ? (
+              "선택한 카테고리에 해당하는 이미지가 없습니다. 다른 카테고리를 선택해보세요."
+            ) : (
+              "표시할 이미지가 아직 없습니다. 첫 번째 이미지를 생성해보는 건 어떨까요?"
+            )}
+          </p>
         </div>
       ) : (
         rowVirtualizer.getVirtualItems().map((virtualRow) => {

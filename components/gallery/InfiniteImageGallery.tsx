@@ -185,7 +185,7 @@ export function InfiniteImageGallery({
     count: rows.length,
     getScrollElement: () => scrollElement.current,
     estimateSize: () => rowHeight,
-    overscan: 40,
+    overscan: 20,
     gap,
     initialOffset: maintainScrollPosition ? scrollPos : undefined,
   });

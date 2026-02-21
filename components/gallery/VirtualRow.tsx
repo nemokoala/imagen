@@ -21,7 +21,9 @@ export function VirtualRow({ virtualRow, row, columnCount }: VirtualRowProps) {
         left: 0,
         width: "100%",
         height: `${virtualRow.size}px`,
-        transform: `translateY(${virtualRow.start}px)`,
+        transform: `translate3d(0, ${virtualRow.start}px, 0)`,
+        willChange: "transform",
+        backfaceVisibility: "hidden",
       }}
     >
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">

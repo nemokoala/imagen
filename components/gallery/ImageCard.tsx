@@ -87,23 +87,20 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
   };
 
   return (
-    <motion.div
-      key={`${category}-${search}`}
-      initial={{ scale: 0.9 }}
-      animate={{ scale: 1 }}
-      transition={{
-        duration: 0.3,
-        delay: Math.min(index * 0.05, 0.3),
-        ease: "easeOut",
-      }}
-    >
+    <div>
       <Link
         href={`/image/${image.id}`}
         prefetch={false}
         onMouseEnter={handleMouseEnter}
         className="block"
       >
-        <Card className="overflow-hidden aspect-square cursor-pointer group bg-background-plus border-0 gap-1 p-0">
+        <Card
+          className="overflow-hidden aspect-square cursor-pointer group bg-background-plus border-0 gap-1 p-0 transform-gpu"
+          style={{
+            WebkitBackfaceVisibility: "hidden",
+            backfaceVisibility: "hidden",
+          }}
+        >
           <div className="relative h-full">
             {!isLoaded && <Skeleton className="absolute inset-0 z-10" />}
             <Image
@@ -179,6 +176,6 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
           </div>
         </Card>
       </Link>
-    </motion.div>
+    </div>
   );
 }

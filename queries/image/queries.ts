@@ -127,7 +127,9 @@ export const useHealthCheckQuery = ({ target }: { target: string }) => {
   return useQuery({
     queryKey: ["healthCheck", target],
     queryFn: async (): Promise<HealthCheckResponse> => {
-      const response = await FetchUtil.get(`/api/health-check/${target}`);
+      const response = await FetchUtil.get(`/api/health-check/${target}`, {
+        signal: AbortSignal.timeout(1000),
+      });
       return response as HealthCheckResponse;
     },
     retry: false,

@@ -88,8 +88,8 @@ const refreshToken = async (): Promise<boolean> => {
 };
 
 export const FetchUtil = {
-  get: async (endpoint: string) => {
-    return handleFetchJSON(endpoint, { method: "GET" });
+  get: async (endpoint: string, options: RequestInit = {}) => {
+    return handleFetchJSON(endpoint, { method: "GET", ...options });
   },
 
   post: async <T>(endpoint: string, data: T, options: RequestInit = {}) => {

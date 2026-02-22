@@ -1,22 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   useGetCreditSettingsQuery,
   useUpdateCreditSettingsMutation,
 } from "@/queries/admin/creditSettings";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { toast } from "sonner";
 import { CreditSettings } from "@/lib/services/admin/creditSettingsService";
+import { ColumnDef } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/data-table";
 
 const MODEL_NAMES: Record<keyof CreditSettings, string> = {
   dallE3: "DALL-E 3",
@@ -26,12 +20,18 @@ const MODEL_NAMES: Record<keyof CreditSettings, string> = {
   zImage: "Z-Image",
 };
 
+type SettingRow = {
+  key: keyof CreditSettings;
+  name: string;
+  cost: number;
+};
+
 export function CreditSettingsComponent() {
   const { data, isLoading, error } = useGetCreditSettingsQuery();
   const updateMutation = useUpdateCreditSettingsMutation();
 
   const [editingValues, setEditingValues] = useState<Partial<CreditSettings>>(
-    {}
+    {},
   );
   const [isEditing, setIsEditing] = useState(false);
 
@@ -74,6 +74,49 @@ export function CreditSettingsComponent() {
     }
   };
 
+  const tableData = useMemo<SettingRow[]>(() => {
+    return (Object.keys(MODEL_NAMES) as Array<keyof CreditSettings>).map(
+      (key) => ({
+        key,
+        name: MODEL_NAMES[key],
+        cost: editingValues[key] ?? data?.[key] ?? 0,
+      }),
+    );
+  }, [editingValues, data]);
+
+  const columns = useMemo<ColumnDef<SettingRow>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "모델",
+        size: 200,
+        cell: ({ row }) => (
+          <span className="font-medium">{row.original.name}</span>
+        ),
+      },
+      {
+        accessorKey: "cost",
+        header: "크레딧 비용",
+        size: 300,
+        cell: ({ row }) => {
+          const key = row.original.key;
+          return isEditing ? (
+            <Input
+              type="number"
+              value={editingValues[key] ?? data?.[key] ?? 0}
+              onChange={(e) => handleChange(key, e.target.value)}
+              className="w-32"
+              min="0"
+            />
+          ) : (
+            <span>{data?.[key] ?? 0} 크레딧</span>
+          );
+        },
+      },
+    ],
+    [isEditing, editingValues, data],
+  );
+
   if (isLoading) {
     return <div className="p-4">로딩 중...</div>;
   }
@@ -100,40 +143,7 @@ export function CreditSettingsComponent() {
         )}
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>모델</TableHead>
-              <TableHead>크레딧 비용</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(Object.keys(MODEL_NAMES) as Array<keyof CreditSettings>).map(
-              (key) => (
-                <TableRow key={key}>
-                  <TableCell className="font-medium">
-                    {MODEL_NAMES[key]}
-                  </TableCell>
-                  <TableCell>
-                    {isEditing ? (
-                      <Input
-                        type="number"
-                        value={editingValues[key] ?? data?.[key] ?? 0}
-                        onChange={(e) => handleChange(key, e.target.value)}
-                        className="w-32"
-                        min="0"
-                      />
-                    ) : (
-                      <span>{data?.[key] ?? 0} 크레딧</span>
-                    )}
-                  </TableCell>
-                </TableRow>
-              )
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable columns={columns} data={tableData} />
 
       {isEditing && (
         <div className="text-sm text-gray-500">

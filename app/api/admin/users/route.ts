@@ -3,6 +3,17 @@ import { checkAdminRole } from "@/lib/server-utils";
 import { prisma } from "@/lib/prisma";
 import { errorHandler } from "@/lib/errors/errorHandler";
 
+// 허용되는 정렬 필드
+const ALLOWED_SORT_FIELDS = [
+  "id",
+  "email",
+  "nickname",
+  "credits",
+  "role",
+  "provider",
+  "createdAt",
+];
+
 export async function GET(request: Request) {
   try {
     // 어드민 권한 확인
@@ -12,6 +23,8 @@ export async function GET(request: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20");
     const search = searchParams.get("search") || "";
+    const sortBy = searchParams.get("sortBy") || "createdAt";
+    const order = searchParams.get("order") === "asc" ? "asc" : "desc";
 
     const skip = (page - 1) * limit;
 
@@ -24,6 +37,10 @@ export async function GET(request: Request) {
           ],
         }
       : {};
+
+    const orderByField = ALLOWED_SORT_FIELDS.includes(sortBy)
+      ? sortBy
+      : "createdAt";
 
     // 유저 목록 조회
     const [users, total] = await Promise.all([
@@ -40,7 +57,7 @@ export async function GET(request: Request) {
           updatedAt: true,
           profileImageUrl: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { [orderByField]: order },
         skip,
         take: limit,
       }),
@@ -60,4 +77,3 @@ export async function GET(request: Request) {
     return errorHandler(error);
   }
 }
-

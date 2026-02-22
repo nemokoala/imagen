@@ -58,14 +58,18 @@ export const useGetGalleryImagesQuery = (
   page: number = 1,
   limit: number = 20,
   search?: string,
+  sortBy?: string,
+  order?: string,
 ) => {
   return useQuery({
-    queryKey: ["galleryImages", page, limit, search],
+    queryKey: ["galleryImages", page, limit, search, sortBy, order],
     queryFn: async () => {
-      const searchParam = search ? `&search=${search}` : "";
-      const response = (await FetchUtil.get(
-        `/api/images?page=${page}&limit=${limit}${searchParam}`,
-      )) as GalleryResponse;
+      let url = `/api/images?page=${page}&limit=${limit}`;
+      if (search) url += `&search=${search}`;
+      if (sortBy) url += `&sortBy=${sortBy}`;
+      if (order) url += `&order=${order}`;
+
+      const response = (await FetchUtil.get(url)) as GalleryResponse;
       return response;
     },
   });

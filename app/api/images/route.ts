@@ -18,6 +18,8 @@ export async function GET(req: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const categoryParam = searchParams.get("category");
     const search = searchParams.get("search") || undefined;
+    const sortBy = searchParams.get("sortBy") || undefined;
+    const order = searchParams.get("order") === "asc" ? "asc" : "desc";
 
     // 콤마로 구분된 카테고리를 배열로 변환
     const categories = categoryParam
@@ -35,6 +37,8 @@ export async function GET(req: NextRequest) {
       categories,
       currentUserId,
       search,
+      sortBy,
+      order,
     );
 
     return NextResponse.json(

@@ -1,27 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useGetGalleryImagesQuery } from "@/queries/image/queries";
 import { useDeleteImageMutation } from "@/queries/image/mutations";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { toast } from "sonner";
 import Image from "next/image";
 import { useModal } from "@/providers/ModalProvider";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
+import { DataTable } from "@/components/ui/data-table";
+
+// TImage type inference from query hook
+type TImage = NonNullable<
+  ReturnType<typeof useGetGalleryImagesQuery>["data"]
+>["images"][number];
 
 export function ImageManagement() {
   const [page, setPage] = useState(1);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const limit = 20;
   const { changeModalContent } = useModal();
 
-  const { data, isLoading, error } = useGetGalleryImagesQuery(page, limit);
+  const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
+  const order =
+    sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
+
+  const { data, isLoading, error } = useGetGalleryImagesQuery(
+    page,
+    limit,
+    undefined,
+    sortBy,
+    order,
+  );
   const deleteImageMutation = useDeleteImageMutation();
 
   const showDeleteModal = (imageId: number) => {
@@ -32,7 +42,7 @@ export function ImageManagement() {
         cancelable: true,
         confirmText: "삭제",
       },
-      () => handleDelete(imageId)
+      () => handleDelete(imageId),
     );
   };
 
@@ -40,7 +50,6 @@ export function ImageManagement() {
     try {
       await deleteImageMutation.mutateAsync(imageId);
       toast.success("이미지가 삭제되었습니다.");
-      // 페이지가 비어있으면 이전 페이지로 이동
       if (data && data.images?.length === 1 && page > 1) {
         setPage(page - 1);
       }
@@ -49,6 +58,101 @@ export function ImageManagement() {
       toast.error("이미지 삭제에 실패했습니다.");
     }
   };
+
+  const columns = useMemo<ColumnDef<TImage>[]>(
+    () => [
+      {
+        accessorKey: "imageUrl",
+        header: "이미지",
+        size: 100,
+        enableSorting: false,
+        cell: ({ row }) => (
+          <div className="relative w-16 h-16">
+            <Image
+              src={row.original.imageUrl}
+              alt={row.original.prompt.substring(0, 50)}
+              fill
+              className="object-cover rounded"
+              sizes="64px"
+            />
+          </div>
+        ),
+      },
+      {
+        accessorKey: "id",
+        header: "ID",
+        size: 80,
+      },
+      {
+        accessorKey: "user",
+        header: "사용자",
+        size: 150,
+        cell: ({ row }) => (
+          <div>
+            <div className="font-medium">{row.original.user.nickname}</div>
+            <div className="text-sm text-gray-500">
+              ID: {row.original.user.id}
+            </div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "prompt",
+        header: "프롬프트",
+        size: 300,
+      },
+      {
+        accessorKey: "model",
+        header: "모델",
+        size: 120,
+        cell: ({ row }) => (
+          <span className="text-sm">{row.original.model}</span>
+        ),
+      },
+      {
+        accessorKey: "likeCount",
+        header: "좋아요",
+        size: 80,
+        cell: ({ row }) => row.original.likeCount || 0,
+      },
+      {
+        accessorKey: "commentCount",
+        header: "댓글",
+        size: 80,
+        cell: ({ row }) => row.original.commentCount || 0,
+      },
+      {
+        accessorKey: "createdAt",
+        header: "생성일",
+        size: 150,
+        cell: ({ row }) =>
+          new Date(row.original.createdAt).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+      },
+      {
+        id: "actions",
+        header: "작업",
+        size: 100,
+        enableSorting: false,
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="destructive"
+            disabled={deleteImageMutation.isPending}
+            onClick={() => showDeleteModal(row.original.id)}
+          >
+            삭제
+          </Button>
+        ),
+      },
+    ],
+    [deleteImageMutation.isPending],
+  );
 
   if (isLoading) {
     return <div className="p-4">로딩 중...</div>;
@@ -64,86 +168,13 @@ export function ImageManagement() {
         <h2 className="text-2xl font-bold">이미지 관리</h2>
       </div>
 
-      <div className="border rounded-lg">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-24">이미지</TableHead>
-              <TableHead>ID</TableHead>
-              <TableHead>사용자</TableHead>
-              <TableHead className="max-w-md">프롬프트</TableHead>
-              <TableHead>모델</TableHead>
-              <TableHead>좋아요</TableHead>
-              <TableHead>댓글</TableHead>
-              <TableHead>생성일</TableHead>
-              <TableHead>작업</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data?.images && data.images.length > 0 ? (
-              data.images.map((image) => (
-                <TableRow key={image.id}>
-                  <TableCell>
-                    <div className="relative w-16 h-16">
-                      <Image
-                        src={image.imageUrl}
-                        alt={image.prompt.substring(0, 50)}
-                        fill
-                        className="object-cover rounded"
-                        sizes="64px"
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>{image.id}</TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{image.user.nickname}</div>
-                      <div className="text-sm text-gray-500">
-                        ID: {image.user.id}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="max-w-md">
-                    <div className="truncate" title={image.prompt}>
-                      {image.prompt}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm">{image.model}</span>
-                  </TableCell>
-                  <TableCell>{image.likeCount || 0}</TableCell>
-                  <TableCell>{image.commentCount || 0}</TableCell>
-                  <TableCell>
-                    {new Date(image.createdAt).toLocaleDateString("ko-KR", {
-                      year: "numeric",
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      disabled={deleteImageMutation.isPending}
-                      onClick={() => showDeleteModal(image.id)}
-                    >
-                      삭제
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={9} className="text-center py-8">
-                  이미지가 없습니다.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <DataTable
+        columns={columns}
+        data={data?.images ?? []}
+        sorting={sorting}
+        onSortingChange={setSorting}
+        manualSorting={true}
+      />
 
       {data && data.totalPages > 1 && (
         <div className="flex justify-center gap-2">

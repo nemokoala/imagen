@@ -175,6 +175,8 @@ export const imageRetrievalService = {
     categorySlugs?: string[],
     currentUserId?: number,
     search?: string,
+    sortBy?: string,
+    order?: string,
   ) {
     try {
       const skip = (page - 1) * limit;
@@ -209,11 +211,34 @@ export const imageRetrievalService = {
         whereClause.AND = conditions;
       }
 
+      const ALLOWED_SORT_FIELDS = [
+        "id",
+        "prompt",
+        "model",
+        "createdAt",
+        "user",
+        "likeCount",
+        "commentCount",
+      ];
+      let orderByQuery: any = { createdAt: "desc" };
+
+      if (sortBy && order && ALLOWED_SORT_FIELDS.includes(sortBy)) {
+        if (sortBy === "user") {
+          orderByQuery = { user: { nickname: order } };
+        } else if (sortBy === "likeCount") {
+          orderByQuery = { likes: { _count: order } };
+        } else if (sortBy === "commentCount") {
+          orderByQuery = { comments: { _count: order } };
+        } else {
+          orderByQuery = { [sortBy]: order };
+        }
+      }
+
       const [images, totalCount] = await Promise.all([
         prisma.generatedImage.findMany({
           where: whereClause,
           include: getImageInclude(currentUserId),
-          orderBy: { createdAt: "desc" },
+          orderBy: orderByQuery,
           skip,
           take: limit,
         }),

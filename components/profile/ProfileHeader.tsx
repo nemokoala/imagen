@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ProfileAvatar } from "../auth/ProfileAvatar";
 import { User, PublicUser } from "@/types/user.interfaces";
+import Link from "next/link";
 
 interface ProfileHeaderProps {
   userInfo: User | PublicUser;
@@ -43,9 +44,11 @@ export function ProfileHeader({
                 {userInfo.nickname}
               </h1>
               {"role" in userInfo && userInfo.role === "admin" && (
-                <span className="px-2 py-0.5 text-[10px] font-bold bg-indigo-500 text-white rounded-full uppercase tracking-widest">
-                  Admin
-                </span>
+                <Link href="/admin">
+                  <div className="px-2 py-0.5 text-[10px] font-bold bg-indigo-500 text-white rounded-full uppercase tracking-widest">
+                    Admin
+                  </div>
+                </Link>
               )}
             </div>
             <p className="text-sm text-muted-foreground font-medium">

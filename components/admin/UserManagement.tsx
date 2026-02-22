@@ -161,10 +161,6 @@ export function UserManagement() {
     [editingUserId, creditValue, updateCreditMutation.isPending],
   );
 
-  if (isLoading) {
-    return <div className="p-4">로딩 중...</div>;
-  }
-
   if (error) {
     return <div className="p-4 text-red-500">에러가 발생했습니다.</div>;
   }

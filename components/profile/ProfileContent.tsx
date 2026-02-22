@@ -15,6 +15,7 @@ import { UserCommentList } from "./UserCommentList";
 import { useGetUserCommentsInfiniteQuery } from "@/queries/user/queries";
 import { ProfileHeader } from "./ProfileHeader";
 import { UserGeneratedImages } from "./UserGeneratedImages";
+import { useUrlParams } from "@/hooks/use-url-params";
 
 interface ProfileContentProps {
   targetUserId?: number | null;
@@ -24,6 +25,12 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { user: storeUser, isLoading: storeLoading } = useUserStore();
+  const { getParam, setParam } = useUrlParams();
+  const activeTab = getParam("tab") || "images";
+
+  const handleTabChange = (value: string) => {
+    setParam("tab", value);
+  };
 
   // 본인 프로필인지 확인
   const isOwnProfile = !targetUserId || targetUserId === storeUser?.id;
@@ -115,7 +122,8 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
         />
 
         <Tabs
-          defaultValue="images"
+          value={activeTab}
+          onValueChange={handleTabChange}
           className="w-full flex flex-col items-center"
         >
           <TabsList className="w-full max-w-md bg-gray-100 dark:bg-gray-800 p-1 h-auto mb-8">

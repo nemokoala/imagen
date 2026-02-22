@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useModal } from "@/providers/ModalProvider";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
+import { useRouter } from "next/navigation";
 
 // TImage type inference from query hook
 type TImage = NonNullable<
@@ -20,12 +21,13 @@ export function ImageManagement() {
   const [sorting, setSorting] = useState<SortingState>([]);
   const limit = 20;
   const { changeModalContent } = useModal();
+  const router = useRouter();
 
   const sortBy = sorting.length > 0 ? sorting[0].id : undefined;
   const order =
     sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : undefined;
 
-  const { data, isLoading, error } = useGetGalleryImagesQuery(
+  const { data, error } = useGetGalleryImagesQuery(
     page,
     limit,
     undefined,
@@ -67,7 +69,10 @@ export function ImageManagement() {
         size: 100,
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="relative w-16 h-16">
+          <Button
+            className="relative w-16 h-16"
+            onClick={() => router.push(`/image/${row.original.id}`)}
+          >
             <Image
               src={row.original.imageUrl}
               alt={row.original.prompt.substring(0, 50)}
@@ -75,7 +80,7 @@ export function ImageManagement() {
               className="object-cover rounded"
               sizes="64px"
             />
-          </div>
+          </Button>
         ),
       },
       {
@@ -137,7 +142,7 @@ export function ImageManagement() {
       {
         id: "actions",
         header: "작업",
-        size: 100,
+        size: 70,
         enableSorting: false,
         cell: ({ row }) => (
           <Button
@@ -153,10 +158,6 @@ export function ImageManagement() {
     ],
     [deleteImageMutation.isPending],
   );
-
-  if (isLoading) {
-    return <div className="p-4">로딩 중...</div>;
-  }
 
   if (error) {
     return <div className="p-4 text-red-500">에러가 발생했습니다.</div>;

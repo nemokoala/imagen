@@ -204,17 +204,13 @@ ${userPrompt}
   },
 
   async healthCheck(): Promise<boolean> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000);
-
     try {
       const response = await fetch(
         `${process.env.OLLAMA_API_URL || "http://localhost:11434"}`,
         {
-          signal: controller.signal,
+          signal: AbortSignal.timeout(1000),
         },
       );
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new ApiError(
@@ -225,8 +221,10 @@ ${userPrompt}
 
       return response.ok;
     } catch (error) {
-      clearTimeout(timeoutId);
-      if (error instanceof Error && error.name === "AbortError") {
+      if (
+        error instanceof Error &&
+        (error.name === "TimeoutError" || error.name === "AbortError")
+      ) {
         throw new ApiError("AI 서비스 연결 시간이 초과되었습니다.", 408);
       }
       if (error instanceof ApiError) throw error;

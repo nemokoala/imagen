@@ -180,6 +180,7 @@ export async function POST(req: NextRequest) {
       {
         success: true,
         imageUrl: result.imageUrl,
+        id: result.id,
         remaining: MAX_TOTAL_REQUESTS - totalRequestCount,
       },
       { status: 200 },

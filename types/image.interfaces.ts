@@ -21,6 +21,7 @@ export interface GenerateImageRequest {
 export interface GenerateImageResponse {
   success: boolean;
   imageUrl: string;
+  id: number;
   remaining: number | "unlimited";
 }
 

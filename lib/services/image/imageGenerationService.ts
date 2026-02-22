@@ -34,6 +34,7 @@ export interface GenerateImageRequest {
 export interface GenerateImageResponse {
   success: boolean;
   imageUrl?: string;
+  id?: number;
   error?: string;
 }
 
@@ -78,7 +79,7 @@ export const imageGenerationService = {
       );
 
       // 데이터베이스에 이미지 정보 저장
-      await imageGenerationService.saveImageToDatabase({
+      const imageId = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
@@ -90,6 +91,7 @@ export const imageGenerationService = {
       return {
         success: true,
         imageUrl: savedImagePath,
+        id: imageId,
       };
     } catch (error: unknown) {
       console.error("Image generation error:", error);
@@ -203,7 +205,7 @@ export const imageGenerationService = {
         userId,
       );
 
-      await imageGenerationService.saveImageToDatabase({
+      const imageId = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         translatedPrompt:
@@ -217,6 +219,7 @@ export const imageGenerationService = {
       yield {
         success: true,
         imageUrl: savedImagePath,
+        id: imageId,
       };
     } catch (error) {
       console.error("Error generating image by Stable Diffusion:", error);
@@ -273,7 +276,7 @@ export const imageGenerationService = {
       );
 
       // 데이터베이스에 이미지 정보 저장
-      await imageGenerationService.saveImageToDatabase({
+      const imageId = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
@@ -285,6 +288,7 @@ export const imageGenerationService = {
       return {
         success: true,
         imageUrl: savedImagePath,
+        id: imageId,
       };
     } catch (error: unknown) {
       console.error("Error generating image by Google Imagen:", error);
@@ -552,7 +556,7 @@ export const imageGenerationService = {
       await authService.updateUserCredit(userId, -creditCost);
 
       // 데이터베이스에 이미지 정보 저장
-      await imageGenerationService.saveImageToDatabase({
+      const imageId = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         translatedPrompt:
@@ -568,6 +572,7 @@ export const imageGenerationService = {
       yield {
         success: true,
         imageUrl: savedImagePath,
+        id: imageId,
       };
     } catch (error: unknown) {
       console.error("❌ 에러 발생:", error);
@@ -656,7 +661,7 @@ export const imageGenerationService = {
       );
 
       // 데이터베이스에 이미지 정보 저장
-      await imageGenerationService.saveImageToDatabase({
+      const imageId = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
@@ -668,6 +673,7 @@ export const imageGenerationService = {
       return {
         success: true,
         imageUrl: savedImagePath,
+        id: imageId,
       };
     } catch (error: unknown) {
       console.error("Error generating image by Nano Banana:", error);
@@ -747,7 +753,7 @@ export const imageGenerationService = {
     model: string;
     size: string;
     categorySlugs?: string[]; // 카테고리 slug 배열 (선택)
-  }) {
+  }): Promise<number> {
     try {
       const { categorySlugs, ...imageInfo } = imageData;
 
@@ -761,12 +767,14 @@ export const imageGenerationService = {
             }
           : {};
 
-      await prisma.generatedImage.create({
+      const newImage = await prisma.generatedImage.create({
         data: {
           ...imageInfo,
           ...categoryConnect,
         },
       });
+
+      return newImage.id;
     } catch (error) {
       console.error("Error saving image to database:", error);
       throw new ApiError("이미지 정보 저장에 실패했습니다.", 500);

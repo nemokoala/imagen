@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles, Download, RefreshCw } from "lucide-react";
+import { Loader2, Sparkles, Download, Eye } from "lucide-react";
 import Image from "next/image";
 import { Layout } from "@/components/layout/Layout";
 import { useGenerateImageMutation } from "@/queries/image/mutations";
@@ -24,10 +24,12 @@ import { Model } from "@/types/model.interfaces";
 import { downloadImage } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
+import Link from "next/link";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageId, setImageId] = useState<number | null>(null);
   const [generationProgress, setGenerationProgress] = useState<string | null>(
     null,
   );
@@ -98,6 +100,7 @@ export default function ImageGenPage() {
     useGenerateImageMutation(
       (data) => {
         setImageUrl(data.imageUrl!);
+        setImageId(data.id);
         toast.success("이미지 생성 완료!", {
           description: "AI가 이미지를 생성했습니다.",
         });
@@ -122,6 +125,7 @@ export default function ImageGenPage() {
       setIsStreaming(true);
       setGenerationProgress("연결 중...");
       setImageUrl(null);
+      setImageId(null);
 
       const response = await FetchUtil.postRaw("/api/generate-image", {
         prompt,
@@ -161,6 +165,7 @@ export default function ImageGenPage() {
                 setGenerationProgress(data.message);
               } else if (data.status === "complete") {
                 setImageUrl(data.imageUrl);
+                setImageId(data.id);
                 setGenerationProgress(null);
                 toast.success("이미지 생성 완료!", {
                   description: "AI가 이미지를 생성했습니다.",
@@ -213,18 +218,14 @@ export default function ImageGenPage() {
     if (model === Model.Z_IMAGE || model === Model.STABLE_DIFFUSION_XL) {
       await handleStreamGenerate();
     } else {
+      setImageUrl(null);
+      setImageId(null);
       generateImage({
         prompt,
         model,
         categories: selectedCategories,
       });
     }
-  };
-
-  const handleRegenerate = () => {
-    setImageUrl(null);
-    console.log("handleRegenerate");
-    handleGenerate();
   };
 
   const isPending = isMutationPending || isStreaming;
@@ -339,18 +340,21 @@ export default function ImageGenPage() {
                       variant="outline"
                       className="flex-1 border-purple-200 text-purple-400 hover:bg-purple-50"
                     >
-                      <Download className="mr-2 h-4 w-4" />
+                      <Download className="mr-1 h-4 w-4" />
                       다운로드
                     </Button>
-                    <Button
-                      onClick={handleRegenerate}
-                      variant="outline"
-                      className="flex-1 border-blue-200 text-blue-400 hover:bg-blue-50"
-                      disabled={isPending || (credit ?? 0) < 1}
-                    >
-                      <RefreshCw className="mr-2 h-4 w-4" />
-                      다시 생성
-                    </Button>
+                    {imageId && (
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="flex-1 border-blue-200 text-blue-400 hover:bg-blue-50"
+                      >
+                        <Link href={`/image/${imageId}`}>
+                          <Eye className="mr-1 h-4 w-4" />
+                          게시물 보기
+                        </Link>
+                      </Button>
+                    )}
                   </div>
                 </div>
               ) : (

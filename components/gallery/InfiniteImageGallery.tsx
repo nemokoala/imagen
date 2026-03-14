@@ -93,14 +93,19 @@ export function InfiniteImageGallery({
     refetch,
   } = userId ? userQuery : galleryQuery;
 
-  const { ref: inViewRef, inView } = useInView({
-    root: scrollElement.current,
-    rootMargin: "200px",
-  });
-
   const containerRef = useRef<HTMLDivElement | null>(null);
   const { setScrollPos, scrollPos } = useScrollStore();
   const [containerWidth, setContainerWidth] = useState(0);
+  const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setScrollEl(scrollElement.current);
+  }, [scrollElement]);
+
+  const { ref: inViewRef, inView } = useInView({
+    root: scrollEl,
+    rootMargin: "200px",
+  });
 
   // 모든 페이지의 이미지를 하나의 배열로 합치기
   const images = useMemo(
@@ -141,7 +146,7 @@ export function InfiniteImageGallery({
       top: containerRef.current?.offsetTop,
       behavior: "instant",
     });
-  }, [selectedCategories, search]);
+  }, [selectedCategories, search, scrollElement]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지
   const containerRefCallback = useCallback((node: HTMLDivElement | null) => {
@@ -186,7 +191,11 @@ export function InfiniteImageGallery({
       const aspectRatio = parseAspectRatio(image.size);
       const itemHeight = Math.round(columnWidth / aspectRatio);
       const shortestCol = colHeights.indexOf(Math.min(...colHeights));
-      cols[shortestCol].push({ image, height: itemHeight, originalIndex: index });
+      cols[shortestCol].push({
+        image,
+        height: itemHeight,
+        originalIndex: index,
+      });
       colHeights[shortestCol] += itemHeight + gap;
     });
 

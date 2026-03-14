@@ -3,7 +3,7 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { ImageCard } from "./ImageCard";
 import { Image as ImageType } from "@/types/image.interfaces";
-import { RefObject } from "react";
+import { RefObject, useEffect } from "react";
 
 export interface MasonryColumnItem {
   image: ImageType;
@@ -34,6 +34,13 @@ export function MasonryColumn({
     gap,
     initialOffset,
   });
+
+  // columnWidth 변경 시 virtualizer 캐시 리셋 (높이 재계산)
+  // virtualizer는 매 렌더마다 새 객체이므로 deps에서 제외
+  useEffect(() => {
+    virtualizer.measure();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [columnWidth]);
 
   return (
     <div

@@ -86,15 +86,15 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
   };
 
   return (
-    <div>
+    <div className="h-full">
       <Link
         href={`/image/${image.id}`}
         prefetch={false}
         onMouseEnter={handleMouseEnter}
-        className="block"
+        className="block h-full"
       >
         <Card
-          className="overflow-hidden aspect-square cursor-pointer group bg-background-plus border-0 gap-1 p-0 transform-gpu"
+          className="overflow-hidden cursor-pointer group bg-background-plus border-0 gap-1 p-0 transform-gpu h-full"
           style={{
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
@@ -106,7 +106,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
               src={image.imageUrl}
               alt={image.prompt}
               fill
-              className="object-cover transition-transform duration-300 aspect-square"
+              className="object-cover transition-transform duration-300"
               loading="eager"
               priority={true}
               sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"

@@ -1,15 +1,13 @@
 "use client";
 
-import { Image } from "@/types/image.interfaces";
 import {
   useGetGalleryImagesInfiniteQuery,
   useGetUserImagesInfiniteQuery,
 } from "@/queries/image/queries";
 import { useGetCategories } from "@/queries/category/queries";
-import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
-import { VirtualRow } from "./VirtualRow";
+import { MasonryColumn, MasonryColumnItem } from "./MasonryColumn";
 import { LoadMoreStatus } from "./LoadMoreStatus";
 import { useScrollStore } from "@/stores/scrollStore";
 import { useScrollObserver } from "@/hooks/use-scroll-observer";
@@ -18,6 +16,17 @@ import { Skeleton } from "../ui/skeleton";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { useInView } from "react-intersection-observer";
 import { Search } from "lucide-react";
+
+/** "WxH" 형태의 size 문자열에서 가로/세로 비율(w/h) 파싱 */
+function parseAspectRatio(size: string): number {
+  const match = size.match(/(\d+)\s*[x×]\s*(\d+)/i);
+  if (match) {
+    const w = parseInt(match[1]);
+    const h = parseInt(match[2]);
+    if (w > 0 && h > 0) return w / h;
+  }
+  return 1; // 기본 1:1
+}
 
 interface InfiniteImageGalleryProps {
   userId?: number;
@@ -116,7 +125,6 @@ export function InfiniteImageGallery({
   const handleToggleCategory = useCallback(
     (slug: string) => {
       const newCategories = selectedCategories.includes(slug) ? [] : [slug];
-
       setParam("categories", newCategories.join(","));
     },
     [selectedCategories, setParam],
@@ -139,13 +147,12 @@ export function InfiniteImageGallery({
   const containerRefCallback = useCallback((node: HTMLDivElement | null) => {
     containerRef.current = node;
     if (node) {
-      // 마운트 시점에만 크기 측정 (이전 값과 다를 때만 업데이트)
       const measuredWidth = node.clientWidth;
       setContainerWidth((prev) =>
         measuredWidth !== prev ? measuredWidth : prev,
       );
     }
-  }, []); // 빈 의존성 배열로 한 번만 생성
+  }, []);
 
   // width나 columnCount 변경 시 크기 재측정
   useEffect(() => {
@@ -159,43 +166,48 @@ export function InfiniteImageGallery({
     }
   }, [width, columnCount, gap, images]);
 
-  // 컬럼별로 이미지를 그룹화
-  const rows = useMemo(() => {
-    const rows: Image[][] = [];
-    for (let i = 0; i < images.length; i += columnCount) {
-      rows.push(images.slice(i, i + columnCount));
-    }
-    return rows;
-  }, [images, columnCount]);
-
-  // 행 높이 직접 계산 (aspect-square 이미지: 너비 = 높이)
-  const rowHeight = useMemo(() => {
-    if (containerWidth === 0) return 350; // 초기값
+  // 컬럼 너비 계산
+  const columnWidth = useMemo(() => {
+    if (containerWidth === 0) return 0;
     const totalGap = gap * (columnCount - 1);
-    const cardWidth = (containerWidth - totalGap) / columnCount;
-    return Math.floor(cardWidth); // 소수점 제거로 정확한 픽셀 계산
-  }, [containerWidth, columnCount]);
+    return (containerWidth - totalGap) / columnCount;
+  }, [containerWidth, columnCount, gap]);
 
-  // 가상 스크롤 설정
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    getScrollElement: () => scrollElement.current,
-    estimateSize: () => rowHeight,
-    overscan: 20,
-    gap,
-    initialOffset: maintainScrollPosition ? scrollPos : undefined,
-  });
+  // 이미지를 컬럼별로 분배 (가장 짧은 컬럼에 배치)
+  const columns = useMemo(() => {
+    if (columnWidth === 0) return [];
+    const cols: MasonryColumnItem[][] = Array.from(
+      { length: columnCount },
+      () => [],
+    );
+    const colHeights = new Array(columnCount).fill(0);
+
+    images.forEach((image, index) => {
+      const aspectRatio = parseAspectRatio(image.size);
+      const itemHeight = Math.round(columnWidth / aspectRatio);
+      const shortestCol = colHeights.indexOf(Math.min(...colHeights));
+      cols[shortestCol].push({ image, height: itemHeight, originalIndex: index });
+      colHeights[shortestCol] += itemHeight + gap;
+    });
+
+    return cols;
+  }, [images, columnCount, columnWidth, gap]);
+
+  // 전체 높이 계산 (가장 긴 컬럼 기준)
+  const maxColumnHeight = useMemo(() => {
+    if (columns.length === 0) return 0;
+    return Math.max(
+      ...columns.map((col) =>
+        col.reduce((sum, item) => sum + item.height + gap, 0),
+      ),
+    );
+  }, [columns, gap]);
 
   useScrollObserver(scrollElement, {
     onScrollChange: (scrollTop) => {
       setScrollPos(scrollTop);
     },
   });
-
-  // 리사이즈 시 가상화 요소 재계산 및 측정값 초기화
-  useEffect(() => {
-    rowVirtualizer.measure();
-  }, [width, rowHeight, rowVirtualizer]);
 
   // useInView로 다음 페이지 로드
   useEffect(() => {
@@ -204,11 +216,15 @@ export function InfiniteImageGallery({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // 가상화된 전체 높이
-  const virtualTotalSize = rowVirtualizer.getTotalSize();
+  // LoadMore 감지용 기본 높이
+  const loadMoreDetectHeight = useMemo(() => {
+    if (columnWidth === 0) return 350;
+    return Math.floor(columnWidth);
+  }, [columnWidth]);
+
   const hasStatus =
     isFetchingNextPage || error || (!hasNextPage && images.length > 0);
-  const containerHeight = virtualTotalSize + (hasStatus ? 150 : 50);
+  const containerHeight = maxColumnHeight + (hasStatus ? 150 : 50);
 
   // 공통 콘텐츠
   const content = (
@@ -242,7 +258,7 @@ export function InfiniteImageGallery({
             {search ? (
               <>
                 <span className="font-semibold text-purple-600">
-                  "{search}"
+                  &ldquo;{search}&rdquo;
                 </span>
                 에 대한 검색 결과가 없습니다.
                 <br />
@@ -256,19 +272,18 @@ export function InfiniteImageGallery({
           </p>
         </div>
       ) : (
-        rowVirtualizer.getVirtualItems().map((virtualRow) => {
-          const row = rows[virtualRow.index];
-          if (!row) return null;
-
-          return (
-            <VirtualRow
-              key={virtualRow.key}
-              virtualRow={virtualRow}
-              row={row}
-              columnCount={columnCount}
+        <div style={{ display: "flex", gap: `${gap}px` }}>
+          {columns.map((colItems, colIndex) => (
+            <MasonryColumn
+              key={colIndex}
+              items={colItems}
+              scrollElement={scrollElement}
+              gap={gap}
+              columnWidth={columnWidth}
+              initialOffset={maintainScrollPosition ? scrollPos : undefined}
             />
-          );
-        })
+          ))}
+        </div>
       )}
 
       <LoadMoreStatus
@@ -279,7 +294,7 @@ export function InfiniteImageGallery({
         totalImages={totalImages}
         onRetry={refetch}
         loadMoreRef={inViewRef}
-        rowHeight={rowHeight}
+        rowHeight={loadMoreDetectHeight}
       />
     </div>
   );

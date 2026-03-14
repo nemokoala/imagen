@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Share2, Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
@@ -124,43 +123,28 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
               </Badge>
             </div>
 
-            {/* 좋아요, 댓글*/}
-            <div className="flex gap-2 absolute bottom-2 left-2 z-20">
-              <Button
-                className={`flex items-center gap-1.5 cursor-pointer rounded-full backdrop-blur-md transition-all duration-300 bg-black/30 border hover:bg-black/60 border-white/10`}
-                onClick={handleLike}
-                size="sm"
-              >
-                <Heart
-                  className={`h-3.5 w-3.5 ${
-                    liked ? "fill-red-500 text-red-500" : "text-white"
-                  }`}
-                />
-                <span
-                  className={`text-xs font-medium ${
-                    liked ? "text-red-200" : "text-white"
-                  }`}
-                >
-                  {likeCount}
-                </span>
-              </Button>
-              <Button
-                className="flex items-center gap-1.5 px-2 py-3 rounded-full backdrop-blur-md border bg-black/30 hover:bg-black/60 border-white/10"
-                size="sm"
-              >
-                <MessageCircle className="h-3.5 w-3.5 text-white" />
-                <span className="text-xs font-medium text-white">
-                  {image.commentCount}
-                </span>
-              </Button>
-            </div>
+            {/* 하단 그라데이션 오버레이 */}
+            <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none" />
 
-            {/* 공유 */}
-            <div className="absolute bottom-2 right-2 z-20">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 rounded-full bg-black/30 hover:bg-black/60 hover:text-white backdrop-blur-md border border-white/10 text-white shadow-sm"
+            {/* 좋아요, 댓글, 공유 */}
+            <div className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-2.5 pb-2">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleLike}
+                  className="flex items-center gap-1 text-white/90 hover:text-white transition-colors"
+                >
+                  <Heart
+                    className={`h-3.5 w-3.5 ${liked ? "fill-red-500 text-red-500" : ""}`}
+                  />
+                  <span className="text-xs font-medium">{likeCount}</span>
+                </button>
+                <div className="flex items-center gap-1 text-white/90">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  <span className="text-xs font-medium">{image.commentCount}</span>
+                </div>
+              </div>
+              <button
+                className="text-white/70 hover:text-white transition-colors"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -170,8 +154,8 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
                   toast.success("링크가 복사되었습니다.");
                 }}
               >
-                <Share2 className="h-4 w-4" />
-              </Button>
+                <Share2 className="h-3.5 w-3.5" />
+              </button>
             </div>
           </div>
         </Card>

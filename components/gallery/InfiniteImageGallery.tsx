@@ -115,9 +115,7 @@ export function InfiniteImageGallery({
   // 카테고리 토글 핸들러 (URL 업데이트)
   const handleToggleCategory = useCallback(
     (slug: string) => {
-      const newCategories = selectedCategories.includes(slug)
-        ? selectedCategories.filter((c) => c !== slug)
-        : [...selectedCategories, slug];
+      const newCategories = selectedCategories.includes(slug) ? [] : [slug];
 
       setParam("categories", newCategories.join(","));
     },
@@ -131,12 +129,10 @@ export function InfiniteImageGallery({
 
   // 카테고리, 검색어 변경 시 스크롤 위치 컨테이너 상단으로 이동
   useEffect(() => {
-    if (selectedCategories.length > 0 || search) {
-      scrollElement.current?.scrollTo({
-        top: containerRef.current?.offsetTop,
-        behavior: "smooth",
-      });
-    }
+    scrollElement.current?.scrollTo({
+      top: containerRef.current?.offsetTop,
+      behavior: "instant",
+    });
   }, [selectedCategories, search]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지

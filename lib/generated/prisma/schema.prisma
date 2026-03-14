@@ -67,6 +67,7 @@ model GeneratedImage {
   imageUrl         String
   model            String
   size             String   @default("1024x1024")
+  ratio            String   @default("1:1")
   editData         String?  @db.Text
   editedImageUrl   String?
   createdAt        DateTime @default(now())

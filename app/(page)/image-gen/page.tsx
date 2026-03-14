@@ -21,6 +21,8 @@ import {
 } from "@/components/image-gen/RecommendPrompt";
 import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
+import { ImageRatio } from "@/types/image.interfaces";
+import { MODEL_RATIO_CONFIG } from "@/constants/model.constants";
 import { downloadImage } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
@@ -35,6 +37,7 @@ export default function ImageGenPage() {
   );
   const [isStreaming, setIsStreaming] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [ratio, setRatio] = useState<ImageRatio>(ImageRatio.RATIO_1_1);
 
   const queryClient = useQueryClient();
   const resultImageRef = useRef<HTMLDivElement>(null);
@@ -67,6 +70,11 @@ export default function ImageGenPage() {
 
   const handleModelChange = (value: Model) => {
     setManualModel(value);
+    // 변경된 모델이 현재 비율을 지원하지 않으면 1:1로 리셋
+    const supported = MODEL_RATIO_CONFIG[value]?.supportedRatios ?? [];
+    if (!supported.includes(ratio)) {
+      setRatio(ImageRatio.RATIO_1_1);
+    }
   };
 
   // AI 카테고리 추천
@@ -130,6 +138,7 @@ export default function ImageGenPage() {
       const response = await FetchUtil.postRaw("/api/generate-image", {
         prompt,
         model,
+        ratio,
         categories: selectedCategories,
       });
 
@@ -223,6 +232,7 @@ export default function ImageGenPage() {
       generateImage({
         prompt,
         model,
+        ratio,
         categories: selectedCategories,
       });
     }
@@ -278,6 +288,32 @@ export default function ImageGenPage() {
                   />
                 </div>
 
+                {/* 비율 선택 */}
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-subtitle">비율</p>
+                  <div className="flex gap-2">
+                    {Object.values(ImageRatio).map((r) => {
+                      const supported =
+                        MODEL_RATIO_CONFIG[model]?.supportedRatios.includes(
+                          r,
+                        ) ?? true;
+                      const isActive = ratio === r;
+                      return (
+                        <Button
+                          key={r}
+                          type="button"
+                          variant={isActive ? "gradient" : "outline"}
+                          onClick={() => setRatio(r)}
+                          disabled={isPending || !supported}
+                          className={`flex-1 ${isActive ? " text-white" : ""} transition-all duration-200`}
+                        >
+                          {r}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 {/* 카테고리 선택 */}
                 <CategorySelect
                   selectedCategories={selectedCategories}
@@ -323,13 +359,12 @@ export default function ImageGenPage() {
             <CardContent>
               {imageUrl ? (
                 <div className="space-y-4">
-                  <div className="mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden aspect-square bg-background flex items-center justify-center">
+                  <div className="relative mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden aspect-square bg-background flex items-center justify-center">
                     <Image
                       src={imageUrl}
                       alt="생성된 이미지"
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      fill
+                      className="w-auto h-auto object-contain transition-transform duration-300 group-hover:scale-105"
                       unoptimized
                     />
                   </div>

@@ -1,5 +1,6 @@
 import { prisma } from "../../prisma";
 import type { Image as ImageType } from "@/types/image.interfaces";
+import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "../logs/logService";
 import { ApiError } from "@/lib/errors/AppError";
 import { unlink } from "fs/promises";
@@ -48,6 +49,7 @@ export const imageRetrievalService = {
     imageUrl: string;
     model: string;
     size: string;
+    ratio: string;
     editData: string | null;
     editedImageUrl: string | null;
     createdAt: Date;
@@ -68,9 +70,13 @@ export const imageRetrievalService = {
       comments: number;
     };
   }): ImageType {
-    const { _count, createdAt, updatedAt, categories, ...imageData } = image;
+    const { _count, createdAt, updatedAt, categories, ratio, ...imageData } =
+      image;
     return {
       ...imageData,
+      ratio: (Object.values(ImageRatio).includes(ratio as ImageRatio)
+        ? ratio
+        : ImageRatio.RATIO_1_1) as ImageRatio,
       createdAt: createdAt.toISOString(),
       updatedAt: updatedAt.toISOString(),
       user: {

@@ -13,22 +13,16 @@ import { useToggleLikeMutation } from "@/queries/image/mutations";
 import { useUserStore } from "@/stores/userStore";
 import { toast } from "sonner";
 
-import { motion } from "framer-motion";
-import { useUrlParams } from "@/hooks/use-url-params";
-
 interface ImageCardProps {
   image: ImageType;
   index?: number;
 }
 
-export function ImageCard({ image, index = 0 }: ImageCardProps) {
+export function ImageCard({ image }: ImageCardProps) {
   const router = useRouter();
   const prefetchedRef = useRef(false); // 중복 prefetch 방지
   const [isLoaded, setIsLoaded] = useState(false);
   const { isAuthenticated } = useUserStore();
-  const { getParam } = useUrlParams();
-  const category = getParam("category");
-  const search = getParam("search");
 
   const likeMutation = useToggleLikeMutation(image.id);
 
@@ -86,15 +80,15 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
   };
 
   return (
-    <div>
+    <div className="h-full">
       <Link
         href={`/image/${image.id}`}
         prefetch={false}
         onMouseEnter={handleMouseEnter}
-        className="block"
+        className="block h-full"
       >
         <Card
-          className="overflow-hidden aspect-square cursor-pointer group bg-background-plus border-0 gap-1 p-0 transform-gpu"
+          className="overflow-hidden cursor-pointer group bg-background-plus border-0 gap-1 p-0 transform-gpu h-full"
           style={{
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
@@ -106,7 +100,7 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
               src={image.imageUrl}
               alt={image.prompt}
               fill
-              className="object-cover transition-transform duration-300 aspect-square"
+              className="object-cover transition-transform duration-300"
               loading="eager"
               priority={true}
               sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
@@ -140,7 +134,9 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
                 </button>
                 <div className="flex items-center gap-1 text-white/90">
                   <MessageCircle className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">{image.commentCount}</span>
+                  <span className="text-xs font-medium">
+                    {image.commentCount}
+                  </span>
                 </div>
               </div>
               <button

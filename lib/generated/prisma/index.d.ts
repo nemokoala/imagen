@@ -3916,6 +3916,7 @@ export namespace Prisma {
     imageUrl: string | null
     model: string | null
     size: string | null
+    ratio: string | null
     editData: string | null
     editedImageUrl: string | null
     createdAt: Date | null
@@ -3930,6 +3931,7 @@ export namespace Prisma {
     imageUrl: string | null
     model: string | null
     size: string | null
+    ratio: string | null
     editData: string | null
     editedImageUrl: string | null
     createdAt: Date | null
@@ -3944,6 +3946,7 @@ export namespace Prisma {
     imageUrl: number
     model: number
     size: number
+    ratio: number
     editData: number
     editedImageUrl: number
     createdAt: number
@@ -3970,6 +3973,7 @@ export namespace Prisma {
     imageUrl?: true
     model?: true
     size?: true
+    ratio?: true
     editData?: true
     editedImageUrl?: true
     createdAt?: true
@@ -3984,6 +3988,7 @@ export namespace Prisma {
     imageUrl?: true
     model?: true
     size?: true
+    ratio?: true
     editData?: true
     editedImageUrl?: true
     createdAt?: true
@@ -3998,6 +4003,7 @@ export namespace Prisma {
     imageUrl?: true
     model?: true
     size?: true
+    ratio?: true
     editData?: true
     editedImageUrl?: true
     createdAt?: true
@@ -4099,6 +4105,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size: string
+    ratio: string
     editData: string | null
     editedImageUrl: string | null
     createdAt: Date
@@ -4132,6 +4139,7 @@ export namespace Prisma {
     imageUrl?: boolean
     model?: boolean
     size?: boolean
+    ratio?: boolean
     editData?: boolean
     editedImageUrl?: boolean
     createdAt?: boolean
@@ -4154,13 +4162,14 @@ export namespace Prisma {
     imageUrl?: boolean
     model?: boolean
     size?: boolean
+    ratio?: boolean
     editData?: boolean
     editedImageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "translatedPrompt" | "imageUrl" | "model" | "size" | "editData" | "editedImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
+  export type GeneratedImageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "prompt" | "translatedPrompt" | "imageUrl" | "model" | "size" | "ratio" | "editData" | "editedImageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["generatedImage"]>
   export type GeneratedImageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     likes?: boolean | GeneratedImage$likesArgs<ExtArgs>
@@ -4187,6 +4196,7 @@ export namespace Prisma {
       imageUrl: string
       model: string
       size: string
+      ratio: string
       editData: string | null
       editedImageUrl: string | null
       createdAt: Date
@@ -4572,6 +4582,7 @@ export namespace Prisma {
     readonly imageUrl: FieldRef<"GeneratedImage", 'String'>
     readonly model: FieldRef<"GeneratedImage", 'String'>
     readonly size: FieldRef<"GeneratedImage", 'String'>
+    readonly ratio: FieldRef<"GeneratedImage", 'String'>
     readonly editData: FieldRef<"GeneratedImage", 'String'>
     readonly editedImageUrl: FieldRef<"GeneratedImage", 'String'>
     readonly createdAt: FieldRef<"GeneratedImage", 'DateTime'>
@@ -10152,6 +10163,7 @@ export namespace Prisma {
     imageUrl: 'imageUrl',
     model: 'model',
     size: 'size',
+    ratio: 'ratio',
     editData: 'editData',
     editedImageUrl: 'editedImageUrl',
     createdAt: 'createdAt',
@@ -10265,6 +10277,7 @@ export namespace Prisma {
     imageUrl: 'imageUrl',
     model: 'model',
     size: 'size',
+    ratio: 'ratio',
     editData: 'editData',
     editedImageUrl: 'editedImageUrl'
   };
@@ -10545,6 +10558,7 @@ export namespace Prisma {
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
+    ratio?: StringFilter<"GeneratedImage"> | string
     editData?: StringNullableFilter<"GeneratedImage"> | string | null
     editedImageUrl?: StringNullableFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
@@ -10564,6 +10578,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    ratio?: SortOrder
     editData?: SortOrderInput | SortOrder
     editedImageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -10587,6 +10602,7 @@ export namespace Prisma {
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
+    ratio?: StringFilter<"GeneratedImage"> | string
     editData?: StringNullableFilter<"GeneratedImage"> | string | null
     editedImageUrl?: StringNullableFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
@@ -10606,6 +10622,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    ratio?: SortOrder
     editData?: SortOrderInput | SortOrder
     editedImageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
@@ -10628,6 +10645,7 @@ export namespace Prisma {
     imageUrl?: StringWithAggregatesFilter<"GeneratedImage"> | string
     model?: StringWithAggregatesFilter<"GeneratedImage"> | string
     size?: StringWithAggregatesFilter<"GeneratedImage"> | string
+    ratio?: StringWithAggregatesFilter<"GeneratedImage"> | string
     editData?: StringNullableWithAggregatesFilter<"GeneratedImage"> | string | null
     editedImageUrl?: StringNullableWithAggregatesFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"GeneratedImage"> | Date | string
@@ -11177,6 +11195,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -11196,6 +11215,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -11212,6 +11232,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11231,6 +11252,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11249,6 +11271,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -11261,6 +11284,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11275,6 +11299,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11944,6 +11969,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    ratio?: SortOrder
     editData?: SortOrder
     editedImageUrl?: SortOrder
     createdAt?: SortOrder
@@ -11963,6 +11989,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    ratio?: SortOrder
     editData?: SortOrder
     editedImageUrl?: SortOrder
     createdAt?: SortOrder
@@ -11977,6 +12004,7 @@ export namespace Prisma {
     imageUrl?: SortOrder
     model?: SortOrder
     size?: SortOrder
+    ratio?: SortOrder
     editData?: SortOrder
     editedImageUrl?: SortOrder
     createdAt?: SortOrder
@@ -13298,6 +13326,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -13315,6 +13344,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -13505,6 +13535,7 @@ export namespace Prisma {
     imageUrl?: StringFilter<"GeneratedImage"> | string
     model?: StringFilter<"GeneratedImage"> | string
     size?: StringFilter<"GeneratedImage"> | string
+    ratio?: StringFilter<"GeneratedImage"> | string
     editData?: StringNullableFilter<"GeneratedImage"> | string | null
     editedImageUrl?: StringNullableFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeFilter<"GeneratedImage"> | Date | string
@@ -14029,6 +14060,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14047,6 +14079,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14128,6 +14161,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14146,6 +14180,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14205,6 +14240,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14223,6 +14259,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14392,6 +14429,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14410,6 +14448,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14489,6 +14528,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14507,6 +14547,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14631,6 +14672,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14649,6 +14691,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14806,6 +14849,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14824,6 +14868,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14881,6 +14926,7 @@ export namespace Prisma {
     imageUrl: string
     model: string
     size?: string
+    ratio?: string
     editData?: string | null
     editedImageUrl?: string | null
     createdAt?: Date | string
@@ -14956,6 +15002,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14973,6 +15020,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14990,6 +15038,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15323,6 +15372,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15341,6 +15391,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15358,6 +15409,7 @@ export namespace Prisma {
     imageUrl?: StringFieldUpdateOperationsInput | string
     model?: StringFieldUpdateOperationsInput | string
     size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

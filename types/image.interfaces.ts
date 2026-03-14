@@ -15,6 +15,7 @@ export interface GeneratedImage {
 export interface GenerateImageRequest {
   prompt: string;
   model: string;
+  ratio?: ImageRatio;
   categories?: string[]; // 카테고리 slug 배열 (선택)
 }
 
@@ -52,6 +53,7 @@ export interface Image {
   imageUrl: string;
   model: string;
   size: string;
+  ratio: ImageRatio;
   editData: string | null;
   editedImageUrl: string | null;
   createdAt: string;
@@ -96,4 +98,10 @@ export interface Category {
   id: number;
   name: string;
   slug: string;
+}
+
+export enum ImageRatio {
+  RATIO_1_1 = "1:1",
+  RATIO_9_16 = "9:16",
+  RATIO_16_9 = "16:9",
 }

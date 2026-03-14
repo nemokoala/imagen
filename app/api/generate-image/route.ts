@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import { errorHandler } from "@/lib/errors/errorHandler";
 import { ApiError } from "@/lib/errors/AppError";
 import { Model } from "@/types/model.interfaces";
+import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "@/lib/services/logs/logService";
 
 export const runtime = "nodejs";
@@ -87,7 +88,10 @@ function streamResponse(
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, model, categories } = await req.json();
+    const { prompt, model, categories, ratio } = await req.json();
+    const imageRatio = Object.values(ImageRatio).includes(ratio)
+      ? (ratio as ImageRatio)
+      : ImageRatio.RATIO_1_1;
 
     if (!prompt) {
       throw new ApiError("프롬프트가 필요합니다.", 400, "PROMPT_REQUIRED");
@@ -118,6 +122,7 @@ export async function POST(req: NextRequest) {
         prompt,
         model,
         userId,
+        ratio: imageRatio,
         categorySlugs: categories,
       };
 
@@ -136,6 +141,7 @@ export async function POST(req: NextRequest) {
         prompt,
         model,
         userId,
+        ratio: imageRatio,
         categorySlugs: categories,
       });
     } else if (model === Model.GOOGLE_IMAGEN) {
@@ -143,6 +149,7 @@ export async function POST(req: NextRequest) {
         prompt,
         model,
         userId,
+        ratio: imageRatio,
         categorySlugs: categories,
       });
     } else if (model === Model.NANO_BANANA) {
@@ -150,6 +157,7 @@ export async function POST(req: NextRequest) {
         prompt,
         model,
         userId,
+        ratio: imageRatio,
         categorySlugs: categories,
       });
     } else {

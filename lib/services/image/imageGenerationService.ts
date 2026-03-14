@@ -8,6 +8,9 @@ import { ollamaService } from "../ollamaService";
 import { authService } from "../auth/authService";
 import { creditSettingsService } from "../admin/creditSettingsService";
 import { ApiError } from "@/lib/errors/AppError";
+import { ImageRatio } from "@/types/image.interfaces";
+import { MODEL_RATIO_CONFIG, getResolution } from "@/constants/model.constants";
+import { Model } from "@/types/model.interfaces";
 
 const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -22,6 +25,7 @@ export interface GenerateImageRequest {
   prompt: string;
   model: string;
   userId: number;
+  ratio?: ImageRatio;
   negativePrompt?: string;
   width?: number;
   height?: number;
@@ -43,7 +47,13 @@ export const imageGenerationService = {
     request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model, userId, categorySlugs } = request;
+      const {
+        prompt,
+        model,
+        userId,
+        categorySlugs,
+        ratio = ImageRatio.RATIO_1_1,
+      } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -58,10 +68,11 @@ export const imageGenerationService = {
       }
 
       // OpenAI API로 이미지 생성
+      const resolution = getResolution(Model.DALL_E_3, ratio);
       const result = await client.images.generate({
         model,
         prompt,
-        size: "1024x1024",
+        size: resolution.size as "1024x1024" | "1024x1792" | "1792x1024",
       });
 
       if (!result.data?.[0]?.url) {
@@ -84,8 +95,9 @@ export const imageGenerationService = {
         prompt,
         imageUrl: savedImagePath,
         model,
-        size: "1024x1024",
-        categorySlugs,
+        size: resolution.size,
+        ratio,
+        categorySlugs: categorySlugs,
       });
 
       return {
@@ -128,7 +140,13 @@ export const imageGenerationService = {
     request: GenerateImageRequest,
   ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
     try {
-      const { prompt, model, userId, categorySlugs } = request;
+      const {
+        prompt,
+        model,
+        userId,
+        categorySlugs,
+        ratio = ImageRatio.RATIO_1_1,
+      } = request;
 
       if (!prompt) {
         yield { success: false, error: "프롬프트가 필요합니다." };
@@ -143,6 +161,8 @@ export const imageGenerationService = {
         yield { success: false, error: "크레딧이 부족합니다." };
         return;
       }
+
+      const resolution = getResolution(Model.STABLE_DIFFUSION_XL, ratio);
 
       yield "프롬프트를 번역하고 분석하는 중입니다...";
       let translatedPrompt = prompt;
@@ -161,8 +181,8 @@ export const imageGenerationService = {
         negative_prompt: "blurry, low quality",
         steps: 24,
         cfg_scale: 7,
-        width: 1024,
-        height: 1024,
+        width: resolution.width,
+        height: resolution.height,
         sampler_index: "DPM++ 2M Karras",
         seed: -1,
         batch_size: 1,
@@ -212,8 +232,9 @@ export const imageGenerationService = {
           translatedPrompt !== prompt ? translatedPrompt : undefined,
         imageUrl: savedImagePath,
         model,
-        size: "1024x1024",
+        size: resolution.size,
         categorySlugs,
+        ratio,
       });
 
       yield {
@@ -231,7 +252,13 @@ export const imageGenerationService = {
     request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model, userId, categorySlugs } = request;
+      const {
+        prompt,
+        model,
+        userId,
+        categorySlugs,
+        ratio = ImageRatio.RATIO_1_1,
+      } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -253,7 +280,7 @@ export const imageGenerationService = {
           numberOfImages: 1,
           outputMimeType: "image/jpeg",
           personGeneration: PersonGeneration.ALLOW_ALL,
-          aspectRatio: "1:1",
+          aspectRatio: MODEL_RATIO_CONFIG[Model.GOOGLE_IMAGEN].aspectRatioMap?.[ratio] ?? "1:1",
           imageSize: "1K",
         },
       });
@@ -281,7 +308,8 @@ export const imageGenerationService = {
         prompt,
         imageUrl: savedImagePath,
         model,
-        size: "1024x1024",
+        size: getResolution(Model.GOOGLE_IMAGEN, ratio).size,
+        ratio,
         categorySlugs,
       });
 
@@ -339,13 +367,15 @@ export const imageGenerationService = {
         model,
         userId,
         negativePrompt,
-        width = 720,
-        height = 1280,
         steps = 6,
         cfg,
         seed,
         categorySlugs,
+        ratio = ImageRatio.RATIO_1_1,
       } = request;
+      const zimageRes = getResolution(Model.Z_IMAGE, ratio);
+      const width = request.width || zimageRes.width;
+      const height = request.height || zimageRes.height;
 
       if (!prompt) {
         yield { success: false, error: "프롬프트가 필요합니다." };
@@ -563,7 +593,8 @@ export const imageGenerationService = {
           translatedPrompt !== prompt ? translatedPrompt : undefined,
         imageUrl: savedImagePath,
         model,
-        size: `${width || 1024}x${height || 1024}`,
+        size: `${width}x${height}`,
+        ratio,
         categorySlugs,
       });
 
@@ -591,7 +622,13 @@ export const imageGenerationService = {
     request: GenerateImageRequest,
   ): Promise<GenerateImageResponse> {
     try {
-      const { prompt, model, userId, categorySlugs } = request;
+      const {
+        prompt,
+        model,
+        userId,
+        categorySlugs,
+        ratio = ImageRatio.RATIO_1_1,
+      } = request;
 
       if (!prompt) {
         return { success: false, error: "프롬프트가 필요합니다." };
@@ -660,13 +697,14 @@ export const imageGenerationService = {
         userId,
       );
 
-      // 데이터베이스에 이미지 정보 저장
+      // 데이터베이스에 이미지 정보 저장 (Nano Banana는 1:1 고정 출력)
       const imageId = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
         model,
         size: "1024x1024",
+        ratio,
         categorySlugs,
       });
 
@@ -752,6 +790,7 @@ export const imageGenerationService = {
     imageUrl: string;
     model: string;
     size: string;
+    ratio: ImageRatio;
     categorySlugs?: string[]; // 카테고리 slug 배열 (선택)
   }): Promise<number> {
     try {

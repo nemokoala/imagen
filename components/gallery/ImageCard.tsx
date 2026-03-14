@@ -13,22 +13,16 @@ import { useToggleLikeMutation } from "@/queries/image/mutations";
 import { useUserStore } from "@/stores/userStore";
 import { toast } from "sonner";
 
-import { motion } from "framer-motion";
-import { useUrlParams } from "@/hooks/use-url-params";
-
 interface ImageCardProps {
   image: ImageType;
   index?: number;
 }
 
-export function ImageCard({ image, index = 0 }: ImageCardProps) {
+export function ImageCard({ image }: ImageCardProps) {
   const router = useRouter();
   const prefetchedRef = useRef(false); // 중복 prefetch 방지
   const [isLoaded, setIsLoaded] = useState(false);
   const { isAuthenticated } = useUserStore();
-  const { getParam } = useUrlParams();
-  const category = getParam("category");
-  const search = getParam("search");
 
   const likeMutation = useToggleLikeMutation(image.id);
 
@@ -140,7 +134,9 @@ export function ImageCard({ image, index = 0 }: ImageCardProps) {
                 </button>
                 <div className="flex items-center gap-1 text-white/90">
                   <MessageCircle className="h-3.5 w-3.5" />
-                  <span className="text-xs font-medium">{image.commentCount}</span>
+                  <span className="text-xs font-medium">
+                    {image.commentCount}
+                  </span>
                 </div>
               </div>
               <button

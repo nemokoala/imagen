@@ -4,8 +4,10 @@ import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery"
 import { WelcomeTitle } from "@/components/home/WelcomeTitle";
 import { Layout } from "@/components/layout/Layout";
 import { ImageCreatButton } from "@/components/home/ImageCreatButton";
-import { FeaturedImages } from "@/components/home/FeaturedImages";
-import { MonthlyRanking } from "@/components/home/MonthlyRanking";
+import { ImageShowcase } from "@/components/home/ImageShowcase";
+import { useGetTopLikedImagesQuery } from "@/queries/image/queries";
+import { useGetMonthlyRankingQuery } from "@/queries/image/queries";
+import { Flame, Trophy } from "lucide-react";
 import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -36,8 +38,22 @@ export default function Home() {
       ref={scrollContainerRef}
     >
       <WelcomeTitle />
-      <FeaturedImages />
-      <MonthlyRanking />
+      <ImageShowcase
+        title="인기 작품"
+        icon={Flame}
+        iconBgClassName="bg-red-100 dark:bg-red-900/30"
+        iconClassName="text-red-500 dark:text-red-400 fill-red-500/20"
+        titleGradientClassName="from-red-500 to-orange-500"
+        useQuery={useGetTopLikedImagesQuery}
+      />
+      <ImageShowcase
+        title="이달의 랭킹"
+        icon={Trophy}
+        iconBgClassName="bg-yellow-100 dark:bg-yellow-900/30"
+        iconClassName="text-yellow-500 dark:text-yellow-400 fill-yellow-500/20"
+        titleGradientClassName="from-yellow-500 to-amber-500"
+        useQuery={useGetMonthlyRankingQuery}
+      />
       <InfiniteImageGallery
         onScrollChange={handleScrollChange}
         maintainScrollPosition={true}

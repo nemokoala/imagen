@@ -359,13 +359,12 @@ export default function ImageGenPage() {
             <CardContent>
               {imageUrl ? (
                 <div className="space-y-4">
-                  <div className="mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden aspect-square bg-background flex items-center justify-center">
+                  <div className="relative mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden aspect-square bg-background flex items-center justify-center">
                     <Image
                       src={imageUrl}
                       alt="생성된 이미지"
-                      width={800}
-                      height={600}
-                      className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      fill
+                      className="w-auto h-auto object-contain transition-transform duration-300 group-hover:scale-105"
                       unoptimized
                     />
                   </div>

@@ -30,5 +30,5 @@ export function useScrollObserver<T extends HTMLElement = HTMLElement>(
     return () => {
       scrollElement.removeEventListener("scroll", handleScroll);
     };
-  }, [scrollRef, scrollRef.current, onScrollChange, passive]);
+  }, [scrollRef, onScrollChange, passive]);
 }

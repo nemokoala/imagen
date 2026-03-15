@@ -53,7 +53,7 @@ export function CategoryFilter({
   const categoryButtonClass = "rounded-full h-9 whitespace-nowrap px-4";
 
   return (
-    <div className="sticky top-2 z-20 bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-fit max-w-[calc(100dvw-2rem)] mx-auto rounded-full shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+    <div className="sticky top-2 z-20 bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-fit max-w-[calc(100%-2rem)] mx-auto rounded-full shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
       <div className="flex items-center gap-1.5 min-h-9 px-1">
         {isSearchOpen ? (
           <form
@@ -88,7 +88,7 @@ export function CategoryFilter({
                   variant="gradient"
                   className={cn(categoryButtonClass, "gap-2 pr-2 shadow-md")}
                 >
-                  <span className="max-w-[100px] truncate">"{search}"</span>
+                  <span className="max-w-[100px] truncate">{search}</span>
                   <X size={16} className="opacity-90" />
                 </Button>
                 <div className="w-px h-8 bg-foreground/30 mx-1 flex-shrink-0" />

@@ -36,6 +36,7 @@ export default function Home() {
     <Layout.Content
       className="h-[calc(100dvh-60px)] px-2"
       ref={scrollContainerRef}
+      onScrollChange={handleScrollChange}
     >
       <WelcomeTitle />
       <ImageShowcase
@@ -55,9 +56,9 @@ export default function Home() {
         useQuery={useGetMonthlyRankingQuery}
       />
       <InfiniteImageGallery
-        onScrollChange={handleScrollChange}
         maintainScrollPosition={true}
         scrollElementRef={scrollContainerRef}
+
       />
       <ImageCreatButton isVisible={isVisible} />
     </Layout.Content>

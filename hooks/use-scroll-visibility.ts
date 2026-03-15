@@ -30,7 +30,7 @@ export function useScrollVisibility(options: UseScrollVisibilityOptions = {}) {
 
       lastScrollTopRef.current = scrollTop;
     },
-    [threshold]
+    [threshold],
   );
 
   return {

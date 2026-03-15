@@ -37,13 +37,11 @@ interface InfiniteImageGalleryProps {
 
 export function InfiniteImageGallery({
   userId,
-  onScrollChange: _onScrollChange,
   scrollElementRef,
   maintainScrollPosition = false,
 }: InfiniteImageGalleryProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollElement = scrollElementRef || parentRef;
-
   const { getParam, setParam, removeParam } = useUrlParams();
 
   // URL에서 카테고리 상태 가져오기
@@ -142,10 +140,11 @@ export function InfiniteImageGallery({
 
   // 카테고리, 검색어 변경 시 스크롤 위치 컨테이너 상단으로 이동
   useEffect(() => {
-    scrollElement.current?.scrollTo({
-      top: containerRef.current?.offsetTop,
-      behavior: "instant",
-    });
+    if (selectedCategories.length > 0)
+      scrollElement.current?.scrollTo({
+        top: containerRef.current?.offsetTop,
+        behavior: "instant",
+      });
   }, [selectedCategories, search, scrollElement]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지
@@ -243,7 +242,7 @@ export function InfiniteImageGallery({
         minHeight: "100dvh",
         width: "100%",
         position: "relative",
-        marginTop: "0.5rem",
+        marginTop: "0.7rem",
       }}
     >
       {isLoading ? (
@@ -311,7 +310,7 @@ export function InfiniteImageGallery({
   // 외부 스크롤 컨테이너를 사용하는 경우
   if (scrollElementRef) {
     return (
-      <div className="w-full" ref={containerRefCallback}>
+      <div className="w-full relative" ref={containerRefCallback}>
         <CategoryFilter
           categories={categories}
           selectedCategories={selectedCategories}

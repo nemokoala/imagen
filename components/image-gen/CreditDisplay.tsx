@@ -76,8 +76,8 @@ export function CreditDisplay({ credit, isLoading }: CreditDisplayProps) {
                 className="overflow-hidden"
               >
                 <div className="rounded-xl bg-red-50/90 dark:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 p-3.5 backdrop-blur-md shadow-sm">
-                  <div className="flex gap-3">
-                    <div className="flex-shrink-0 mt-0.5 p-1 bg-red-100 dark:bg-red-900/50 rounded-full">
+                  <div className="flex gap-4 items-center">
+                    <div className="flex-shrink-0 w-8 h-8 mt-0.5 p-1 bg-red-100 dark:bg-red-900/50 rounded-full flex items-center justify-center">
                       <AlertCircle className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />
                     </div>
                     <div className="flex flex-col gap-1">

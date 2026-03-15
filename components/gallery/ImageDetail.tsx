@@ -26,7 +26,7 @@ import { useUserStore } from "@/stores/userStore";
 import { toast } from "sonner";
 import { useModal } from "@/providers/ModalProvider";
 import { useRouter } from "next/navigation";
-import { downloadImage } from "@/lib/utils";
+import { downloadImage, getRatio } from "@/lib/utils";
 import { Image as ImageType } from "@/types/image.interfaces";
 import { Layout } from "../layout/Layout";
 import Link from "next/link";
@@ -52,6 +52,7 @@ export function ImageDetail({
   const { changeModalContent } = useModal();
   const { user } = useUserStore();
 
+  console.log(imageData);
   // image prop이 변경될 때만 업데이트
   useEffect(() => {
     if (initialImage) {
@@ -135,7 +136,9 @@ export function ImageDetail({
           <div className="flex flex-col gap-4">
             <div className="space-y-6">
               {/* 이미지 */}
-              <div className="flex justify-center aspect-square relative">
+              <div
+                className={`flex justify-center w-auto mx-auto ${getRatio(imageData.ratio)} md:max-h-[50dvh] relative`}
+              >
                 <Image
                   src={imageData.imageUrl}
                   alt={imageData.prompt || "AI 생성 이미지"}
@@ -300,7 +303,7 @@ export function ImageDetail({
                   <ChevronLeft className="h-6 w-6 text-purple-600" />
                   이전글
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[400px]">
                   {prevImages.map((prevImage) => (
                     <ImageCard key={prevImage.id} image={prevImage} />
                   ))}
@@ -315,7 +318,7 @@ export function ImageDetail({
                   <ChevronRight className="h-6 w-6 text-purple-600" />
                   다음글
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[400px]">
                   {nextImages.map((nextImage) => (
                     <ImageCard key={nextImage.id} image={nextImage} />
                   ))}

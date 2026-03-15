@@ -39,6 +39,7 @@ export interface GenerateImageResponse {
   success: boolean;
   imageUrl?: string;
   id?: number;
+  ratio?: ImageRatio;
   error?: string;
 }
 
@@ -90,7 +91,7 @@ export const imageGenerationService = {
       );
 
       // 데이터베이스에 이미지 정보 저장
-      const imageId = await imageGenerationService.saveImageToDatabase({
+      const savedImage = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
@@ -103,7 +104,8 @@ export const imageGenerationService = {
       return {
         success: true,
         imageUrl: savedImagePath,
-        id: imageId,
+        id: savedImage.id,
+        ratio: savedImage.ratio as ImageRatio,
       };
     } catch (error: unknown) {
       console.error("Image generation error:", error);
@@ -225,7 +227,7 @@ export const imageGenerationService = {
         userId,
       );
 
-      const imageId = await imageGenerationService.saveImageToDatabase({
+      const savedImage = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         translatedPrompt:
@@ -240,7 +242,8 @@ export const imageGenerationService = {
       yield {
         success: true,
         imageUrl: savedImagePath,
-        id: imageId,
+        id: savedImage.id,
+        ratio: savedImage.ratio as ImageRatio,
       };
     } catch (error) {
       console.error("Error generating image by Stable Diffusion:", error);
@@ -280,7 +283,9 @@ export const imageGenerationService = {
           numberOfImages: 1,
           outputMimeType: "image/jpeg",
           personGeneration: PersonGeneration.ALLOW_ALL,
-          aspectRatio: MODEL_RATIO_CONFIG[Model.GOOGLE_IMAGEN].aspectRatioMap?.[ratio] ?? "1:1",
+          aspectRatio:
+            MODEL_RATIO_CONFIG[Model.GOOGLE_IMAGEN].aspectRatioMap?.[ratio] ??
+            "1:1",
           imageSize: "1K",
         },
       });
@@ -303,7 +308,7 @@ export const imageGenerationService = {
       );
 
       // 데이터베이스에 이미지 정보 저장
-      const imageId = await imageGenerationService.saveImageToDatabase({
+      const savedImage = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
@@ -316,7 +321,8 @@ export const imageGenerationService = {
       return {
         success: true,
         imageUrl: savedImagePath,
-        id: imageId,
+        id: savedImage.id,
+        ratio: savedImage.ratio as ImageRatio,
       };
     } catch (error: unknown) {
       console.error("Error generating image by Google Imagen:", error);
@@ -586,7 +592,7 @@ export const imageGenerationService = {
       await authService.updateUserCredit(userId, -creditCost);
 
       // 데이터베이스에 이미지 정보 저장
-      const imageId = await imageGenerationService.saveImageToDatabase({
+      const savedImage = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         translatedPrompt:
@@ -603,7 +609,8 @@ export const imageGenerationService = {
       yield {
         success: true,
         imageUrl: savedImagePath,
-        id: imageId,
+        id: savedImage.id,
+        ratio: savedImage.ratio as ImageRatio,
       };
     } catch (error: unknown) {
       console.error("❌ 에러 발생:", error);
@@ -698,7 +705,7 @@ export const imageGenerationService = {
       );
 
       // 데이터베이스에 이미지 정보 저장 (Nano Banana는 1:1 고정 출력)
-      const imageId = await imageGenerationService.saveImageToDatabase({
+      const savedImage = await imageGenerationService.saveImageToDatabase({
         userId,
         prompt,
         imageUrl: savedImagePath,
@@ -711,7 +718,8 @@ export const imageGenerationService = {
       return {
         success: true,
         imageUrl: savedImagePath,
-        id: imageId,
+        id: savedImage.id,
+        ratio: savedImage.ratio as ImageRatio,
       };
     } catch (error: unknown) {
       console.error("Error generating image by Nano Banana:", error);
@@ -792,7 +800,7 @@ export const imageGenerationService = {
     size: string;
     ratio: ImageRatio;
     categorySlugs?: string[]; // 카테고리 slug 배열 (선택)
-  }): Promise<number> {
+  }) {
     try {
       const { categorySlugs, ...imageInfo } = imageData;
 
@@ -813,7 +821,7 @@ export const imageGenerationService = {
         },
       });
 
-      return newImage.id;
+      return newImage;
     } catch (error) {
       console.error("Error saving image to database:", error);
       throw new ApiError("이미지 정보 저장에 실패했습니다.", 500);

@@ -23,7 +23,7 @@ import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { MODEL_RATIO_CONFIG } from "@/constants/model.constants";
-import { downloadImage } from "@/lib/utils";
+import { cn, downloadImage, getRatio } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
 import Link from "next/link";
@@ -38,6 +38,7 @@ export default function ImageGenPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [ratio, setRatio] = useState<ImageRatio>(ImageRatio.RATIO_1_1);
+  const [displayRatio, setDisplayRatio] = useState<ImageRatio>(ImageRatio.RATIO_1_1);
 
   const queryClient = useQueryClient();
   const resultImageRef = useRef<HTMLDivElement>(null);
@@ -109,6 +110,7 @@ export default function ImageGenPage() {
       (data) => {
         setImageUrl(data.imageUrl!);
         setImageId(data.id);
+        setDisplayRatio(data.ratio ?? ratio);
         toast.success("이미지 생성 완료!", {
           description: "AI가 이미지를 생성했습니다.",
         });
@@ -175,6 +177,7 @@ export default function ImageGenPage() {
               } else if (data.status === "complete") {
                 setImageUrl(data.imageUrl);
                 setImageId(data.id);
+                setDisplayRatio(data.ratio ?? ratio);
                 setGenerationProgress(null);
                 toast.success("이미지 생성 완료!", {
                   description: "AI가 이미지를 생성했습니다.",
@@ -359,7 +362,13 @@ export default function ImageGenPage() {
             <CardContent>
               {imageUrl ? (
                 <div className="space-y-4">
-                  <div className="relative mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden aspect-square bg-background flex items-center justify-center">
+                  <div
+                    className={cn(
+                      "relative mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden",
+                      "bg-background flex items-center justify-center",
+                      getRatio(displayRatio),
+                    )}
+                  >
                     <Image
                       src={imageUrl}
                       alt="생성된 이미지"

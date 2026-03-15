@@ -23,6 +23,7 @@ export interface GenerateImageResponse {
   success: boolean;
   imageUrl: string;
   id: number;
+  ratio?: ImageRatio;
   remaining: number | "unlimited";
 }
 

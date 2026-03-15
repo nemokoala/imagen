@@ -38,7 +38,9 @@ export default function ImageGenPage() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [ratio, setRatio] = useState<ImageRatio>(ImageRatio.RATIO_1_1);
-  const [displayRatio, setDisplayRatio] = useState<ImageRatio>(ImageRatio.RATIO_1_1);
+  const [displayRatio, setDisplayRatio] = useState<ImageRatio>(
+    ImageRatio.RATIO_1_1,
+  );
 
   const queryClient = useQueryClient();
   const resultImageRef = useRef<HTMLDivElement>(null);
@@ -401,30 +403,56 @@ export default function ImageGenPage() {
                     )}
                   </div>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                  {isPending && generationProgress ? (
-                    <div className="flex flex-col items-center gap-2 mb-4">
-                      <Loader2 className="h-12 w-12 animate-spin text-purple-400" />
-                      <p className="text-lg font-medium text-purple-600 animate-pulse">
+              ) : isPending ? (
+                <div
+                  className="aurora-bg relative mx-auto rounded-xl overflow-hidden"
+                  style={{
+                    aspectRatio:
+                      ratio === ImageRatio.RATIO_9_16
+                        ? "9/16"
+                        : ratio === ImageRatio.RATIO_16_9
+                          ? "16/9"
+                          : "1/1",
+                    maxHeight: "500px",
+                    maxWidth:
+                      ratio === ImageRatio.RATIO_9_16
+                        ? `${Math.round(500 * (9 / 16))}px`
+                        : ratio === ImageRatio.RATIO_1_1
+                          ? "500px"
+                          : "100%",
+                    width: "100%",
+                  }}
+                >
+                  {/* 부드러운 노이즈 오버레이 */}
+                  <div className="absolute inset-0 bg-black/10" />
+                  {/* 중앙 글로우 */}
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,255,255,0.12) 0%, transparent 70%)",
+                    }}
+                  />
+                  {/* 텍스트 */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6">
+                    {generationProgress && (
+                      <p className="text-sm font-medium text-white/90 text-center drop-shadow-md">
                         {generationProgress}
                       </p>
-                    </div>
-                  ) : (
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-700/70 dark:to-blue-700/70 flex items-center justify-center mb-4">
-                      <Sparkles className="h-12 w-12 text-purple-400" />
-                    </div>
-                  )}
-                  {!isPending && (
-                    <>
-                      <p className="text-lg font-medium mb-2">
-                        이미지가 생성되면 여기에 표시됩니다
-                      </p>
-                      <p className="text-sm text-gray-400">
-                        프롬프트를 입력하고 생성 버튼을 눌러보세요
-                      </p>
-                    </>
-                  )}
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-700/70 dark:to-blue-700/70 flex items-center justify-center mb-4">
+                    <Sparkles className="h-12 w-12 text-purple-400" />
+                  </div>
+                  <p className="text-lg font-medium mb-2">
+                    이미지가 생성되면 여기에 표시됩니다
+                  </p>
+                  <p className="text-sm text-gray-400">
+                    프롬프트를 입력하고 생성 버튼을 눌러보세요
+                  </p>
                 </div>
               )}
             </CardContent>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useRef, useState } from "react";
-import debounce from "lodash/debounce";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -83,6 +82,7 @@ export default function ImageGenPage() {
   // AI 카테고리 추천
   const {
     mutate: suggestCategories,
+    mutateAsync: suggestCategoriesAsync,
     isPending: isSuggestingCategories,
     isError: isSuggestingCategoriesError,
   } = useSuggestCategories((suggestedSlugs) => {
@@ -90,17 +90,6 @@ export default function ImageGenPage() {
       setSelectedCategories(suggestedSlugs);
     }
   });
-
-  // 디바운스된 카테고리 추천 함수
-  const debouncedSuggestCategories = useMemo(
-    () =>
-      debounce((promptText: string) => {
-        if (promptText.trim().length > 3) {
-          suggestCategories(promptText);
-        }
-      }, 1000),
-    [suggestCategories],
-  );
 
   const handleClickRecommendPrompt = (prompt: string) => {
     suggestCategories(prompt);
@@ -132,7 +121,7 @@ export default function ImageGenPage() {
       },
     );
 
-  const handleStreamGenerate = async () => {
+  const handleStreamGenerate = async (categories: string[]) => {
     try {
       setIsStreaming(true);
       setGenerationProgress("연결 중...");
@@ -143,7 +132,7 @@ export default function ImageGenPage() {
         prompt,
         model,
         ratio,
-        categories: selectedCategories,
+        categories,
       });
 
       if (!response.ok) {
@@ -229,8 +218,21 @@ export default function ImageGenPage() {
       return;
     }
 
+    // 카테고리 미선택 시 AI 추천 실행
+    let categoriesToUse = selectedCategories;
+    if (selectedCategories.length === 0) {
+      try {
+        const suggested = await suggestCategoriesAsync(prompt);
+        if (suggested.length > 0) {
+          categoriesToUse = suggested;
+        }
+      } catch {
+        // 추천 실패해도 생성은 계속 진행
+      }
+    }
+
     if (model === Model.Z_IMAGE || model === Model.STABLE_DIFFUSION_XL) {
-      await handleStreamGenerate();
+      await handleStreamGenerate(categoriesToUse);
     } else {
       setImageUrl(null);
       setImageId(null);
@@ -238,7 +240,7 @@ export default function ImageGenPage() {
         prompt,
         model,
         ratio,
-        categories: selectedCategories,
+        categories: categoriesToUse,
       });
     }
   };
@@ -268,10 +270,7 @@ export default function ImageGenPage() {
                   <Textarea
                     placeholder="원하는 이미지를 자세히 설명해주세요... 예: 귀여운 고양이가 라면을 먹는 모습, 카툰 스타일, 밝은 색상"
                     value={prompt}
-                    onChange={(e) => {
-                      setPrompt(e.target.value);
-                      debouncedSuggestCategories(e.target.value);
-                    }}
+                    onChange={(e) => setPrompt(e.target.value)}
                     className="min-h-[120px] resize-none border-2 focus:border-purple-500 transition-colors"
                     disabled={isPending}
                   />

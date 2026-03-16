@@ -135,11 +135,13 @@ model CreditSettings {
 
 // LLM 텍스트 모델 설정 (단일 레코드로 관리)
 model LlmSettings {
-  id          Int      @id @default(1) // 항상 1번만 사용
-  provider    String   @default("ollama") // "ollama" | "gemini"
-  geminiModel String   @default("gemini-2.0-flash-lite")
-  ollamaModel String   @default("gemma3:4b")
-  updatedAt   DateTime @updatedAt
+  id               Int      @id @default(1) // 항상 1번만 사용
+  provider         String   @default("ollama") // "ollama" | "gemini"
+  geminiModel      String   @default("gemini-2.5-flash-lite")
+  ollamaModel      String   @default("gemma3:4b")
+  translateEnabled Boolean  @default(true) // 프롬프트 번역 on/off
+  categoryEnabled  Boolean  @default(true) // 카테고리 추천 on/off
+  updatedAt        DateTime @updatedAt
 
   @@map("llm_settings")
 }

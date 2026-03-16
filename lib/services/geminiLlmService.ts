@@ -4,14 +4,34 @@ import { TranslateAndClassifyResult } from "./ollamaService";
 
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
+const GEMINI_REQUEST_LIMIT = 100;
+let geminiRequestCount = 0;
+
+export function getGeminiRequestCount() {
+  return geminiRequestCount;
+}
+
+export function resetGeminiRequestCount() {
+  geminiRequestCount = 0;
+}
+
 async function callGemini(
   model: string,
   prompt: string,
 ): Promise<string> {
+  if (geminiRequestCount >= GEMINI_REQUEST_LIMIT) {
+    throw new ApiError(
+      `Gemini API 요청 한도(${GEMINI_REQUEST_LIMIT}회)에 도달했습니다.`,
+      429,
+    );
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new ApiError("GEMINI_API_KEY가 설정되지 않았습니다.", 500);
   }
+
+  geminiRequestCount++;
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 30000);

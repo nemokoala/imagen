@@ -108,10 +108,10 @@ jobs:
           ln -sfn ${{ env.DEPLOY_DIR }} $HOME/imagen-app
           echo "✅ Symlink updated: $HOME/imagen-app → ${{ env.DEPLOY_DIR }}"
 
-      - name: Reload PM2 process (Zero Downtime)
+      - name: Restart PM2 process
         working-directory: ${{ github.workspace }}
         run: |
-          echo "🔄 PM2 Reloading..."
+          echo "🔄 PM2 Restarting..."
 
           EXPECTED_CWD="/home/koala/imagen-app"
 
@@ -121,11 +121,9 @@ jobs:
             2>/dev/null || echo "")
 
           if [ "$CURRENT_CWD" = "$EXPECTED_CWD" ]; then
-            # cwd가 동일 → rolling restart (zero downtime)
-            echo "✅ PM2 cwd matches. Performing rolling reload..."
-            pm2 reload ecosystem.config.js
+            echo "✅ PM2 cwd matches. Performing restart..."
+            pm2 restart ecosystem.config.js
           else
-            # cwd가 다름 (최초 배포 또는 설정 변경) → 강제 재시작
             echo "⚠️ PM2 cwd mismatch: '$CURRENT_CWD' ≠ '$EXPECTED_CWD'"
             echo "🔸 Performing fresh start with new config..."
             pm2 delete imagen-app 2>/dev/null || true

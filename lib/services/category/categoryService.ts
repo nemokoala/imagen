@@ -60,11 +60,11 @@ export const categoryService = {
    * 프롬프트 기반 카테고리 추천 (AI 분석)
    */
   async suggestCategoriesFromPrompt(prompt: string): Promise<string[]> {
-    // ollamaService 동적 import (순환 참조 방지)
-    const { ollamaService } = await import("../ollamaService");
+    // llmService 동적 import (순환 참조 방지)
+    const { llmService } = await import("../llmService");
 
     try {
-      const result = await ollamaService.translateAndClassify(prompt);
+      const result = await llmService.translateAndClassify(prompt);
       return result.categories;
     } catch (error) {
       throw new ApiError("카테고리 추천에 실패했습니다." + error, 400);

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ollamaService } from "@/lib/services/ollamaService";
+import { llmService } from "@/lib/services/llmService";
 import { imageService } from "@/lib/services/image/imageService";
-import { errorHandler } from "@/lib/errors/errorHandler";
 
 export async function GET(
   req: NextRequest,
@@ -17,6 +17,9 @@ export async function GET(
       case "ollama":
         response = await ollamaService.healthCheck();
         break;
+      case "llm":
+        response = await llmService.healthCheck();
+        break;
       case "stable":
         response = await imageService.stableHealthCheck();
         break;
@@ -28,7 +31,7 @@ export async function GET(
         return NextResponse.json(
           {
             error:
-              'Invalid target. Use "ollama", "stable", "comfyui", or "zimage"',
+              'Invalid target. Use "ollama", "llm", "stable", "comfyui", or "zimage"',
           },
           { status: 400 },
         );

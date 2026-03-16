@@ -6,6 +6,7 @@ import { useUserStore } from "@/stores/userStore";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { CreditSettingsComponent } from "@/components/admin/CreditSettings";
 import { ImageManagement } from "@/components/admin/ImageManagement";
+import { LlmSettingsComponent } from "@/components/admin/LlmSettings";
 import { Layout } from "@/components/layout/Layout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -54,6 +55,7 @@ export default function AdminPage() {
             <TabsTrigger value="users">유저 관리</TabsTrigger>
             <TabsTrigger value="images">이미지 관리</TabsTrigger>
             <TabsTrigger value="credits">크레딧 비용 설정</TabsTrigger>
+            <TabsTrigger value="llm">LLM 모델 설정</TabsTrigger>
           </TabsList>
           <TabsContent value="users" className="mt-4">
             <UserManagement />
@@ -63,6 +65,9 @@ export default function AdminPage() {
           </TabsContent>
           <TabsContent value="credits" className="mt-4">
             <CreditSettingsComponent />
+          </TabsContent>
+          <TabsContent value="llm" className="mt-4">
+            <LlmSettingsComponent />
           </TabsContent>
         </Tabs>
       </div>

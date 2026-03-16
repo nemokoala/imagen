@@ -4,7 +4,7 @@ import { writeFile, mkdir, readFile } from "fs/promises";
 import { join } from "path";
 import mime from "mime";
 import { prisma } from "../../prisma";
-import { ollamaService } from "../ollamaService";
+import { llmService } from "../llmService";
 import { authService } from "../auth/authService";
 import { creditSettingsService } from "../admin/creditSettingsService";
 import { ApiError } from "@/lib/errors/AppError";
@@ -169,7 +169,7 @@ export const imageGenerationService = {
       yield "프롬프트를 번역하고 분석하는 중입니다...";
       let translatedPrompt = prompt;
       try {
-        translatedPrompt = await ollamaService.translateText(prompt);
+        translatedPrompt = await llmService.translateText(prompt);
       } catch {
         console.error("ollama service error");
         // Ollama 서비스가 사용 불가능한 경우 원본 프롬프트 사용 (에러 로그 제거)
@@ -402,7 +402,7 @@ export const imageGenerationService = {
       yield "프롬프트를 번역하고 분석하는 중입니다...";
       let translatedPrompt = prompt;
       try {
-        translatedPrompt = await ollamaService.translateText(prompt);
+        translatedPrompt = await llmService.translateText(prompt);
         console.log("translatedPrompt", translatedPrompt);
       } catch {
         console.error("ollama service error");

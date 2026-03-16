@@ -13,7 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1,
     },
     {
-      url: `${baseUrl}/image-gen`,
+      url: `${baseUrl}/generate`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
@@ -39,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: image.updatedAt,
         changeFrequency: "weekly" as const,
         priority: 0.6,
-      })
+      }),
     );
 
     return [...staticPages, ...imagePages];

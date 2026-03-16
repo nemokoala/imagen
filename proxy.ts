@@ -6,7 +6,7 @@ export function proxy(request: NextRequest) {
   const accessToken = request.cookies.get("accessToken");
   const refreshToken = request.cookies.get("refreshToken");
   const notLogin = !accessToken && !refreshToken;
-  const notLoginDeniedPath = ["/image-gen", "/profile"];
+  const notLoginDeniedPath = ["/generate", "/profile"];
 
   if (notLogin) {
     if (notLoginDeniedPath.includes(pathname)) {

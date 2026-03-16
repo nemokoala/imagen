@@ -32,7 +32,7 @@ export function ImageCreatButton({ isVisible = true }: ImageCreatButtonProps) {
         damping: 30,
       }}
     >
-      <Link href="/image-gen">
+      <Link href="/generate">
         <Button variant="gradient" className="rounded-full" size="lg">
           <Sparkles className="h-4 w-4" />
           이미지 생성하기

@@ -45,7 +45,7 @@ export function UserGeneratedImages({
                 : `${userInfo.nickname}님이 아직 생성한 이미지가 없습니다.`}
             </p>
             {isOwnProfile && (
-              <Link href="/image-gen">
+              <Link href="/generate">
                 <Button variant="gradient">이미지 생성하기</Button>
               </Link>
             )}

@@ -79,7 +79,7 @@ export const Header = () => {
           </div>
         ) : (
           <div className="flex items-center gap-3">
-            <Link href="/image-gen">
+            <Link href="/generate">
               <Button
                 variant="gradient"
                 className="hidden sm:flex items-center gap-2"

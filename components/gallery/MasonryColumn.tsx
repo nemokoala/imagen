@@ -35,12 +35,12 @@ export function MasonryColumn({
     initialOffset,
   });
 
-  // columnWidth 변경 시 virtualizer 캐시 리셋 (높이 재계산)
+  // columnWidth 또는 items 변경 시 virtualizer 캐시 리셋 (높이 재계산)
   // virtualizer는 매 렌더마다 새 객체이므로 deps에서 제외
   useEffect(() => {
     virtualizer.measure();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [columnWidth]);
+  }, [columnWidth, items]);
 
   return (
     <div

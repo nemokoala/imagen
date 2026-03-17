@@ -183,7 +183,7 @@ export const useDeleteImageMutation = () => {
     onSuccess: () => {
       // 갤러리 이미지 쿼리 무효화 및 재조회
       queryClient.invalidateQueries({ queryKey: ["galleryImages"] });
-      queryClient.invalidateQueries({ queryKey: ["galleryImagesInfinite"] });
+      queryClient.removeQueries({ queryKey: ["galleryImagesInfinite"] });
     },
   });
 };

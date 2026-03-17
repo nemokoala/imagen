@@ -26,6 +26,7 @@ import { cn, downloadImage, getRatio } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
 import Link from "next/link";
+import { useScrollStore } from "@/stores/scrollStore";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
@@ -42,6 +43,7 @@ export default function ImageGenPage() {
   );
 
   const queryClient = useQueryClient();
+  const { setScrollPos } = useScrollStore();
   const resultImageRef = useRef<HTMLDivElement>(null);
   const recommendPromptRef = useRef<RecommendPromptRef>(null);
 
@@ -108,12 +110,9 @@ export default function ImageGenPage() {
         recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
         resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
         queryClient.invalidateQueries({ queryKey: ["credit"] });
-        queryClient.invalidateQueries({
-          queryKey: ["galleryImagesInfinite"],
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["userImagesInfinite"],
-        });
+        queryClient.removeQueries({ queryKey: ["galleryImagesInfinite"] });
+        queryClient.removeQueries({ queryKey: ["userImagesInfinite"] });
+        setScrollPos(0);
       },
       (error) => {
         toast.error(error.message);
@@ -176,12 +175,11 @@ export default function ImageGenPage() {
                 recommendPromptRef.current?.refresh();
                 resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
                 queryClient.invalidateQueries({ queryKey: ["credit"] });
-                queryClient.invalidateQueries({
+                queryClient.removeQueries({
                   queryKey: ["galleryImagesInfinite"],
                 });
-                queryClient.invalidateQueries({
-                  queryKey: ["userImagesInfinite"],
-                });
+                queryClient.removeQueries({ queryKey: ["userImagesInfinite"] });
+                setScrollPos(0);
               } else if (data.status === "error") {
                 throw new Error(data.message);
               }
@@ -374,7 +372,7 @@ export default function ImageGenPage() {
                       src={imageUrl}
                       alt="생성된 이미지"
                       fill
-                      className="w-auto h-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-auto object-cover"
                       unoptimized
                     />
                   </div>

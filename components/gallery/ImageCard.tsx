@@ -125,14 +125,14 @@ export function ImageCard({ image }: ImageCardProps) {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleLike}
-                  className="flex items-center gap-1 text-white/90 hover:text-white transition-colors"
+                  className="flex items-center gap-1 text-white/90 hover:text-white transition-colors hover:cursor-pointer"
                 >
                   <Heart
                     className={`h-3.5 w-3.5 ${liked ? "fill-red-500 text-red-500" : ""}`}
                   />
                   <span className="text-xs font-medium">{likeCount}</span>
                 </button>
-                <div className="flex items-center gap-1 text-white/90">
+                <div className="flex items-center gap-1 text-white/90 hover:cursor-pointer">
                   <MessageCircle className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">
                     {image.commentCount}
@@ -140,7 +140,7 @@ export function ImageCard({ image }: ImageCardProps) {
                 </div>
               </div>
               <button
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-white/70 hover:text-white transition-colors hover:cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();

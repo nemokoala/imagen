@@ -303,7 +303,7 @@ export function ImageDetail({
                   <ChevronLeft className="h-6 w-6 text-purple-600" />
                   이전글
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[400px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 min-h-[400px]">
                   {prevImages.map((prevImage) => (
                     <ImageCard key={prevImage.id} image={prevImage} />
                   ))}
@@ -318,7 +318,7 @@ export function ImageDetail({
                   <ChevronRight className="h-6 w-6 text-purple-600" />
                   다음글
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[400px]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 min-h-[400px]">
                   {nextImages.map((nextImage) => (
                     <ImageCard key={nextImage.id} image={nextImage} />
                   ))}

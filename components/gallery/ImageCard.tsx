@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Share2, Heart, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { Image as ImageType } from "@/types/image.interfaces";
@@ -108,14 +108,14 @@ export function ImageCard({ image }: ImageCardProps) {
             />
 
             {/* 모델 종류 */}
-            <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
+            {/* <div className="absolute top-2 right-2 z-20 flex flex-col gap-2">
               <Badge
                 variant="secondary"
-                className="text-xs gradient-purple-bg text-white backdrop-blur-sm border-0 shadow-lg self-end"
+                className="text-xs bg-foreground/50 text-background border-0 shadow-lg self-end"
               >
                 {image.model}
               </Badge>
-            </div>
+            </div> */}
 
             {/* 하단 그라데이션 오버레이 */}
             <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none" />

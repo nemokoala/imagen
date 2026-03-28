@@ -2,8 +2,11 @@ import { Category } from "@/types/image.interfaces";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, X } from "lucide-react";
+import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+const RATIO_OPTIONS = ["1:1", "16:9", "9:16"] as const;
+type RatioOption = (typeof RATIO_OPTIONS)[number];
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -12,6 +15,8 @@ interface CategoryFilterProps {
   handleToggleCategory: (slug: string) => void;
   search?: string;
   setSearch?: (value: string) => void;
+  selectedRatio?: string;
+  onToggleRatio?: (ratio: RatioOption) => void;
 }
 
 export function CategoryFilter({
@@ -21,9 +26,12 @@ export function CategoryFilter({
   handleToggleCategory,
   search = "",
   setSearch,
+  selectedRatio,
+  onToggleRatio,
 }: CategoryFilterProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(search);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   // 외부 search 값이 변경되면 로컬 값도 업데이트
   useEffect(() => {
@@ -52,8 +60,32 @@ export function CategoryFilter({
   const iconButtonClass = "rounded-full h-9 w-9 flex-shrink-0";
   const categoryButtonClass = "rounded-full h-9 whitespace-nowrap px-4";
 
+  if (isCollapsed) {
+    return (
+      <div className="sticky top-2 z-20 mx-auto w-fit">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsCollapsed(false)}
+          className={cn(
+            iconButtonClass,
+            "bg-white/80 dark:bg-gray-800/80 shadow-lg border border-gray-100 dark:border-gray-700 text-gray-500 hover:text-primary",
+          )}
+        >
+          <ChevronDown size={18} />
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className="sticky top-2 z-20 bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-fit max-w-[calc(100%-2rem)] mx-auto rounded-full shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+    <div
+      className={cn(
+        "sticky top-2 z-20 bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-fit max-w-[calc(100%-2rem)] mx-auto shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden",
+        onToggleRatio ? "rounded-2xl" : "rounded-full",
+      )}
+    >
+      {/* 1행: 카테고리 + 검색 */}
       <div className="flex items-center gap-1.5 min-h-9 px-1">
         {isSearchOpen ? (
           <form
@@ -116,7 +148,7 @@ export function CategoryFilter({
           </div>
         )}
 
-        <div className="flex-shrink-0 border-l border-foreground/30 pl-1.5 ml-0.5">
+        <div className="flex-shrink-0 flex items-center justify-center border-l border-foreground/30 pl-1.5 ml-0.5">
           <Button
             variant="outline"
             size="icon"
@@ -132,6 +164,33 @@ export function CategoryFilter({
           </Button>
         </div>
       </div>
+
+      {/* 2행: 비율 필터 + 축소 버튼 */}
+      {onToggleRatio && (
+        <div className="flex justify-center items-center gap-1.5 px-1 pt-2 pb-0.5 border-t border-gray-100 dark:border-gray-700">
+          {RATIO_OPTIONS.map((r) => (
+            <Button
+              key={r}
+              onClick={() => onToggleRatio(r)}
+              variant={selectedRatio === r ? "gradient" : "outline"}
+              className={categoryButtonClass}
+            >
+              {r}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsCollapsed(true)}
+            className={cn(
+              iconButtonClass,
+              "ml-auto text-gray-500 hover:text-primary border-transparent shadow-none",
+            )}
+          >
+            <ChevronUp size={18} />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

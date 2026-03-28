@@ -61,6 +61,19 @@ export function InfiniteImageGallery({
     }
   };
 
+  // URL에서 비율 필터 상태 가져오기
+  const ratio = getParam("ratio") || undefined;
+  const handleToggleRatio = useCallback(
+    (value: string) => {
+      if (ratio === value) {
+        removeParam("ratio");
+      } else {
+        setParam("ratio", value);
+      }
+    },
+    [ratio, setParam, removeParam],
+  );
+
   // 카테고리 목록 조회
   const { data: categories = [] } = useGetCategories();
 
@@ -73,12 +86,14 @@ export function InfiniteImageGallery({
     Boolean(!userId),
     categoryParam,
     search || undefined,
+    ratio,
   );
   const userQuery = useGetUserImagesInfiniteQuery(
     userId || 0,
     20,
     categoryParam,
     search || undefined,
+    ratio,
   );
 
   const {
@@ -318,6 +333,8 @@ export function InfiniteImageGallery({
           handleToggleCategory={handleToggleCategory}
           search={search}
           setSearch={setSearch}
+          selectedRatio={ratio}
+          onToggleRatio={handleToggleRatio}
         />
         {content}
       </div>

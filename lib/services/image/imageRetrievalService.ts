@@ -1,4 +1,5 @@
 import { prisma } from "../../prisma";
+import { Prisma } from "@/lib/generated/prisma";
 import type { Image as ImageType } from "@/types/image.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "../logs/logService";
@@ -183,12 +184,13 @@ export const imageRetrievalService = {
     search?: string,
     sortBy?: string,
     order?: string,
+    ratio?: string,
   ) {
     try {
       const skip = (page - 1) * limit;
 
       // whereClause 구성
-      const whereClause: any = {};
+      const whereClause: Prisma.GeneratedImageWhereInput = {};
       const conditions = [];
 
       if (userId) {
@@ -200,6 +202,11 @@ export const imageRetrievalService = {
         conditions.push({
           categories: { some: { slug: { in: categorySlugs } } },
         });
+      }
+
+      // 비율 필터링
+      if (ratio) {
+        conditions.push({ ratio });
       }
 
       // 검색어 필터링: 프롬프트, 번역된 프롬프트, 작성자 닉네임
@@ -226,17 +233,18 @@ export const imageRetrievalService = {
         "likeCount",
         "commentCount",
       ];
-      let orderByQuery: any = { createdAt: "desc" };
+      let orderByQuery: Prisma.GeneratedImageOrderByWithRelationInput = { createdAt: "desc" };
 
       if (sortBy && order && ALLOWED_SORT_FIELDS.includes(sortBy)) {
+        const sortOrder = order as Prisma.SortOrder;
         if (sortBy === "user") {
-          orderByQuery = { user: { nickname: order } };
+          orderByQuery = { user: { nickname: sortOrder } };
         } else if (sortBy === "likeCount") {
-          orderByQuery = { likes: { _count: order } };
+          orderByQuery = { likes: { _count: sortOrder } };
         } else if (sortBy === "commentCount") {
-          orderByQuery = { comments: { _count: order } };
+          orderByQuery = { comments: { _count: sortOrder } };
         } else {
-          orderByQuery = { [sortBy]: order };
+          orderByQuery = { [sortBy]: sortOrder };
         }
       }
 

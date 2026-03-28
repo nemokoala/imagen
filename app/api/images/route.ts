@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || undefined;
     const sortBy = searchParams.get("sortBy") || undefined;
     const order = searchParams.get("order") === "asc" ? "asc" : "desc";
+    const ratio = searchParams.get("ratio") || undefined;
 
     // 콤마로 구분된 카테고리를 배열로 변환
     const categories = categoryParam
@@ -39,6 +40,7 @@ export async function GET(req: NextRequest) {
       search,
       sortBy,
       order,
+      ratio,
     );
 
     return NextResponse.json(

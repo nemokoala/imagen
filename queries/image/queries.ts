@@ -80,14 +80,16 @@ export const useGetGalleryImagesInfiniteQuery = (
   enabled: boolean = true,
   category?: string,
   search?: string,
+  ratio?: string,
 ) => {
   return useInfiniteQuery({
-    queryKey: ["galleryImagesInfinite", limit, category, search],
+    queryKey: ["galleryImagesInfinite", limit, category, search, ratio],
     queryFn: async ({ pageParam = 1 }) => {
       const categoryParam = category ? `&category=${category}` : "";
       const searchParam = search ? `&search=${search}` : "";
+      const ratioParam = ratio ? `&ratio=${ratio}` : "";
       const response = (await FetchUtil.get(
-        `/api/images?page=${pageParam}&limit=${limit}${categoryParam}${searchParam}`,
+        `/api/images?page=${pageParam}&limit=${limit}${categoryParam}${searchParam}${ratioParam}`,
       )) as GalleryResponse;
       return response;
     },
@@ -104,14 +106,16 @@ export const useGetUserImagesInfiniteQuery = (
   limit: number = 20,
   category?: string,
   search?: string,
+  ratio?: string,
 ) => {
   return useInfiniteQuery({
-    queryKey: ["userImagesInfinite", userId, limit, category, search],
+    queryKey: ["userImagesInfinite", userId, limit, category, search, ratio],
     queryFn: async ({ pageParam = 1 }) => {
       const categoryParam = category ? `&category=${category}` : "";
       const searchParam = search ? `&search=${search}` : "";
+      const ratioParam = ratio ? `&ratio=${ratio}` : "";
       const response = (await FetchUtil.get(
-        `/api/images?userId=${userId}&page=${pageParam}&limit=${limit}${categoryParam}${searchParam}`,
+        `/api/images?userId=${userId}&page=${pageParam}&limit=${limit}${categoryParam}${searchParam}${ratioParam}`,
       )) as GetUserImagesResponse;
       return response;
     },

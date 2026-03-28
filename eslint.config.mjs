@@ -55,6 +55,7 @@ export default [
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
       "react-hooks/set-state-in-effect": "off",
+      "react-hooks/preserve-manual-memoization": "off",
     },
   },
   {

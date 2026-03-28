@@ -42,7 +42,7 @@ export const CommonModal = () => {
       }}
     >
       <DialogContent
-        className="w-9/12 max-w-screen-sm bg-white dark:bg-[#33302f] rounded-[20px] p-6 gap-1.5 z-[999]"
+        className="w-fit max-w-screen-sm bg-white dark:bg-[#33302f] rounded-[20px] p-6 px-8 gap-1.5 z-[999]"
         aria-describedby={undefined}
       >
         <DialogHeader>

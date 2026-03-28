@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useGetUsersQuery } from "@/queries/admin/queries";
 import { useUpdateUserCreditMutation } from "@/queries/admin/mutations";
 import { Input } from "@/components/ui/input";
@@ -10,25 +10,19 @@ import { toast } from "sonner";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { User } from "@/types/user.interfaces";
 import { DataTable } from "@/components/ui/data-table";
+import { CreditCell } from "@/components/admin/CreditCell";
 
 export function UserManagement() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
-  const [creditValue, setCreditValue] = useState<string>("");
   const limit = 20;
 
   const sortBy = sorting.length > 0 ? sorting[0].id : "";
   const order = sorting.length > 0 ? (sorting[0].desc ? "desc" : "asc") : "";
 
-  const { data, isLoading, error } = useGetUsersQuery(
-    page,
-    limit,
-    search,
-    sortBy,
-    order,
-  );
+  const { data, error } = useGetUsersQuery(page, limit, search, sortBy, order);
   const updateCreditMutation = useUpdateUserCreditMutation();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -36,33 +30,20 @@ export function UserManagement() {
     if (page !== 1) setPage(1);
   };
 
-  const handleEditClick = (user: { id: number; credits: number }) => {
-    setEditingUserId(user.id);
-    setCreditValue(user.credits.toString());
-  };
-
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditingUserId(null);
-    setCreditValue("");
-  };
+  }, []);
 
-  const handleSaveCredit = async (userId: number) => {
-    const credits = parseInt(creditValue);
-    if (isNaN(credits) || credits < 0) {
-      toast.error("유효한 크레딧 값을 입력해주세요.");
-      return;
-    }
-
+  const handleSaveCredit = useCallback(async (userId: number, credits: number) => {
     try {
       await updateCreditMutation.mutateAsync({ userId, credits });
       toast.success("크레딧이 수정되었습니다.");
       setEditingUserId(null);
-      setCreditValue("");
     } catch (error) {
       console.error(error);
       toast.error("크레딧 수정에 실패했습니다.");
     }
-  };
+  }, [updateCreditMutation]);
 
   const columns = useMemo<ColumnDef<User>[]>(
     () => [
@@ -87,37 +68,15 @@ export function UserManagement() {
         size: 200,
         cell: ({ row }) => {
           const user = row.original;
-          return editingUserId === user.id ? (
-            <div className="flex gap-2 items-center">
-              <Input
-                type="number"
-                value={creditValue}
-                onChange={(e) => setCreditValue(e.target.value)}
-                className="w-24 h-8"
-                min="0"
-              />
-              <Button
-                size="sm"
-                onClick={() => handleSaveCredit(user.id)}
-                disabled={updateCreditMutation.isPending}
-              >
-                저장
-              </Button>
-              <Button size="sm" variant="outline" onClick={handleCancelEdit}>
-                취소
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <span>{user.credits}</span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleEditClick(user)}
-              >
-                수정
-              </Button>
-            </div>
+          return (
+            <CreditCell
+              user={user}
+              isEditing={editingUserId === user.id}
+              onEdit={() => setEditingUserId(user.id)}
+              onSave={(credits) => handleSaveCredit(user.id, credits)}
+              onCancel={handleCancelEdit}
+              isPending={updateCreditMutation.isPending}
+            />
           );
         },
       },
@@ -158,7 +117,7 @@ export function UserManagement() {
         enableSorting: false,
       },
     ],
-    [editingUserId, creditValue, updateCreditMutation.isPending],
+    [editingUserId, handleSaveCredit, handleCancelEdit, updateCreditMutation.isPending],
   );
 
   if (error) {

@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useCallback } from "react";
 import {
   useGetCreditSettingsQuery,
   useUpdateCreditSettingsMutation,
 } from "@/queries/admin/creditSettings";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { CreditSettings } from "@/lib/services/admin/creditSettingsService";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
+import { CreditSettingCell } from "@/components/admin/CreditSettingCell";
 
 const MODEL_NAMES: Record<keyof CreditSettings, string> = {
   dallE3: "DALL-E 3",
@@ -30,44 +30,31 @@ export function CreditSettingsComponent() {
   const { data, isLoading, error } = useGetCreditSettingsQuery();
   const updateMutation = useUpdateCreditSettingsMutation();
 
-  const [editingValues, setEditingValues] = useState<Partial<CreditSettings>>(
-    {},
-  );
+  const editingValuesRef = useRef<Partial<CreditSettings>>({});
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEdit = () => {
     if (data) {
-      setEditingValues(data);
+      editingValuesRef.current = { ...data };
       setIsEditing(true);
     }
   };
 
   const handleCancel = () => {
-    setEditingValues({});
+    editingValuesRef.current = {};
     setIsEditing(false);
   };
 
-  const handleChange = (key: keyof CreditSettings, value: string) => {
-    const numValue = parseInt(value);
-    if (!isNaN(numValue) && numValue >= 0) {
-      setEditingValues((prev) => ({
-        ...prev,
-        [key]: numValue,
-      }));
-    } else if (value === "") {
-      setEditingValues((prev) => ({
-        ...prev,
-        [key]: 0,
-      }));
-    }
-  };
+  const handleChange = useCallback((key: keyof CreditSettings, value: number) => {
+    editingValuesRef.current[key] = value;
+  }, []);
 
   const handleSave = async () => {
     try {
-      await updateMutation.mutateAsync(editingValues);
+      await updateMutation.mutateAsync(editingValuesRef.current);
       toast.success("크레딧 설정이 저장되었습니다.");
+      editingValuesRef.current = {};
       setIsEditing(false);
-      setEditingValues({});
     } catch (error) {
       console.error(error);
       toast.error("크레딧 설정 저장에 실패했습니다.");
@@ -79,10 +66,10 @@ export function CreditSettingsComponent() {
       (key) => ({
         key,
         name: MODEL_NAMES[key],
-        cost: editingValues[key] ?? data?.[key] ?? 0,
+        cost: data?.[key] ?? 0,
       }),
     );
-  }, [editingValues, data]);
+  }, [data]);
 
   const columns = useMemo<ColumnDef<SettingRow>[]>(
     () => [
@@ -98,23 +85,16 @@ export function CreditSettingsComponent() {
         accessorKey: "cost",
         header: "크레딧 비용",
         size: 300,
-        cell: ({ row }) => {
-          const key = row.original.key;
-          return isEditing ? (
-            <Input
-              type="number"
-              value={editingValues[key] ?? data?.[key] ?? 0}
-              onChange={(e) => handleChange(key, e.target.value)}
-              className="w-32"
-              min="0"
-            />
-          ) : (
-            <span>{data?.[key] ?? 0} 크레딧</span>
-          );
-        },
+        cell: ({ row }) => (
+          <CreditSettingCell
+            initialValue={row.original.cost}
+            isEditing={isEditing}
+            onChange={(value) => handleChange(row.original.key, value)}
+          />
+        ),
       },
     ],
-    [isEditing, editingValues, data],
+    [isEditing, handleChange],
   );
 
   if (isLoading) {

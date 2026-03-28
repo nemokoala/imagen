@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -242,6 +242,12 @@ export default function ImageGenPage() {
       });
     }
   };
+
+  useEffect(() => {
+    if (prompt.length === 0 && selectedCategories.length > 0) {
+      setSelectedCategories([]);
+    }
+  }, [prompt, selectedCategories]);
 
   const isPending = isMutationPending || isStreaming;
 

@@ -8,6 +8,12 @@ export function proxy(request: NextRequest) {
   const notLogin = !accessToken && !refreshToken;
   const notLoginDeniedPath = ["/generate", "/profile"];
 
+  // 로그인 유저 또는 이미 랜딩을 본 유저는 갤러리로 바로 이동
+  const visited = request.cookies.get("visited");
+  if (pathname === "/" && (accessToken || visited)) {
+    return NextResponse.redirect(new URL("/explore", request.url));
+  }
+
   if (notLogin) {
     if (notLoginDeniedPath.includes(pathname)) {
       return NextResponse.redirect(new URL("/?needLogin=true", request.url));
@@ -19,7 +25,7 @@ export function proxy(request: NextRequest) {
     !pathname.includes("callback") &&
     !notLogin
   ) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/explore", request.url));
   }
   return NextResponse.next();
 }

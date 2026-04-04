@@ -6,6 +6,10 @@ import jwt from "jsonwebtoken";
 import { User } from "@/lib/generated/prisma";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
+import {
+  emailVerificationService,
+  type VerificationDispatchResult,
+} from "@/lib/services/auth/emailVerificationService";
 
 interface CreateUserData {
   email: string;
@@ -16,6 +20,12 @@ interface CreateUserData {
 interface LoginDTO {
   email: string;
   password: string;
+}
+
+type PublicUser = Omit<User, "password">;
+
+interface RegisterResult extends VerificationDispatchResult {
+  user: PublicUser;
 }
 
 export const authService = {
@@ -55,9 +65,7 @@ export const authService = {
     }
   },
 
-  async register(
-    data: CreateUserData,
-  ): Promise<Omit<CreateUserData, "password">> {
+  async register(data: CreateUserData, baseUrl: string): Promise<RegisterResult> {
     // 데이터 검증
     await this.validateRegisterData(data);
 
@@ -72,13 +80,22 @@ export const authService = {
       data: {
         ...data,
         password: hashedPassword,
+        emailVerified: false,
       },
     });
+
+    const verification = await emailVerificationService.sendVerificationEmail(
+      user,
+      baseUrl,
+    );
 
     // 비밀번호를 제외한 사용자 정보 반환
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return {
+      ...verification,
+      user: userWithoutPassword,
+    };
   },
 
   async validateLoginData(data: LoginDTO): Promise<void> {
@@ -114,6 +131,14 @@ export const authService = {
         "비밀번호가 일치하지 않습니다.",
         400,
         "INVALID_PASSWORD",
+      );
+    }
+
+    if (user.provider === "local" && !user.emailVerified) {
+      throw new ApiError(
+        "이메일 인증이 완료되지 않았습니다. 받은 편지함을 확인하거나 인증 메일을 다시 요청해주세요.",
+        403,
+        "EMAIL_NOT_VERIFIED",
       );
     }
 
@@ -274,6 +299,42 @@ export const authService = {
     return { ...userWithoutPassword, refreshExpiresAt };
   },
 
+  async resendVerificationEmail(email: string, baseUrl: string) {
+    if (!email) {
+      throw new ApiError("이메일을 입력해주세요.", 400, "EMAIL_REQUIRED");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new ApiError(
+        "가입된 이메일을 찾을 수 없습니다.",
+        404,
+        "USER_NOT_FOUND",
+      );
+    }
+
+    if (user.provider !== "local") {
+      throw new ApiError(
+        "소셜 로그인 계정은 이메일 인증 재발송 대상이 아닙니다.",
+        400,
+        "SOCIAL_ACCOUNT",
+      );
+    }
+
+    if (user.emailVerified) {
+      throw new ApiError(
+        "이미 이메일 인증이 완료된 계정입니다.",
+        400,
+        "EMAIL_ALREADY_VERIFIED",
+      );
+    }
+
+    return emailVerificationService.sendVerificationEmail(user, baseUrl);
+  },
+
   async logout(): Promise<void> {
     const cookieStore = await cookies();
 
@@ -427,6 +488,8 @@ export const authService = {
             nickname: finalNickname,
             kakaoId,
             provider: "kakao",
+            emailVerified: true,
+            emailVerifiedAt: new Date(),
             password: null, // 카카오 로그인은 비밀번호 없음
             profileImageUrl,
           },

@@ -12,7 +12,7 @@ export function errorHandler(error: unknown) {
 
   if (error instanceof ApiError) {
     return NextResponse.json(
-      { message: error.message },
+      { message: error.message, code: error.code },
       { status: error.statusCode }
     );
   }

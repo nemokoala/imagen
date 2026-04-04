@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,15 +25,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import Link from "next/link";
-import { registerSchema, type RegisterFormData } from "@/schemas/auth";
-import { toast } from "sonner";
 import { Layout } from "@/components/layout/Layout";
 import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
+import { registerSchema, type RegisterFormData } from "@/schemas/auth";
+import { FetchUtil } from "@/lib/Fetch.util";
+import type { RegisterResponse } from "@/types/auth.interfaces";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const form = useForm<RegisterFormData>({
@@ -48,37 +50,18 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+      const responseData = (await FetchUtil.post(
+        "/api/auth/register",
+        data,
+      )) as RegisterResponse;
+
+      toast.success("회원가입이 완료되었습니다", {
+        description: "인증 메일을 확인한 뒤 로그인해주세요.",
       });
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        const errorMessage =
-          responseData.message || "회원가입 중 오류가 발생했습니다.";
-
-        // 에러 토스트 표시
-        toast.error("회원가입 실패", {
-          description: errorMessage,
-        });
-
-        throw new Error(errorMessage);
-      }
-
-      // 회원가입 성공 시 성공 토스트 표시
-      toast.success("회원가입이 완료되었습니다!", {
-        description: "로그인 페이지로 이동합니다.",
-      });
-
-      // 잠시 후 로그인 페이지로 이동
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 100);
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(responseData.email)}&sent=1`,
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error
@@ -97,7 +80,7 @@ export default function RegisterPage() {
         <CardHeader>
           <CardTitle>회원가입</CardTitle>
           <CardDescription>
-            계정을 생성하고 서비스를 이용해보세요.
+            계정을 만들고 서비스를 바로 시작해보세요.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -117,7 +100,7 @@ export default function RegisterPage() {
                     <FormLabel>닉네임</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="홍길동"
+                        placeholder="닉네임"
                         disabled={loading}
                         {...field}
                       />
@@ -155,7 +138,7 @@ export default function RegisterPage() {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="••••••"
+                        placeholder="비밀번호"
                         disabled={loading}
                         {...field}
                       />
@@ -165,14 +148,14 @@ export default function RegisterPage() {
                 )}
               />
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4 mt-8">
+            <CardFooter className="mt-8 flex flex-col space-y-4">
               <Button
                 type="submit"
                 className="w-full"
                 disabled={loading}
                 variant="gradient"
               >
-                {loading ? "처리중..." : "회원가입"}
+                {loading ? "처리 중..." : "회원가입"}
               </Button>
 
               <div className="relative w-full">
@@ -188,7 +171,7 @@ export default function RegisterPage() {
 
               <KakaoLoginButton disabled={loading} isRegister />
 
-              <div className="text-sm text-muted-foreground text-center">
+              <div className="text-center text-sm text-muted-foreground">
                 이미 계정이 있으신가요?{" "}
                 <Link
                   href="/auth/login"

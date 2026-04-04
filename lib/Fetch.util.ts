@@ -47,7 +47,13 @@ const handleFetchJSON = async (
   if (!response.ok) {
     const errorMessage = data.message || "요청에 실패했습니다";
     console.error(errorMessage);
-    throw new Error(errorMessage);
+    const error = new Error(errorMessage) as Error & {
+      code?: string;
+      statusCode?: number;
+    };
+    error.code = data.code;
+    error.statusCode = response.status;
+    throw error;
   }
 
   return data;

@@ -18,6 +18,8 @@ export interface User {
   credits: number;
   role: "user" | "admin";
   provider: "local" | "kakao";
+  emailVerified: boolean;
+  emailVerifiedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 }

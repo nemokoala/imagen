@@ -25,24 +25,39 @@ enum AuthProvider {
 }
 
 model User {
-  id                     Int              @id @default(autoincrement())
-  email                  String           @unique
-  password               String?
-  nickname               String           @unique
-  credits                Int              @default(100) // 기본 100 크레딧
-  role                   UserRole         @default(user)
-  provider               AuthProvider     @default(local)
-  kakaoId                String?          @unique // 카카오 고유 ID
-  fcmToken               String? // FCM 토큰
-  createdAt              DateTime         @default(now())
-  updatedAt              DateTime         @updatedAt
-  profileImageUrl        String?
-  loginAttempts          LoginAttempt[]
-  generatedImages        GeneratedImage[]
-  imageLikes             ImageLike[]
-  imageComments          ImageComment[]
-  notifications          Notification[]   @relation("UserNotifications")
-  triggeredNotifications Notification[]   @relation("NotificationActor")
+  id                      Int                      @id @default(autoincrement())
+  email                   String                   @unique
+  password                String?
+  nickname                String                   @unique
+  credits                 Int                      @default(100) // 기본 100 크레딧
+  role                    UserRole                 @default(user)
+  provider                AuthProvider             @default(local)
+  emailVerified           Boolean                  @default(true)
+  emailVerifiedAt         DateTime?
+  kakaoId                 String?                  @unique // 카카오 고유 ID
+  fcmToken                String? // FCM 토큰
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  profileImageUrl         String?
+  loginAttempts           LoginAttempt[]
+  emailVerificationTokens EmailVerificationToken[]
+  generatedImages         GeneratedImage[]
+  imageLikes              ImageLike[]
+  imageComments           ImageComment[]
+  notifications           Notification[]           @relation("UserNotifications")
+  triggeredNotifications  Notification[]           @relation("NotificationActor")
+}
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model LoginAttempt {

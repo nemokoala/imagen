@@ -1,5 +1,7 @@
 export interface ErrorResponse {
   message: string;
+  code?: string;
+  statusCode?: number;
 }
 
 //@ts-expect-error 타입 추론 문제 때문에 추가

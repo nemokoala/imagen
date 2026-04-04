@@ -1,9 +1,11 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -23,43 +25,22 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import Link from "next/link";
 import { loginSchema, type LoginFormData } from "@/schemas/auth";
-import { toast } from "sonner";
 import { useUserStore } from "@/stores/userStore";
 import { Layout } from "@/components/layout/Layout";
 import { useLoginMutation } from "@/queries/auth/mutations";
 import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
+import { FetchUtil } from "@/lib/Fetch.util";
+import type { ErrorResponse } from "@/types/common.interfaces";
 
 export default function LoginForm() {
   const router = useRouter();
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState<string | undefined>();
+  const [isResending, setIsResending] = useState(false);
   const { login } = useUserStore();
   const searchParams = useSearchParams();
   const socialLoginError = searchParams.get("error");
-
-  const { mutate: loginMutation, isPending } = useLoginMutation(
-    (data) => {
-      login(data.user);
-      // 로그인 성공 시 토스트 메시지 표시
-      toast.success("로그인이 완료되었습니다!", {
-        description: "환영합니다!",
-      });
-
-      // 잠시 후 메인 페이지로 이동
-      setTimeout(() => {
-        router.push("/");
-      }, 100);
-    },
-    (error) => {
-      const errorMessage = error?.message || "로그인 중 오류가 발생했습니다.";
-
-      toast.error("오류 발생", {
-        description: errorMessage,
-      });
-      setError(errorMessage);
-    }
-  );
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -69,10 +50,69 @@ export default function LoginForm() {
     },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const emailValue = form.watch("email");
+
+  const { mutate: loginMutation, isPending } = useLoginMutation(
+    (data) => {
+      setError("");
+      setErrorCode(undefined);
+      login(data.user);
+      toast.success("로그인이 완료되었습니다", {
+        description: "환영합니다.",
+      });
+      router.push("/");
+    },
+    (loginError: ErrorResponse) => {
+      const errorMessage =
+        loginError?.message || "로그인 중 오류가 발생했습니다.";
+
+      toast.error("오류 발생", {
+        description: errorMessage,
+      });
+      setError(errorMessage);
+      setErrorCode(loginError?.code);
+    },
+  );
+
+  const onSubmit = (data: LoginFormData) => {
     setError("");
+    setErrorCode(undefined);
     loginMutation(data);
   };
+
+  async function handleResendVerification() {
+    if (!emailValue) {
+      toast.error("이메일을 먼저 입력해주세요.");
+      return;
+    }
+
+    setIsResending(true);
+
+    try {
+      await FetchUtil.post("/api/auth/resend-verification", {
+        email: emailValue,
+      });
+
+      toast.success("인증 메일을 다시 보냈습니다", {
+        description: "받은 편지함을 확인해주세요.",
+      });
+
+      router.push(
+        `/auth/verify-email?email=${encodeURIComponent(emailValue)}&resent=1`,
+      );
+    } catch (resendError) {
+      const message =
+        resendError instanceof Error
+          ? resendError.message
+          : "인증 메일 재발송에 실패했습니다.";
+
+      toast.error("재발송 실패", {
+        description: message,
+      });
+    } finally {
+      setIsResending(false);
+    }
+  }
 
   useEffect(() => {
     if (socialLoginError) {
@@ -88,7 +128,7 @@ export default function LoginForm() {
         <CardHeader>
           <CardTitle>로그인</CardTitle>
           <CardDescription>
-            계정에 로그인하여 서비스를 이용해보세요.
+            계정으로 로그인하고 서비스를 이어서 이용해보세요.
           </CardDescription>
         </CardHeader>
         <Form {...form}>
@@ -110,7 +150,7 @@ export default function LoginForm() {
                       <Input
                         type="email"
                         placeholder="example@email.com"
-                        disabled={isPending}
+                        disabled={isPending || isResending}
                         {...field}
                       />
                     </FormControl>
@@ -128,8 +168,8 @@ export default function LoginForm() {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="••••••"
-                        disabled={isPending}
+                        placeholder="비밀번호"
+                        disabled={isPending || isResending}
                         {...field}
                       />
                     </FormControl>
@@ -138,15 +178,27 @@ export default function LoginForm() {
                 )}
               />
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4 mt-8">
+            <CardFooter className="mt-8 flex flex-col space-y-4">
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isPending}
+                disabled={isPending || isResending}
                 variant="gradient"
               >
                 {isPending ? "로그인 중..." : "로그인"}
               </Button>
+
+              {errorCode === "EMAIL_NOT_VERIFIED" && (
+                <Button
+                  type="button"
+                  className="w-full"
+                  variant="outline"
+                  disabled={isPending || isResending}
+                  onClick={handleResendVerification}
+                >
+                  {isResending ? "재발송 중..." : "인증 메일 다시 보내기"}
+                </Button>
+              )}
 
               <div className="relative w-full">
                 <div className="absolute inset-0 flex items-center">
@@ -159,7 +211,7 @@ export default function LoginForm() {
                 </div>
               </div>
 
-              <KakaoLoginButton disabled={isPending} />
+              <KakaoLoginButton disabled={isPending || isResending} />
 
               <div className="text-sm text-muted-foreground text-center">
                 계정이 없으신가요?{" "}

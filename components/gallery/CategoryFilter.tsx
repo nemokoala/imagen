@@ -60,137 +60,179 @@ export function CategoryFilter({
   const iconButtonClass = "rounded-full h-9 w-9 flex-shrink-0";
   const categoryButtonClass = "rounded-full h-9 whitespace-nowrap px-4";
 
-  if (isCollapsed) {
-    return (
-      <div className="sticky top-2 z-20 mx-auto w-fit">
+  if (isCollapsed === null) return null; // avoid TS error if any
+
+  return (
+    <div className="sticky top-2 z-20 mx-auto w-fit flex flex-col items-center max-w-[calc(100%-2rem)] perspective-1000">
+      {/* 축소된 상태의 버튼 */}
+      <div
+        className={cn(
+          "transition-all duration-300 ease-spring absolute top-0 z-30",
+          isCollapsed
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-75 -translate-y-4 pointer-events-none",
+        )}
+      >
         <Button
           variant="outline"
           size="icon"
           onClick={() => setIsCollapsed(false)}
           className={cn(
             iconButtonClass,
-            "bg-white/80 dark:bg-gray-800/80 shadow-lg border border-gray-100 dark:border-gray-700 text-gray-500 hover:text-primary",
+            "!bg-background backdrop-blur-md shadow-lg border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:text-primary",
           )}
         >
           <ChevronDown size={18} />
         </Button>
       </div>
-    );
-  }
 
-  return (
-    <div
-      className={cn(
-        "sticky top-2 z-20 bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-fit max-w-[calc(100%-2rem)] mx-auto shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden",
-        onToggleRatio ? "rounded-2xl" : "rounded-full",
-      )}
-    >
-      {/* 1행: 카테고리 + 검색 */}
-      <div className="flex items-center gap-1.5 min-h-9 px-1">
-        {isSearchOpen ? (
-          <form
-            onSubmit={handleSearchSubmit}
-            className="w-full flex items-center gap-2 flex-1"
+      {/* 확장된 상태의 패널 */}
+      <div
+        className={cn(
+          "transition-all duration-300 ease-spring origin-top grid w-full",
+          isCollapsed
+            ? "grid-rows-[0fr] opacity-0 scale-95 pointer-events-none -translate-y-2"
+            : "grid-rows-[1fr] opacity-100 scale-100 translate-y-0",
+        )}
+      >
+        <div className="overflow-hidden">
+          <div
+            className={cn(
+              "bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-max max-w-full mx-auto shadow-lg border border-gray-200 dark:border-gray-800 font-medium text-gray-800 dark:text-gray-200",
+              onToggleRatio ? "rounded-2xl" : "rounded-full",
+            )}
           >
-            <Input
-              value={localSearch}
-              onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder="검색어 입력..."
-              className="h-9 rounded-full border-none bg-gray-100 dark:bg-gray-700 focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px]"
-              autoFocus
-            />
-            <Button
-              type="submit"
-              variant="outline"
-              size="icon"
-              className={cn(
-                iconButtonClass,
-                "text-primary border-primary/20 hover:bg-primary/10",
-              )}
-            >
-              <Search size={18} />
-            </Button>
-          </form>
-        ) : (
-          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide rounded-full min-w-0">
-            {search && (
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <Button
-                  onClick={clearSearch}
-                  variant="gradient"
-                  className={cn(categoryButtonClass, "gap-2 pr-2 shadow-md")}
+            {/* 1행: 카테고리 + 검색 */}
+            <div className="flex items-center gap-1.5 min-h-9 px-1">
+              {isSearchOpen ? (
+                <form
+                  onSubmit={handleSearchSubmit}
+                  className="w-full flex items-center gap-2 flex-1"
                 >
-                  <span className="max-w-[100px] truncate">{search}</span>
-                  <X size={16} className="opacity-90" />
+                  <Input
+                    value={localSearch}
+                    onChange={(e) => setLocalSearch(e.target.value)}
+                    placeholder="검색어 입력..."
+                    className="h-9 rounded-full border-none bg-gray-100/80 dark:bg-gray-900/80 focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px] text-gray-800 dark:text-gray-200"
+                    autoFocus
+                  />
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="icon"
+                    className={cn(
+                      iconButtonClass,
+                      "text-primary border-primary/20 hover:bg-primary/10",
+                    )}
+                  >
+                    <Search size={18} />
+                  </Button>
+                </form>
+              ) : (
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide rounded-full min-w-0">
+                  {search && (
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button
+                        onClick={clearSearch}
+                        variant="gradient"
+                        className={cn(
+                          categoryButtonClass,
+                          "gap-2 pr-2 shadow-md",
+                        )}
+                      >
+                        <span className="max-w-[100px] truncate">{search}</span>
+                        <X size={16} className="opacity-90" />
+                      </Button>
+                      <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-1 flex-shrink-0" />
+                    </div>
+                  )}
+                  <Button
+                    onClick={handleSelectAll}
+                    variant={
+                      selectedCategories.length === 0 ? "gradient" : "outline"
+                    }
+                    className={cn(
+                      categoryButtonClass,
+                      selectedCategories.length === 0
+                        ? ""
+                        : "bg-transparent border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900",
+                    )}
+                  >
+                    전체
+                  </Button>
+                  {categories.map((cat) => (
+                    <Button
+                      key={cat.id}
+                      onClick={() => handleToggleCategory(cat.slug)}
+                      variant={
+                        selectedCategories.includes(cat.slug)
+                          ? "gradient"
+                          : "outline"
+                      }
+                      className={cn(
+                        categoryButtonClass,
+                        selectedCategories.includes(cat.slug)
+                          ? ""
+                          : "bg-transparent border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900",
+                      )}
+                    >
+                      {cat.name}
+                    </Button>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex-shrink-0 flex items-center justify-center border-l border-gray-200 dark:border-gray-700 pl-1.5 ml-0.5">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={toggleSearch}
+                  className={cn(
+                    iconButtonClass,
+                    isSearchOpen
+                      ? "text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 border-gray-200 dark:border-gray-800"
+                      : "text-gray-500 hover:text-primary dark:text-gray-400 border-transparent shadow-none bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900",
+                  )}
+                >
+                  {isSearchOpen ? <X size={18} /> : <Search size={18} />}
                 </Button>
-                <div className="w-px h-8 bg-foreground/30 mx-1 flex-shrink-0" />
+              </div>
+            </div>
+
+            {/* 2행: 비율 필터 + 축소 버튼 */}
+            {onToggleRatio && (
+              <div className="flex justify-center items-center gap-1.5 px-1 pt-2 pb-0.5 mt-1 border-t border-gray-100 dark:border-gray-800/50">
+                {RATIO_OPTIONS.map((r) => (
+                  <Button
+                    key={r}
+                    onClick={() => onToggleRatio(r)}
+                    variant={selectedRatio === r ? "gradient" : "outline"}
+                    className={cn(
+                      categoryButtonClass,
+                      selectedRatio === r
+                        ? ""
+                        : "bg-transparent border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900",
+                    )}
+                  >
+                    {r}
+                  </Button>
+                ))}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setIsCollapsed(true)}
+                  className={cn(
+                    iconButtonClass,
+                    "ml-auto text-gray-500 hover:text-primary dark:text-gray-400 border-transparent shadow-none bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900",
+                  )}
+                >
+                  <ChevronUp size={18} />
+                </Button>
               </div>
             )}
-            <Button
-              onClick={handleSelectAll}
-              variant={selectedCategories.length === 0 ? "gradient" : "outline"}
-              className={categoryButtonClass}
-            >
-              전체
-            </Button>
-            {categories.map((cat) => (
-              <Button
-                key={cat.id}
-                onClick={() => handleToggleCategory(cat.slug)}
-                variant={
-                  selectedCategories.includes(cat.slug) ? "gradient" : "outline"
-                }
-                className={categoryButtonClass}
-              >
-                {cat.name}
-              </Button>
-            ))}
           </div>
-        )}
-
-        <div className="flex-shrink-0 flex items-center justify-center border-l border-foreground/30 pl-1.5 ml-0.5">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={toggleSearch}
-            className={cn(
-              iconButtonClass,
-              isSearchOpen
-                ? "text-gray-400 hover:text-red-500 hover:bg-red-50 border-gray-200"
-                : "text-gray-500 hover:text-primary border-transparent shadow-none",
-            )}
-          >
-            {isSearchOpen ? <X size={18} /> : <Search size={18} />}
-          </Button>
         </div>
       </div>
-
-      {/* 2행: 비율 필터 + 축소 버튼 */}
-      {onToggleRatio && (
-        <div className="flex justify-center items-center gap-1.5 px-1 pt-2 pb-0.5 border-t border-gray-100 dark:border-gray-700">
-          {RATIO_OPTIONS.map((r) => (
-            <Button
-              key={r}
-              onClick={() => onToggleRatio(r)}
-              variant={selectedRatio === r ? "gradient" : "outline"}
-              className={categoryButtonClass}
-            >
-              {r}
-            </Button>
-          ))}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setIsCollapsed(true)}
-            className={cn(
-              iconButtonClass,
-              "ml-auto text-gray-500 hover:text-primary border-transparent shadow-none",
-            )}
-          >
-            <ChevronUp size={18} />
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

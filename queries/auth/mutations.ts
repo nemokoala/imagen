@@ -1,5 +1,9 @@
 import { FetchUtil } from "@/lib/Fetch.util";
-import { LoginFormData, RegisterFormData } from "@/schemas/auth";
+import {
+  LoginFormData,
+  RegisterFormData,
+  RegisterPayload,
+} from "@/schemas/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ErrorResponse } from "@/types/common.interfaces";
 import {
@@ -32,9 +36,15 @@ export const useRegisterMutation = (
 ) => {
   return useMutation({
     mutationFn: async (data: RegisterFormData): Promise<RegisterResponse> => {
-      const response = await FetchUtil.post<RegisterFormData>(
+      const registerPayload: RegisterPayload = {
+        nickname: data.nickname,
+        email: data.email,
+        password: data.password,
+      };
+
+      const response = await FetchUtil.post<RegisterPayload>(
         "/api/auth/register",
-        data,
+        registerPayload,
       );
       return response as RegisterResponse;
     },

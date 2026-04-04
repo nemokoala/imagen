@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
+import { PasswordInput } from "@/components/auth/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -26,8 +28,11 @@ import {
 } from "@/components/ui/form";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Layout } from "@/components/layout/Layout";
-import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
-import { registerSchema, type RegisterFormData } from "@/schemas/auth";
+import {
+  registerSchema,
+  type RegisterFormData,
+  type RegisterPayload,
+} from "@/schemas/auth";
 import { FetchUtil } from "@/lib/Fetch.util";
 import type { RegisterResponse } from "@/types/auth.interfaces";
 
@@ -42,6 +47,7 @@ export default function RegisterPage() {
       nickname: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -50,9 +56,15 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      const registerPayload: RegisterPayload = {
+        nickname: data.nickname,
+        email: data.email,
+        password: data.password,
+      };
+
       const responseData = (await FetchUtil.post(
         "/api/auth/register",
-        data,
+        registerPayload,
       )) as RegisterResponse;
 
       toast.success("회원가입이 완료되었습니다", {
@@ -136,9 +148,26 @@ export default function RegisterPage() {
                   <FormItem>
                     <FormLabel>비밀번호</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordInput
                         placeholder="비밀번호"
+                        disabled={loading}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>비밀번호 확인</FormLabel>
+                    <FormControl>
+                      <PasswordInput
+                        placeholder="비밀번호를 다시 입력하세요"
                         disabled={loading}
                         {...field}
                       />

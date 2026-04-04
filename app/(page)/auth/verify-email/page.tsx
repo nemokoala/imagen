@@ -144,7 +144,7 @@ export default function VerifyEmailContent() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Alert variant={status === "error" ? "destructive" : "default"}>
+          <Alert variant={status === "error" ? "destructive" : "success"}>
             <AlertDescription>{message}</AlertDescription>
           </Alert>
 

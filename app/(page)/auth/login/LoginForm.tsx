@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
+import { PasswordInput } from "@/components/auth/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,7 +31,6 @@ import { loginSchema, type LoginFormData } from "@/schemas/auth";
 import { useUserStore } from "@/stores/userStore";
 import { Layout } from "@/components/layout/Layout";
 import { useLoginMutation } from "@/queries/auth/mutations";
-import { KakaoLoginButton } from "@/components/auth/KakaoLoginButton";
 import { FetchUtil } from "@/lib/Fetch.util";
 import type { ErrorResponse } from "@/types/common.interfaces";
 
@@ -166,8 +167,7 @@ export default function LoginForm() {
                   <FormItem>
                     <FormLabel>비밀번호</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
+                      <PasswordInput
                         placeholder="비밀번호"
                         disabled={isPending || isResending}
                         {...field}

@@ -78,15 +78,22 @@ export async function generateMetadata({
       ...prompt.split(" ").slice(0, 10), // 프롬프트 앞부분을 키워드로 추가
     ].filter(Boolean);
 
+    // 고유한 title/description 생성
+    const modelLabel = image.model || "AI";
+    const pageTitle = `${truncatedPrompt} | ${modelLabel} 이미지 by ${creator}`;
+    const pageDescription = prompt.length > 100
+      ? `${creator}님이 ${modelLabel} 모델로 생성한 AI 아트: "${prompt.substring(0, 150)}..."`
+      : `${creator}님이 ${modelLabel} 모델로 생성한 AI 아트: "${prompt}"`;
+
     return {
-      title: `${truncatedPrompt} - AI Image ${id} | ImageGen`,
-      description: `AI로 생성된 고해상도 이미지입니다. 프롬프트: "${prompt}". 생성자: ${creator}, 모델: ${image.model}. ImageGen에서 더 많은 AI 아트를 확인하세요.`,
+      title: pageTitle,
+      description: pageDescription,
       keywords: keywords,
       metadataBase: new URL(baseUrl),
       openGraph: {
-        title: `${truncatedPrompt} - AI Image ${id} | ImageGen`,
-        description: `AI로 생성된 이미지입니다. 생성자: ${creator}. 프롬프트: ${prompt}`,
-        type: "website",
+        title: pageTitle,
+        description: pageDescription,
+        type: "article",
         url: pageUrl,
         siteName: "ImageGen",
         locale: "ko_KR",
@@ -102,17 +109,12 @@ export async function generateMetadata({
       },
       twitter: {
         card: "summary_large_image",
-        title: `${truncatedPrompt} - AI Image ${id} | ImageGen`,
-        description: `AI로 생성된 이미지입니다. 생성자: ${creator}`,
+        title: pageTitle,
+        description: pageDescription,
         images: [absoluteImageUrl],
       },
       alternates: {
         canonical: pageUrl,
-      },
-      icons: {
-        icon: [
-          { url: absoluteImageUrl, sizes: "1024x1024", type: "image/png" },
-        ],
       },
       robots: {
         index: true,

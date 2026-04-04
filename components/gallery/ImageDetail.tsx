@@ -124,11 +124,17 @@ export function ImageDetail({
           뒤로가기
         </Button>
 
-        {/* 헤더 */}
+        {/* 헤더 - 페이지별 고유 h1 */}
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent flex items-center gap-2">
             <ImageIcon className="h-8 w-8 text-purple-600" />
-            <span>이미지 상세 정보</span>
+            <span>
+              {imageData.prompt
+                ? imageData.prompt.length > 60
+                  ? imageData.prompt.substring(0, 60) + "..."
+                  : imageData.prompt
+                : "AI 생성 이미지"}
+            </span>
           </h1>
         </div>
 

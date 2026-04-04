@@ -98,7 +98,7 @@ export function CategoryFilter({
         <div className="overflow-hidden">
           <div
             className={cn(
-              "bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-max max-w-full mx-auto shadow-lg border border-gray-200 dark:border-gray-800 font-medium text-gray-800 dark:text-gray-200",
+              "bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-max max-w-full mx-auto border border-gray-300 dark:border-gray-600 font-medium text-gray-800 dark:text-gray-200",
               onToggleRatio ? "rounded-2xl" : "rounded-full",
             )}
           >
@@ -143,7 +143,7 @@ export function CategoryFilter({
                         <span className="max-w-[100px] truncate">{search}</span>
                         <X size={16} className="opacity-90" />
                       </Button>
-                      <div className="w-px h-8 bg-gray-200 dark:bg-gray-700 mx-1 flex-shrink-0" />
+                      <div className="w-px h-8 bg-foreground/30 mx-1 flex-shrink-0" />
                     </div>
                   )}
                   <Button
@@ -151,12 +151,7 @@ export function CategoryFilter({
                     variant={
                       selectedCategories.length === 0 ? "gradient" : "outline"
                     }
-                    className={cn(
-                      categoryButtonClass,
-                      selectedCategories.length === 0
-                        ? ""
-                        : "bg-transparent border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900",
-                    )}
+                    className={categoryButtonClass}
                   >
                     전체
                   </Button>
@@ -169,12 +164,7 @@ export function CategoryFilter({
                           ? "gradient"
                           : "outline"
                       }
-                      className={cn(
-                        categoryButtonClass,
-                        selectedCategories.includes(cat.slug)
-                          ? ""
-                          : "bg-transparent border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900",
-                      )}
+                      className={categoryButtonClass}
                     >
                       {cat.name}
                     </Button>
@@ -182,7 +172,7 @@ export function CategoryFilter({
                 </div>
               )}
 
-              <div className="flex-shrink-0 flex items-center justify-center border-l border-gray-200 dark:border-gray-700 pl-1.5 ml-0.5">
+              <div className="flex-shrink-0 flex items-center justify-center border-l border-foreground/30 pl-1.5 ml-0.5">
                 <Button
                   variant="outline"
                   size="icon"
@@ -190,8 +180,8 @@ export function CategoryFilter({
                   className={cn(
                     iconButtonClass,
                     isSearchOpen
-                      ? "text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 border-gray-200 dark:border-gray-800"
-                      : "text-gray-500 hover:text-primary dark:text-gray-400 border-transparent shadow-none bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900",
+                      ? "text-gray-400 hover:text-red-500 hover:bg-red-50 border-gray-200"
+                      : "text-gray-500 hover:text-primary border-transparent shadow-none",
                   )}
                 >
                   {isSearchOpen ? <X size={18} /> : <Search size={18} />}
@@ -207,12 +197,7 @@ export function CategoryFilter({
                     key={r}
                     onClick={() => onToggleRatio(r)}
                     variant={selectedRatio === r ? "gradient" : "outline"}
-                    className={cn(
-                      categoryButtonClass,
-                      selectedRatio === r
-                        ? ""
-                        : "bg-transparent border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-900",
-                    )}
+                    className={categoryButtonClass}
                   >
                     {r}
                   </Button>
@@ -223,7 +208,7 @@ export function CategoryFilter({
                   onClick={() => setIsCollapsed(true)}
                   className={cn(
                     iconButtonClass,
-                    "ml-auto text-gray-500 hover:text-primary dark:text-gray-400 border-transparent shadow-none bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900",
+                    "ml-auto text-gray-500 hover:text-primary border-transparent shadow-none",
                   )}
                 >
                   <ChevronUp size={18} />

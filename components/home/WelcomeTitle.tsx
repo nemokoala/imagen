@@ -6,7 +6,6 @@ import { useUserStore } from "@/stores/userStore";
 import { X, Sparkles, Wand2 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 
 export function WelcomeTitle() {
   const { user, isLoading } = useUserStore();
@@ -58,12 +57,6 @@ export function WelcomeTitle() {
 
         <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
           ImageGen와 함께 AI 이미지를 생성해보세요.
-          <br className="hidden sm:block" />
-          당신의 아이디어가{" "}
-          <span className="font-semibold text-foreground">
-            현실이 되는 마법
-          </span>
-          을 보여드립니다.
         </p>
 
         <div className="flex gap-4 justify-center relative group/btn">

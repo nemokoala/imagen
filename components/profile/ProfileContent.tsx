@@ -16,6 +16,7 @@ import { useGetUserCommentsInfiniteQuery } from "@/queries/user/queries";
 import { ProfileHeader } from "./ProfileHeader";
 import { UserGeneratedImages } from "./UserGeneratedImages";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { DecorativeBackground } from "../ui/decorative-background";
 
 interface ProfileContentProps {
   targetUserId?: number | null;
@@ -111,7 +112,8 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
       ref={scrollContainerRef}
       className="h-[calc(100dvh-60px)] items-center"
     >
-      <div className="container flex flex-col items-center mx-auto px-4 pt-8 max-w-6xl">
+      <DecorativeBackground />
+      <div className="container flex flex-col items-center mx-auto px-4 pt-8 max-w-6xl z-10">
         {/* 프로필 헤더 */}
         <ProfileHeader
           userInfo={userInfo}

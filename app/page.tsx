@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Sparkles, Wand2, Images } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NeedLoginHandler } from "@/components/home/NeedLoginHandler";
+import { DecorativeBackground } from "@/components/ui/decorative-background";
 
 export const metadata: Metadata = {
   title: "ImageGen - AI 이미지 생성 플랫폼",
@@ -17,12 +18,8 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <main className="relative min-h-[calc(100dvh-60px)] flex items-center justify-center overflow-hidden px-6">
-      {/* Decorative background */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-[100px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
-      <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_60%,transparent_100%)] pointer-events-none" />
+    <main className="relative min-h-[calc(100dvh-60px)] flex items-center justify-center px-6">
+      <DecorativeBackground />
 
       <NeedLoginHandler />
 

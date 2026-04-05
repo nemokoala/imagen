@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -35,6 +35,7 @@ import {
 } from "@/schemas/auth";
 import { FetchUtil } from "@/lib/Fetch.util";
 import type { RegisterResponse } from "@/types/auth.interfaces";
+import { DecorativeBackground } from "@/components/ui/decorative-background";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -87,8 +88,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <Layout.Content className="flex items-center justify-center">
-      <Card className="w-[350px]">
+    <Layout.Content className="relative flex items-center justify-center py-10 min-h-fit">
+      <DecorativeBackground />
+      <Card className="relative w-[350px] z-10">
         <CardHeader>
           <CardTitle>회원가입</CardTitle>
           <CardDescription>

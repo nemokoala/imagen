@@ -143,7 +143,7 @@ export function ImageDetail({
             <div className="space-y-6">
               {/* 이미지 */}
               <div
-                className={`flex justify-center w-auto mx-auto ${getRatio(imageData.ratio)} md:max-h-[50dvh] relative`}
+                className={`flex justify-center w-auto mx-auto ${getRatio(imageData.ratio)} md:max-h-[70dvh] relative`}
               >
                 <Image
                   src={imageData.imageUrl}
@@ -311,7 +311,9 @@ export function ImageDetail({
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 min-h-[400px]">
                   {prevImages.map((prevImage) => (
-                    <ImageCard key={prevImage.id} image={prevImage} />
+                    <div className="min-h-[400px]" key={prevImage.id}>
+                      <ImageCard key={prevImage.id} image={prevImage} />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -326,7 +328,9 @@ export function ImageDetail({
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 min-h-[400px]">
                   {nextImages.map((nextImage) => (
-                    <ImageCard key={nextImage.id} image={nextImage} />
+                    <div className="min-h-[400px]" key={nextImage.id}>
+                      <ImageCard key={nextImage.id} image={nextImage} />
+                    </div>
                   ))}
                 </div>
               </div>

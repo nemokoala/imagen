@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -33,6 +33,7 @@ import { Layout } from "@/components/layout/Layout";
 import { useLoginMutation } from "@/queries/auth/mutations";
 import { FetchUtil } from "@/lib/Fetch.util";
 import type { ErrorResponse } from "@/types/common.interfaces";
+import { DecorativeBackground } from "@/components/ui/decorative-background";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -124,8 +125,10 @@ export default function LoginForm() {
   }, [socialLoginError]);
 
   return (
-    <Layout.Content className="flex items-center justify-center">
-      <Card className="w-[350px]">
+    <Layout.Content className="relative flex items-center justify-center">
+      <DecorativeBackground />
+
+      <Card className="relative w-[350px] z-10">
         <CardHeader>
           <CardTitle>로그인</CardTitle>
           <CardDescription>

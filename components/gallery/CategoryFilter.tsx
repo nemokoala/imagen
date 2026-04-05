@@ -191,7 +191,7 @@ export function CategoryFilter({
 
             {/* 2행: 비율 필터 + 축소 버튼 */}
             {onToggleRatio && (
-              <div className="flex justify-center items-center gap-1.5 px-1 pt-2 pb-0.5 mt-1 border-t border-gray-100 dark:border-gray-800/50">
+              <div className="flex justify-center items-center gap-1.5 px-1 pt-2 pb-0.5 mt-1">
                 {RATIO_OPTIONS.map((r) => (
                   <Button
                     key={r}

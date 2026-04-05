@@ -2,7 +2,6 @@ import { prisma } from "../../prisma";
 import { Prisma } from "@/lib/generated/prisma";
 import type { Image as ImageType } from "@/types/image.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
-import { discordService } from "../logs/logService";
 import { ApiError } from "@/lib/errors/AppError";
 import { unlink } from "fs/promises";
 import { existsSync } from "fs";
@@ -107,13 +106,8 @@ export const imageRetrievalService = {
       });
 
       if (!image) {
-        discordService.sendError(`이미지 조회 실패: ${id}`);
         return null;
       }
-
-      discordService.sendLog(
-        `이미지 조회 성공: ${image.id} - ${image.prompt} - ${image.imageUrl}`,
-      );
 
       return imageRetrievalService.convertToImageType(image);
     } catch (error: unknown) {
@@ -233,7 +227,9 @@ export const imageRetrievalService = {
         "likeCount",
         "commentCount",
       ];
-      let orderByQuery: Prisma.GeneratedImageOrderByWithRelationInput = { createdAt: "desc" };
+      let orderByQuery: Prisma.GeneratedImageOrderByWithRelationInput = {
+        createdAt: "desc",
+      };
 
       if (sortBy && order && ALLOWED_SORT_FIELDS.includes(sortBy)) {
         const sortOrder = order as Prisma.SortOrder;

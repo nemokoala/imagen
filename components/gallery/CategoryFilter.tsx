@@ -92,7 +92,7 @@ export function CategoryFilter({
           "transition-all duration-300 ease-spring origin-top grid w-full",
           isCollapsed
             ? "grid-rows-[0fr] opacity-0 scale-95 pointer-events-none -translate-y-2"
-            : "grid-rows-[1fr] opacity-100 scale-100 translate-y-0",
+            : "grid-rows-[1fr] opacity-100 scale-100 translate-y-0 pb-1",
         )}
       >
         <div className="overflow-hidden">
@@ -129,7 +129,7 @@ export function CategoryFilter({
                   </Button>
                 </form>
               ) : (
-                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide rounded-full min-w-0">
+                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide rounded-full min-w-0 py-0.5">
                   {search && (
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <Button
@@ -191,7 +191,7 @@ export function CategoryFilter({
 
             {/* 2행: 비율 필터 + 축소 버튼 */}
             {onToggleRatio && (
-              <div className="flex justify-center items-center gap-1.5 px-1 pt-2 pb-0.5 mt-1">
+              <div className="flex justify-center items-center gap-1.5 px-1 pt-2 py-0.5">
                 {RATIO_OPTIONS.map((r) => (
                   <Button
                     key={r}

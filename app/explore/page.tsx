@@ -4,7 +4,6 @@ import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery"
 import { Layout } from "@/components/layout/Layout";
 import { ImageCreatButton } from "@/components/home/ImageCreatButton";
 import { CoverflowShowcase } from "@/components/home/CoverflowShowcase";
-import { useGetTopLikedImagesQuery } from "@/queries/image/queries";
 import { LayoutGrid } from "lucide-react";
 import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
 import { useRef } from "react";
@@ -24,7 +23,7 @@ export default function ExplorePage() {
       onScrollChange={handleScrollChange}
     >
       <DecorativeBackground />
-      <CoverflowShowcase useQuery={useGetTopLikedImagesQuery} limit={10} />
+      <CoverflowShowcase />
       <div className="relative flex items-center gap-3 max-w-7xl mx-auto w-full my-2">
         <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
         <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border bg-background/50 backdrop-blur-sm shrink-0">

@@ -7,25 +7,16 @@ import type { Swiper as SwiperClass } from "swiper";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageCard } from "@/components/gallery/ImageCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UseQueryResult } from "@tanstack/react-query";
-import { Image } from "@/types/image.interfaces";
 
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import { Button } from "../ui/button";
+import { useGetTopLikedImagesQuery } from "@/queries/image/queries";
 
-interface CoverflowShowcaseProps {
-  useQuery: (limit: number) => UseQueryResult<Image[]>;
-  limit?: number;
-}
-
-export function CoverflowShowcase({
-  useQuery,
-  limit = 15,
-}: CoverflowShowcaseProps) {
-  const { data: images, isLoading } = useQuery(limit);
+export function CoverflowShowcase() {
+  const { data: images, isLoading } = useGetTopLikedImagesQuery(20);
   const swiperRef = useRef<SwiperClass | null>(null);
 
   const handleSlideClickCapture = useCallback(

@@ -4,7 +4,6 @@ import {
   useGetGalleryImagesInfiniteQuery,
   useGetUserImagesInfiniteQuery,
 } from "@/queries/image/queries";
-import { useGetCategories } from "@/queries/category/queries";
 import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 import { useWindowWidth } from "@/hooks/use-window-width";
 import { MasonryColumn, MasonryColumnItem } from "./MasonryColumn";
@@ -73,9 +72,6 @@ export function InfiniteImageGallery({
     },
     [ratio, setParam, removeParam],
   );
-
-  // 카테고리 목록 조회
-  const { data: categories = [] } = useGetCategories();
 
   // 선택된 카테고리를 콤마로 구분된 문자열로 변환 (비어있으면 undefined)
   const categoryParam =
@@ -327,7 +323,6 @@ export function InfiniteImageGallery({
     return (
       <div className="w-full relative" ref={containerRefCallback}>
         <CategoryFilter
-          categories={categories}
           selectedCategories={selectedCategories}
           handleSelectAll={handleSelectAll}
           handleToggleCategory={handleToggleCategory}
@@ -348,7 +343,6 @@ export function InfiniteImageGallery({
       ref={containerRefCallback}
     >
       <CategoryFilter
-        categories={categories}
         selectedCategories={selectedCategories}
         handleSelectAll={handleSelectAll}
         handleToggleCategory={handleToggleCategory}

@@ -1,15 +1,15 @@
-import { Category } from "@/types/image.interfaces";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useGetCategories } from "@/queries/category/queries";
+import { Skeleton } from "../ui/skeleton";
 
 const RATIO_OPTIONS = ["1:1", "16:9", "9:16"] as const;
 type RatioOption = (typeof RATIO_OPTIONS)[number];
 
 interface CategoryFilterProps {
-  categories: Category[];
   selectedCategories: string[];
   handleSelectAll: () => void;
   handleToggleCategory: (slug: string) => void;
@@ -20,7 +20,6 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({
-  categories,
   selectedCategories,
   handleSelectAll,
   handleToggleCategory,
@@ -32,6 +31,8 @@ export function CategoryFilter({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(search);
   const [isCollapsed, setIsCollapsed] = useState(false);
+
+  const { data: categories = [], isLoading } = useGetCategories();
 
   // 외부 search 값이 변경되면 로컬 값도 업데이트
   useEffect(() => {
@@ -63,7 +64,7 @@ export function CategoryFilter({
   if (isCollapsed === null) return null; // avoid TS error if any
 
   return (
-    <div className="sticky top-2 z-20 mx-auto w-fit flex flex-col items-center max-w-[calc(100%-2rem)] perspective-1000">
+    <div className="sticky top-2 z-20 mx-auto w-fit flex flex-col items-center max-w-[calc(100%-2rem)] perspective-1000 backdrop-blur-2xl">
       {/* 축소된 상태의 버튼 */}
       <div
         className={cn(
@@ -107,7 +108,7 @@ export function CategoryFilter({
               {isSearchOpen ? (
                 <form
                   onSubmit={handleSearchSubmit}
-                  className="w-full flex items-center gap-2 flex-1"
+                  className="w-full flex items-center gap-2 flex-1 py-0.5"
                 >
                   <Input
                     value={localSearch}
@@ -155,20 +156,28 @@ export function CategoryFilter({
                   >
                     전체
                   </Button>
-                  {categories.map((cat) => (
-                    <Button
-                      key={cat.id}
-                      onClick={() => handleToggleCategory(cat.slug)}
-                      variant={
-                        selectedCategories.includes(cat.slug)
-                          ? "gradient"
-                          : "outline"
-                      }
-                      className={categoryButtonClass}
-                    >
-                      {cat.name}
-                    </Button>
-                  ))}
+                  {isLoading ? (
+                    <>
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="h-9 w-20 rounded-full" />
+                      ))}
+                    </>
+                  ) : (
+                    categories.map((cat) => (
+                      <Button
+                        key={cat.id}
+                        onClick={() => handleToggleCategory(cat.slug)}
+                        variant={
+                          selectedCategories.includes(cat.slug)
+                            ? "gradient"
+                            : "outline"
+                        }
+                        className={categoryButtonClass}
+                      >
+                        {cat.name}
+                      </Button>
+                    ))
+                  )}
                 </div>
               )}
 

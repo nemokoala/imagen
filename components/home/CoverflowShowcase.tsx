@@ -50,13 +50,16 @@ export function CoverflowShowcase() {
 
   if (isLoading) {
     return (
-      <div className="w-full py-8 max-w-7xl mx-auto overflow-hidden">
-        <div className="flex items-center gap-2 mb-6 px-2 md:px-0">
-          <Skeleton className="h-8 w-8 rounded-full" />
-          <Skeleton className="h-8 w-48" />
+      <div className="w-full py-8 mx-[-8px] overflow-hidden min-h-[630px]">
+        <div className="flex justify-center items-center gap-4 pt-4 pb-20">
+          <Skeleton className="hidden h-auto w-[22%] max-w-[320px] aspect-[3/4] rounded-2xl opacity-40 sm:block" />
+          <Skeleton className="w-[80%] max-w-[400px] aspect-[3/4] rounded-2xl" />
+          <Skeleton className="hidden h-auto w-[22%] max-w-[320px] aspect-[3/4] rounded-2xl opacity-40 sm:block" />
         </div>
-        <div className="flex justify-center items-center gap-4">
-          <Skeleton className="w-[60%] md:w-[40%] aspect-[3/4] rounded-2xl" />
+        <div className="flex justify-center gap-2 -mt-4">
+          <Skeleton className="h-2 w-2 rounded-full" />
+          <Skeleton className="h-2 w-6 rounded-full" />
+          <Skeleton className="h-2 w-2 rounded-full" />
         </div>
       </div>
     );
@@ -67,7 +70,7 @@ export function CoverflowShowcase() {
   const enableLoop = images.length > 2;
 
   return (
-    <section className="w-vw py-8 mx-[-8px]">
+    <section className="w-full py-8 mx-[-8px]">
       <div className="relative w-full">
         {/* Swiper wrapper with specific styling for Coverflow */}
         <div className="w-full [&_.swiper-pagination-bullet-active]:bg-primary">
@@ -101,7 +104,7 @@ export function CoverflowShowcase() {
               dynamicBullets: true,
             }}
             modules={[EffectCoverflow, Pagination, Autoplay]}
-            className="w-full pb-12 pt-4"
+            className="w-full !pb-16 !pt-4"
           >
             {images.map((image, index) => (
               <SwiperSlide

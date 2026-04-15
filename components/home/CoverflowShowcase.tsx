@@ -7,6 +7,7 @@ import type { Swiper as SwiperClass } from "swiper";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageCard } from "@/components/gallery/ImageCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useWindowWidth } from "@/hooks/use-window-width";
 
 // Import Swiper styles
 import "swiper/css";
@@ -18,6 +19,7 @@ import { useGetTopLikedImagesQuery } from "@/queries/image/queries";
 export function CoverflowShowcase() {
   const { data: images, isLoading } = useGetTopLikedImagesQuery(20);
   const swiperRef = useRef<SwiperClass | null>(null);
+  const width = useWindowWidth();
 
   const handleSlideClickCapture = useCallback(
     (event: MouseEvent<HTMLElement>, index: number) => {
@@ -67,21 +69,24 @@ export function CoverflowShowcase() {
 
   if (!images || images.length === 0) return null;
 
-  const enableLoop = images.length > 2;
+  const isMobile = width < 768;
+  const showcaseImages = images.slice(0, isMobile ? 8 : 12);
+  const enableLoop = showcaseImages.length > 2;
 
   return (
-    <section className="w-full py-8 mx-[-8px]">
+    <section className="w-vw py-8 mx-[-8px]">
       <div className="relative w-full">
         {/* Swiper wrapper with specific styling for Coverflow */}
-        <div className="w-full [&_.swiper-pagination-bullet-active]:bg-primary">
+        <div className="w-full [--swiper-pagination-bullet-horizontal-gap:6px] [--swiper-pagination-bullet-size:10px] [&_.swiper-pagination-bullet-active]:bg-primary">
           <Swiper
             effect={"coverflow"}
             grabCursor={false}
             simulateTouch={false}
             centeredSlides={true}
             slidesPerView={"auto"}
+            roundLengths={true}
             loop={enableLoop}
-            initialSlide={Math.floor(images.length / 2)}
+            initialSlide={Math.floor(showcaseImages.length / 2)}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
             }}
@@ -93,7 +98,7 @@ export function CoverflowShowcase() {
               stretch: 0,
               depth: 120,
               modifier: 1,
-              slideShadows: true,
+              slideShadows: false,
             }}
             autoplay={{
               delay: 3500,
@@ -106,15 +111,15 @@ export function CoverflowShowcase() {
             modules={[EffectCoverflow, Pagination, Autoplay]}
             className="w-full !pb-16 !pt-4"
           >
-            {images.map((image, index) => (
+            {showcaseImages.map((image, index) => (
               <SwiperSlide
                 key={image.id}
                 onClickCapture={(event) =>
                   handleSlideClickCapture(event, index)
                 }
-                className="max-w-[80%] sm:max-w-[400px] transition-transform duration-300"
+                className="max-w-[80%] sm:max-w-[400px]"
               >
-                <div className="w-full aspect-[3/4] relative rounded-2xl overflow-hidden shadow-md bg-background ">
+                <div className="w-full aspect-[3/4] relative rounded-2xl overflow-hidden bg-background shadow-none md:shadow-md">
                   <ImageCard image={image} />
                 </div>
               </SwiperSlide>

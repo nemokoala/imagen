@@ -64,7 +64,7 @@ export function CategoryFilter({
   if (isCollapsed === null) return null; // avoid TS error if any
 
   return (
-    <div className="sticky top-2 z-20 mx-auto w-fit flex flex-col items-center max-w-[calc(100%-2rem)] perspective-1000 backdrop-blur-2xl">
+    <div className="sticky top-2 z-20 mx-auto w-fit flex flex-col items-center max-w-[calc(100%-2rem)] perspective-1000">
       {/* 축소된 상태의 버튼 */}
       <div
         className={cn(
@@ -90,16 +90,16 @@ export function CategoryFilter({
       {/* 확장된 상태의 패널 */}
       <div
         className={cn(
-          "transition-all duration-300 ease-spring origin-top grid w-full",
+          "transition-all duration-300 ease-spring origin-top w-full pb-1",
           isCollapsed
-            ? "grid-rows-[0fr] opacity-0 scale-95 pointer-events-none -translate-y-2"
-            : "grid-rows-[1fr] opacity-100 scale-100 translate-y-0 pb-1",
+            ? "opacity-0 scale-95 pointer-events-none -translate-y-2"
+            : "opacity-100 scale-100 translate-y-0",
         )}
       >
         <div className="overflow-hidden">
           <div
             className={cn(
-              "bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-max max-w-full mx-auto border border-gray-300 dark:border-gray-600 font-medium text-gray-800 dark:text-gray-200",
+              "backdrop-blur-md bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-max max-w-full mx-auto border border-gray-300 dark:border-gray-600 font-medium text-gray-800 dark:text-gray-200",
               onToggleRatio ? "rounded-2xl" : "rounded-full",
             )}
           >

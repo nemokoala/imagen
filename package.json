@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "local-dev": "env-cmd -f .env.local next dev --turbopack",
+    "local-dev": "env-cmd -f .env.local next dev --turbopack -H 0.0.0.0",
     "local-prd": "env-cmd -f .env.production next dev --turbopack",
     "dev": "env-cmd -f .env.development next dev --turbopack",
     "build": "next build",

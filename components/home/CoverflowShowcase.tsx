@@ -17,7 +17,7 @@ import { Button } from "../ui/button";
 import { useGetTopLikedImagesQuery } from "@/queries/image/queries";
 
 export function CoverflowShowcase() {
-  const { data: images, isLoading } = useGetTopLikedImagesQuery(20);
+  const { data: images, isLoading } = useGetTopLikedImagesQuery(16);
   const swiperRef = useRef<SwiperClass | null>(null);
   const width = useWindowWidth();
 
@@ -70,7 +70,7 @@ export function CoverflowShowcase() {
   if (!images || images.length === 0) return null;
 
   const isMobile = width < 768;
-  const showcaseImages = images.slice(0, isMobile ? 8 : 12);
+  const showcaseImages = images.slice(0, isMobile ? 8 : 16);
   const enableLoop = showcaseImages.length > 2;
 
   return (

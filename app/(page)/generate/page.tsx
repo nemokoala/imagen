@@ -180,8 +180,11 @@ export default function ImageGenPage() {
                 });
                 queryClient.removeQueries({ queryKey: ["userImagesInfinite"] });
                 setScrollPos(0);
-              } else if (data.status === "error") {
-                throw new Error(data.message);
+              } else if (data.status === "error" || data.status === "fail") {
+                toast.error(
+                  data.message || "이미지 생성 중 오류가 발생했습니다.",
+                );
+                return;
               }
             } catch (e) {
               console.error("JSON parse error", e);

@@ -135,7 +135,16 @@ export default function ImageGenPage() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let message = `HTTP error! status: ${response.status}`;
+
+        try {
+          const errorData = await response.json();
+          message = errorData.message || message;
+        } catch {
+          // Ignore non-JSON error responses.
+        }
+
+        throw new Error(message);
       }
 
       if (!response.body) {

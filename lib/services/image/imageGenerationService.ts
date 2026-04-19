@@ -21,6 +21,12 @@ const nanoBananaAI = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
 });
 
+const LOCAL_IMAGE_GENERATION_ERROR_MESSAGE =
+  "이미지 생성 중 오류가 발생했습니다. 나중에 다시 시도해주세요.";
+
+const COMFYUI_URL_REQUIRED_MESSAGE =
+  "ComfyUI 서버 URL이 설정되지 않았습니다. COMFYUI_URL 환경변수를 확인해주세요.";
+
 export interface GenerateImageRequest {
   prompt: string;
   model: string;
@@ -398,6 +404,13 @@ export const imageGenerationService = {
       }
 
       const COMFY_URL = process.env.COMFYUI_URL;
+      if (!COMFY_URL) {
+        yield {
+          success: false,
+          error: COMFYUI_URL_REQUIRED_MESSAGE,
+        };
+        return;
+      }
 
       yield "프롬프트를 번역하고 분석하는 중입니다...";
       let translatedPrompt = prompt;
@@ -614,13 +627,9 @@ export const imageGenerationService = {
       };
     } catch (error: unknown) {
       console.error("❌ 에러 발생:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "이미지 생성 중 오류가 발생했습니다.";
       yield {
         success: false,
-        error: errorMessage,
+        error: LOCAL_IMAGE_GENERATION_ERROR_MESSAGE,
       };
     }
   },

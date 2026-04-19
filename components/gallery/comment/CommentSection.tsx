@@ -11,6 +11,7 @@ import {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
 } from "@/queries/image/mutations";
+import { useModal } from "@/providers/ModalProvider";
 
 interface CommentSectionProps {
   imageId: number;
@@ -18,6 +19,7 @@ interface CommentSectionProps {
 
 export function CommentSection({ imageId }: CommentSectionProps) {
   const { isAuthenticated, user } = useUserStore();
+  const { changeModalContent } = useModal();
   const [commentContent, setCommentContent] = useState("");
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
 
@@ -104,10 +106,20 @@ export function CommentSection({ imageId }: CommentSectionProps) {
     }
   };
 
+  const showDeleteModal = (commentId: number) => {
+    changeModalContent(
+      {
+        title: "댓글 삭제 확인",
+        content: "댓글을 삭제하시겠습니까?",
+        cancelable: true,
+        confirmText: "삭제",
+      },
+      () => handleCommentDelete(commentId),
+    );
+  };
+
   // 댓글 삭제
   const handleCommentDelete = async (commentId: number) => {
-    if (!confirm("댓글을 삭제하시겠습니까?")) return;
-
     try {
       const response = await deleteCommentMutation.mutateAsync(commentId);
       if (response.success) {
@@ -151,7 +163,7 @@ export function CommentSection({ imageId }: CommentSectionProps) {
               setEditingCommentId={setEditingCommentId}
               onReplySubmit={handleReplySubmit}
               onEdit={handleCommentEdit}
-              onDelete={handleCommentDelete}
+              onDelete={showDeleteModal}
               loading={loading}
             />
           ))

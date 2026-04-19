@@ -1,5 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/lib/errors/AppError";
+import {
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_LLM_PROVIDER,
+  DEFAULT_OLLAMA_MODEL,
+  GEMINI_MODEL_OPTIONS,
+  LLM_PROVIDER_OPTIONS,
+  isValidGeminiModel,
+  isValidLlmProvider,
+} from "@/constants/llm.constants";
 
 export interface LlmSettings {
   provider: string;
@@ -8,12 +17,6 @@ export interface LlmSettings {
   translateEnabled: boolean;
   categoryEnabled: boolean;
 }
-
-const VALID_PROVIDERS = ["ollama", "gemini"] as const;
-
-const VALID_GEMINI_MODELS = [
-  "gemini-2.5-flash-lite",
-] as const;
 
 export const llmSettingsService = {
   async getLlmSettings(): Promise<LlmSettings> {
@@ -25,9 +28,9 @@ export const llmSettingsService = {
       settings = await prisma.llmSettings.create({
         data: {
           id: 1,
-          provider: "ollama",
-          geminiModel: "gemini-2.5-flash-lite",
-          ollamaModel: "gemma3:4b",
+          provider: DEFAULT_LLM_PROVIDER,
+          geminiModel: DEFAULT_GEMINI_MODEL,
+          ollamaModel: DEFAULT_OLLAMA_MODEL,
           translateEnabled: true,
           categoryEnabled: true,
         },
@@ -46,10 +49,10 @@ export const llmSettingsService = {
   async updateLlmSettings(data: Partial<LlmSettings>): Promise<LlmSettings> {
     if (
       data.provider !== undefined &&
-      !VALID_PROVIDERS.includes(data.provider as (typeof VALID_PROVIDERS)[number])
+      !isValidLlmProvider(data.provider)
     ) {
       throw new ApiError(
-        `유효하지 않은 프로바이더입니다. (${VALID_PROVIDERS.join(", ")})`,
+        `유효하지 않은 프로바이더입니다. (${LLM_PROVIDER_OPTIONS.map((option) => option.value).join(", ")})`,
         400,
         "INVALID_PROVIDER",
       );
@@ -57,41 +60,64 @@ export const llmSettingsService = {
 
     if (
       data.geminiModel !== undefined &&
-      !VALID_GEMINI_MODELS.includes(
-        data.geminiModel as (typeof VALID_GEMINI_MODELS)[number],
-      )
+      !isValidGeminiModel(data.geminiModel)
     ) {
       throw new ApiError(
-        `유효하지 않은 Gemini 모델입니다. (${VALID_GEMINI_MODELS.join(", ")})`,
+        `유효하지 않은 Gemini 모델입니다. (${GEMINI_MODEL_OPTIONS.map((option) => option.value).join(", ")})`,
         400,
         "INVALID_GEMINI_MODEL",
       );
     }
 
-    const existing = await prisma.llmSettings.findUnique({
-      where: { id: 1 },
-    });
+    const updateData: Partial<LlmSettings> = {};
 
-    if (!existing) {
-      const defaults = await this.getLlmSettings();
-      await prisma.llmSettings.create({
-        data: { id: 1, ...defaults, ...data },
-      });
-    } else {
-      await prisma.llmSettings.update({
-        where: { id: 1 },
-        data,
-      });
+    if (data.provider !== undefined) updateData.provider = data.provider;
+    if (data.geminiModel !== undefined) {
+      updateData.geminiModel = data.geminiModel;
     }
+    if (data.translateEnabled !== undefined) {
+      updateData.translateEnabled = data.translateEnabled;
+    }
+    if (data.categoryEnabled !== undefined) {
+      updateData.categoryEnabled = data.categoryEnabled;
+    }
+
+    if (data.ollamaModel !== undefined) {
+      const ollamaModel = data.ollamaModel.trim();
+
+      if (!ollamaModel || ollamaModel.length > 120 || /\s/.test(ollamaModel)) {
+        throw new ApiError(
+          "Ollama 모델명은 공백 없이 1~120자로 입력해야 합니다.",
+          400,
+          "INVALID_OLLAMA_MODEL",
+        );
+      }
+
+      updateData.ollamaModel = ollamaModel;
+    }
+
+    await prisma.llmSettings.upsert({
+      where: { id: 1 },
+      create: {
+        id: 1,
+        provider: DEFAULT_LLM_PROVIDER,
+        geminiModel: DEFAULT_GEMINI_MODEL,
+        ollamaModel: DEFAULT_OLLAMA_MODEL,
+        translateEnabled: true,
+        categoryEnabled: true,
+        ...updateData,
+      },
+      update: updateData,
+    });
 
     return this.getLlmSettings();
   },
 
   getValidProviders() {
-    return VALID_PROVIDERS;
+    return LLM_PROVIDER_OPTIONS.map((option) => option.value);
   },
 
   getValidGeminiModels() {
-    return VALID_GEMINI_MODELS;
+    return GEMINI_MODEL_OPTIONS.map((option) => option.value);
   },
 };

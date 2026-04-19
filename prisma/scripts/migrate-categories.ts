@@ -1,9 +1,11 @@
 import { PrismaClient } from "../../lib/generated/prisma";
+import { DEFAULT_OLLAMA_MODEL } from "../../constants/llm.constants";
 
 const prisma = new PrismaClient();
 
 // 환경변수에서 Ollama URL 가져오기
 const OLLAMA_API_URL = process.env.OLLAMA_API_URL || "http://localhost:11434";
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || DEFAULT_OLLAMA_MODEL;
 
 /**
  * DB에서 현재 사용 가능한 카테고리 slug 목록 조회
@@ -47,7 +49,7 @@ ${prompt}
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "gemma3:4b",
+        model: OLLAMA_MODEL,
         prompt: systemPrompt,
         stream: false,
       }),

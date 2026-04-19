@@ -1,10 +1,14 @@
 import { prisma } from "../prisma";
 import { ApiError } from "@/lib/errors/AppError";
+import { DEFAULT_OLLAMA_MODEL } from "@/constants/llm.constants";
 
 export interface TranslateAndClassifyResult {
   prompt: string;
   categories: string[];
 }
+
+const getOllamaApiUrl = () =>
+  process.env.OLLAMA_API_URL || "http://localhost:11434";
 
 export const ollamaService = {
   /**
@@ -17,7 +21,10 @@ export const ollamaService = {
     return categories.map((c) => c.slug);
   },
 
-  async translateText(userPrompt: string): Promise<string> {
+  async translateText(
+    userPrompt: string,
+    model = DEFAULT_OLLAMA_MODEL,
+  ): Promise<string> {
     const systemPrompt = `
   You are an assistant that converts user natural language descriptions into concise, SDXL-ready prompts.
   
@@ -42,12 +49,12 @@ export const ollamaService = {
 
     try {
       const response = await fetch(
-        `${process.env.OLLAMA_API_URL}/api/generate`,
+        `${getOllamaApiUrl()}/api/generate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: "gemma3:4b",
+            model,
             prompt: systemPrompt,
             stream: false,
           }),
@@ -97,6 +104,7 @@ export const ollamaService = {
    */
   async translateAndClassify(
     userPrompt: string,
+    model = DEFAULT_OLLAMA_MODEL,
   ): Promise<TranslateAndClassifyResult> {
     // DB에서 카테고리 목록 동적 조회
     const availableCategories = await this.getAvailableCategorySlugs();
@@ -137,12 +145,12 @@ ${userPrompt}
 
     try {
       const response = await fetch(
-        `${process.env.OLLAMA_API_URL}/api/generate`,
+        `${getOllamaApiUrl()}/api/generate`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: "gemma3:4b",
+            model,
             prompt: systemPrompt,
             stream: false,
           }),
@@ -206,7 +214,7 @@ ${userPrompt}
   async healthCheck(): Promise<boolean> {
     try {
       const response = await fetch(
-        `${process.env.OLLAMA_API_URL || "http://localhost:11434"}`,
+        getOllamaApiUrl(),
         {
           signal: AbortSignal.timeout(1000),
         },

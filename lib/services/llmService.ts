@@ -1,8 +1,13 @@
 import { prisma } from "../prisma";
 import { ollamaService, TranslateAndClassifyResult } from "./ollamaService";
 import { geminiLlmService } from "./geminiLlmService";
-
-type LlmProvider = "ollama" | "gemini";
+import {
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_LLM_PROVIDER,
+  DEFAULT_OLLAMA_MODEL,
+  LlmProvider,
+  isValidLlmProvider,
+} from "@/constants/llm.constants";
 
 interface LlmConfig {
   provider: LlmProvider;
@@ -18,9 +23,12 @@ async function getConfig(): Promise<LlmConfig> {
   });
 
   return {
-    provider: (settings?.provider as LlmProvider) || "ollama",
-    geminiModel: settings?.geminiModel || "gemini-2.5-flash-lite",
-    ollamaModel: settings?.ollamaModel || "gemma3:4b",
+    provider:
+      settings?.provider && isValidLlmProvider(settings.provider)
+        ? settings.provider
+        : DEFAULT_LLM_PROVIDER,
+    geminiModel: settings?.geminiModel || DEFAULT_GEMINI_MODEL,
+    ollamaModel: settings?.ollamaModel || DEFAULT_OLLAMA_MODEL,
     translateEnabled: settings?.translateEnabled ?? true,
     categoryEnabled: settings?.categoryEnabled ?? true,
   };
@@ -36,7 +44,7 @@ export const llmService = {
       return geminiLlmService.translateText(userPrompt, config.geminiModel);
     }
 
-    return ollamaService.translateText(userPrompt);
+    return ollamaService.translateText(userPrompt, config.ollamaModel);
   },
 
   async translateAndClassify(
@@ -50,7 +58,7 @@ export const llmService = {
 
       const translated = config.provider === "gemini"
         ? await geminiLlmService.translateText(userPrompt, config.geminiModel)
-        : await ollamaService.translateText(userPrompt);
+        : await ollamaService.translateText(userPrompt, config.ollamaModel);
       return { prompt: translated, categories: [] };
     }
 
@@ -61,7 +69,7 @@ export const llmService = {
       );
     }
 
-    return ollamaService.translateAndClassify(userPrompt);
+    return ollamaService.translateAndClassify(userPrompt, config.ollamaModel);
   },
 
   async healthCheck(): Promise<boolean> {

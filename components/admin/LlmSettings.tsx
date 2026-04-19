@@ -15,21 +15,18 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { LlmSettings } from "@/lib/services/admin/llmSettingsService";
-
-const PROVIDER_OPTIONS = [
-  { value: "ollama", label: "Ollama (로컬)", description: "로컬 서버 (무료)" },
-  { value: "gemini", label: "Gemini Flash Lite", description: "Google API (유료)" },
-] as const;
-
-const GEMINI_MODEL_OPTIONS = [
-  {
-    value: "gemini-2.5-flash-lite",
-    label: "Gemini 2.5 Flash Lite",
-    cost: "$0.10 / 1M input",
-  },
-] as const;
+import type { LlmSettings } from "@/lib/services/admin/llmSettingsService";
+import {
+  DEFAULT_GEMINI_MODEL,
+  DEFAULT_LLM_PROVIDER,
+  DEFAULT_OLLAMA_MODEL,
+  GEMINI_MODEL_OPTIONS,
+  LLM_PROVIDER_OPTIONS,
+  OLLAMA_MODEL_OPTIONS,
+  getOllamaModelLabel,
+} from "@/constants/llm.constants";
 
 export function LlmSettingsComponent() {
   const { data, isLoading, error } = useGetLlmSettingsQuery();
@@ -38,13 +35,21 @@ export function LlmSettingsComponent() {
   const [editingValues, setEditingValues] = useState<Partial<LlmSettings>>({});
   const [isEditing, setIsEditing] = useState(false);
 
-  const currentProvider = editingValues.provider ?? data?.provider ?? "ollama";
+  const currentProvider =
+    editingValues.provider ?? data?.provider ?? DEFAULT_LLM_PROVIDER;
   const currentGeminiModel =
-    editingValues.geminiModel ?? data?.geminiModel ?? "gemini-2.5-flash-lite";
+    editingValues.geminiModel ?? data?.geminiModel ?? DEFAULT_GEMINI_MODEL;
+  const currentOllamaModel =
+    editingValues.ollamaModel ?? data?.ollamaModel ?? DEFAULT_OLLAMA_MODEL;
   const currentTranslateEnabled =
     editingValues.translateEnabled ?? data?.translateEnabled ?? true;
   const currentCategoryEnabled =
     editingValues.categoryEnabled ?? data?.categoryEnabled ?? true;
+  const selectedOllamaPreset = OLLAMA_MODEL_OPTIONS.some(
+    (option) => option.value === currentOllamaModel,
+  )
+    ? currentOllamaModel
+    : "custom";
 
   const handleEdit = () => {
     if (data) {
@@ -150,7 +155,7 @@ export function LlmSettingsComponent() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {PROVIDER_OPTIONS.map((option) => (
+                {LLM_PROVIDER_OPTIONS.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
@@ -160,7 +165,7 @@ export function LlmSettingsComponent() {
           ) : (
             <div className="flex items-center gap-2">
               <span className="text-sm">
-                {PROVIDER_OPTIONS.find((o) => o.value === data?.provider)
+                {LLM_PROVIDER_OPTIONS.find((o) => o.value === data?.provider)
                   ?.label ?? data?.provider}
               </span>
               <Badge variant={data?.provider === "ollama" ? "secondary" : "default"}>
@@ -169,7 +174,7 @@ export function LlmSettingsComponent() {
             </div>
           )}
           <p className="text-xs text-muted-foreground">
-            {PROVIDER_OPTIONS.find((o) => o.value === currentProvider)?.description}
+            {LLM_PROVIDER_OPTIONS.find((o) => o.value === currentProvider)?.description}
           </p>
         </div>
 
@@ -219,12 +224,57 @@ export function LlmSettingsComponent() {
         {currentProvider === "ollama" && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Ollama 모델</label>
-            <div className="flex items-center gap-2">
-              <span className="text-sm">{data?.ollamaModel ?? "gemma3:4b"}</span>
-              <Badge variant="secondary">로컬</Badge>
-            </div>
+            {isEditing ? (
+              <div className="space-y-2">
+                <Select
+                  value={selectedOllamaPreset}
+                  onValueChange={(value) => {
+                    if (value === "custom") return;
+                    setEditingValues((prev) => ({
+                      ...prev,
+                      ollamaModel: value,
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {OLLAMA_MODEL_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}{" "}
+                        <span className="text-muted-foreground">
+                          ({option.value})
+                        </span>
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="custom">직접 입력</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  value={currentOllamaModel}
+                  onChange={(event) =>
+                    setEditingValues((prev) => ({
+                      ...prev,
+                      ollamaModel: event.target.value,
+                    }))
+                  }
+                  placeholder="예: gemma4:e2b, gemma4:e4b"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-sm">
+                  {getOllamaModelLabel(data?.ollamaModel ?? DEFAULT_OLLAMA_MODEL)}
+                </span>
+                <Badge variant="secondary">
+                  {data?.ollamaModel ?? DEFAULT_OLLAMA_MODEL}
+                </Badge>
+              </div>
+            )}
             <p className="text-xs text-muted-foreground">
-              Ollama 서버에서 실행 중인 모델이 사용됩니다.
+              Ollama에 설치된 모델 태그를 입력하세요. 저장 후 번역과 카테고리
+              추천에 바로 적용됩니다.
             </p>
           </div>
         )}

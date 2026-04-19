@@ -29,7 +29,7 @@ interface LocalImageQueueJob {
 }
 
 const DEFAULT_MAX_ACCEPTED = 10;
-const DEFAULT_CONCURRENCY = 2;
+const DEFAULT_CONCURRENCY = 1;
 const WAITING_MESSAGE_INTERVAL_MS = 2000;
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

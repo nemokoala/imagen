@@ -12,6 +12,7 @@ import { ApiError } from "@/lib/errors/AppError";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "@/lib/services/logs/logService";
+import { localImageQueue } from "@/lib/services/image/localImageQueue";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -126,9 +127,15 @@ export async function POST(req: NextRequest) {
         categorySlugs: categories,
       };
 
-      const generator = isZImage
-        ? imageService.generateImageByZImageStream(request)
-        : imageService.generateImageByStableDiffusionStream(request);
+      const generator = localImageQueue.enqueue({
+        userId,
+        model,
+        signal: req.signal,
+        generator: () =>
+          isZImage
+            ? imageService.generateImageByZImageStream(request)
+            : imageService.generateImageByStableDiffusionStream(request),
+      });
 
       return streamResponse(generator);
     }

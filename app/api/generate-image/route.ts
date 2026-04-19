@@ -13,6 +13,7 @@ import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "@/lib/services/logs/logService";
 import { localImageQueue } from "@/lib/services/image/localImageQueue";
+import { creditSettingsService } from "@/lib/services/admin/creditSettingsService";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -97,6 +98,8 @@ export async function POST(req: NextRequest) {
     if (!prompt) {
       throw new ApiError("프롬프트가 필요합니다.", 400, "PROMPT_REQUIRED");
     }
+
+    await creditSettingsService.assertModelEnabled(model);
 
     // 🆕 Stable Diffusion과 Z-Image 제외하고 전체 요청 횟수 체크
     const isZImage = model === Model.Z_IMAGE;

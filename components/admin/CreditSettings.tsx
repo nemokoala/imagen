@@ -1,30 +1,70 @@
 "use client";
 
-import { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo, useRef, useCallback, useEffect } from "react";
 import {
   useGetCreditSettingsQuery,
   useUpdateCreditSettingsMutation,
 } from "@/queries/admin/creditSettings";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { CreditSettings } from "@/lib/services/admin/creditSettingsService";
+import type { CreditSettings } from "@/lib/services/admin/creditSettingsService";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/data-table";
 import { CreditSettingCell } from "@/components/admin/CreditSettingCell";
-
-const MODEL_NAMES: Record<keyof CreditSettings, string> = {
-  dallE3: "DALL-E 3",
-  stableDiffusionXl: "Stable Diffusion XL",
-  googleImagen: "Google Imagen",
-  nanoBanana: "Nano Banana",
-  zImage: "Z-Image",
-};
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
+import {
+  CREDIT_MODEL_SETTING_OPTIONS,
+  CreditModelEnabledKey,
+  CreditModelKey,
+} from "@/constants/credit.constants";
 
 type SettingRow = {
-  key: keyof CreditSettings;
+  creditKey: CreditModelKey;
+  enabledKey: CreditModelEnabledKey;
   name: string;
   cost: number;
+  enabled: boolean;
 };
+
+function ModelEnabledCell({
+  initialValue,
+  isEditing,
+  onChange,
+}: {
+  initialValue: boolean;
+  isEditing: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  const [checked, setChecked] = useState(initialValue);
+
+  useEffect(() => {
+    setChecked(initialValue);
+  }, [initialValue, isEditing]);
+
+  if (!isEditing) {
+    return (
+      <Badge variant={initialValue ? "default" : "destructive"}>
+        {initialValue ? "사용" : "중지"}
+      </Badge>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <Switch
+        checked={checked}
+        onCheckedChange={(value) => {
+          setChecked(value);
+          onChange(value);
+        }}
+      />
+      <span className="text-sm text-muted-foreground">
+        {checked ? "사용" : "중지"}
+      </span>
+    </div>
+  );
+}
 
 export function CreditSettingsComponent() {
   const { data, isLoading, error } = useGetCreditSettingsQuery();
@@ -45,9 +85,19 @@ export function CreditSettingsComponent() {
     setIsEditing(false);
   };
 
-  const handleChange = useCallback((key: keyof CreditSettings, value: number) => {
-    editingValuesRef.current[key] = value;
-  }, []);
+  const handleCreditChange = useCallback(
+    (key: CreditModelKey, value: number) => {
+      editingValuesRef.current[key] = value;
+    },
+    [],
+  );
+
+  const handleEnabledChange = useCallback(
+    (key: CreditModelEnabledKey, value: boolean) => {
+      editingValuesRef.current[key] = value;
+    },
+    [],
+  );
 
   const handleSave = async () => {
     try {
@@ -62,13 +112,13 @@ export function CreditSettingsComponent() {
   };
 
   const tableData = useMemo<SettingRow[]>(() => {
-    return (Object.keys(MODEL_NAMES) as Array<keyof CreditSettings>).map(
-      (key) => ({
-        key,
-        name: MODEL_NAMES[key],
-        cost: data?.[key] ?? 0,
-      }),
-    );
+    return CREDIT_MODEL_SETTING_OPTIONS.map((option) => ({
+      creditKey: option.creditKey,
+      enabledKey: option.enabledKey,
+      name: option.label,
+      cost: data?.[option.creditKey] ?? option.defaultCost,
+      enabled: data?.[option.enabledKey] ?? true,
+    }));
   }, [data]);
 
   const columns = useMemo<ColumnDef<SettingRow>[]>(
@@ -76,25 +126,41 @@ export function CreditSettingsComponent() {
       {
         accessorKey: "name",
         header: "모델",
-        size: 200,
+        size: 220,
         cell: ({ row }) => (
           <span className="font-medium">{row.original.name}</span>
         ),
       },
       {
+        accessorKey: "enabled",
+        header: "사용 여부",
+        size: 160,
+        cell: ({ row }) => (
+          <ModelEnabledCell
+            initialValue={row.original.enabled}
+            isEditing={isEditing}
+            onChange={(value) =>
+              handleEnabledChange(row.original.enabledKey, value)
+            }
+          />
+        ),
+      },
+      {
         accessorKey: "cost",
         header: "크레딧 비용",
-        size: 300,
+        size: 260,
         cell: ({ row }) => (
           <CreditSettingCell
             initialValue={row.original.cost}
             isEditing={isEditing}
-            onChange={(value) => handleChange(row.original.key, value)}
+            onChange={(value) =>
+              handleCreditChange(row.original.creditKey, value)
+            }
           />
         ),
       },
     ],
-    [isEditing, handleChange],
+    [isEditing, handleCreditChange, handleEnabledChange],
   );
 
   if (isLoading) {

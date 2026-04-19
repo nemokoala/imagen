@@ -1,6 +1,6 @@
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { CreditSettings } from "@/lib/services/admin/creditSettingsService";
+import type { CreditSettings } from "@/lib/services/admin/creditSettingsService";
 
 export const useGetCreditSettingsQuery = () => {
   return useQuery<CreditSettings>({

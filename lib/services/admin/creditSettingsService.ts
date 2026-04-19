@@ -1,13 +1,28 @@
-import { prisma } from "@/lib/prisma";
 import { ApiError } from "@/lib/errors/AppError";
+import { prisma } from "@/lib/prisma";
+import { Model } from "@/types/model.interfaces";
+import {
+  CREDIT_MODEL_ENABLED_KEYS,
+  CREDIT_MODEL_KEYS,
+  CreditSettingsShape,
+  DEFAULT_CREDIT_SETTINGS,
+  MODEL_CREDIT_SETTINGS,
+} from "@/constants/credit.constants";
 
-export interface CreditSettings {
-  dallE3: number;
-  stableDiffusionXl: number;
-  googleImagen: number;
-  nanoBanana: number;
-  zImage: number;
-}
+export type CreditSettings = CreditSettingsShape;
+
+const toCreditSettings = (settings: CreditSettings): CreditSettings => ({
+  dallE3: settings.dallE3,
+  stableDiffusionXl: settings.stableDiffusionXl,
+  googleImagen: settings.googleImagen,
+  nanoBanana: settings.nanoBanana,
+  zImage: settings.zImage,
+  dallE3Enabled: settings.dallE3Enabled,
+  stableDiffusionXlEnabled: settings.stableDiffusionXlEnabled,
+  googleImagenEnabled: settings.googleImagenEnabled,
+  nanoBananaEnabled: settings.nanoBananaEnabled,
+  zImageEnabled: settings.zImageEnabled,
+});
 
 export const creditSettingsService = {
   async getCreditSettings(): Promise<CreditSettings> {
@@ -20,49 +35,51 @@ export const creditSettingsService = {
       settings = await prisma.creditSettings.create({
         data: {
           id: 1,
-          dallE3: 20,
-          stableDiffusionXl: 5,
-          googleImagen: 20,
-          nanoBanana: 20,
-          zImage: 10,
+          ...DEFAULT_CREDIT_SETTINGS,
         },
       });
     }
 
-    return {
-      dallE3: settings.dallE3,
-      stableDiffusionXl: settings.stableDiffusionXl,
-      googleImagen: settings.googleImagen,
-      nanoBanana: settings.nanoBanana,
-      zImage: settings.zImage,
-    };
+    return toCreditSettings(settings);
   },
 
   async updateCreditSettings(
-    data: Partial<CreditSettings>
+    data: Partial<CreditSettings>,
   ): Promise<CreditSettings> {
-    // 유효성 검사
-    const fields = [
-      "dallE3",
-      "stableDiffusionXl",
-      "googleImagen",
-      "nanoBanana",
-      "zImage",
-    ] as const;
+    const updateData: Partial<CreditSettings> = {};
 
-    for (const field of fields) {
+    for (const field of CREDIT_MODEL_KEYS) {
       if (data[field] !== undefined) {
-        if (typeof data[field] !== "number" || data[field] < 0) {
+        if (
+          typeof data[field] !== "number" ||
+          !Number.isFinite(data[field]) ||
+          data[field] < 0
+        ) {
           throw new ApiError(
             `${field}는 0 이상의 숫자여야 합니다.`,
             400,
-            "INVALID_CREDIT_VALUE"
+            "INVALID_CREDIT_VALUE",
           );
         }
+
+        updateData[field] = data[field];
       }
     }
 
-    // 설정이 없으면 생성
+    for (const field of CREDIT_MODEL_ENABLED_KEYS) {
+      if (data[field] !== undefined) {
+        if (typeof data[field] !== "boolean") {
+          throw new ApiError(
+            `${field}는 boolean 값이어야 합니다.`,
+            400,
+            "INVALID_ENABLED_VALUE",
+          );
+        }
+
+        updateData[field] = data[field];
+      }
+    }
+
     const existing = await prisma.creditSettings.findUnique({
       where: { id: 1 },
     });
@@ -73,17 +90,34 @@ export const creditSettingsService = {
         data: {
           id: 1,
           ...defaultSettings,
-          ...data,
+          ...updateData,
         },
       });
     } else {
       await prisma.creditSettings.update({
         where: { id: 1 },
-        data,
+        data: updateData,
       });
     }
 
     return this.getCreditSettings();
   },
-};
 
+  async assertModelEnabled(model: Model | string): Promise<void> {
+    const modelSetting = MODEL_CREDIT_SETTINGS[model as Model];
+
+    if (!modelSetting) {
+      throw new ApiError("지원하지 않는 모델입니다.", 400, "INVALID_MODEL");
+    }
+
+    const settings = await this.getCreditSettings();
+
+    if (!settings[modelSetting.enabledKey]) {
+      throw new ApiError(
+        "현재 사용할 수 없는 모델입니다.",
+        403,
+        "MODEL_DISABLED",
+      );
+    }
+  },
+};

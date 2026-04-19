@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 
 export function CreditSettingCell({
@@ -13,6 +13,10 @@ export function CreditSettingCell({
   onChange: (value: number) => void;
 }) {
   const [inputValue, setInputValue] = useState(initialValue.toString());
+
+  useEffect(() => {
+    setInputValue(initialValue.toString());
+  }, [initialValue, isEditing]);
 
   if (!isEditing) {
     return <span>{initialValue} 크레딧</span>;

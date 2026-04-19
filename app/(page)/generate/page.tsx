@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import { useHealthCheckQuery } from "@/queries/image/queries";
 import { ModelSelect } from "@/components/image-gen/ModelSelect";
 import { CreditDisplay } from "@/components/image-gen/CreditDisplay";
 import { useGetUserCredit } from "@/queries/auth/queries";
+import { useGetCreditSettingsQuery } from "@/queries/admin/creditSettings";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   RecommendPrompt,
@@ -22,6 +23,7 @@ import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { MODEL_RATIO_CONFIG } from "@/constants/model.constants";
+import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
 import { cn, downloadImage, getRatio } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
@@ -54,16 +56,42 @@ export default function ImageGenPage() {
     useHealthCheckQuery({ target: "zimage" });
 
   const { data: credit, isLoading: isCreditLoading } = useGetUserCredit();
+  const {
+    data: creditSettings,
+    isLoading: isCreditSettingsLoading,
+    error: creditSettingsError,
+  } = useGetCreditSettingsQuery();
+
+  const isCreditModelEnabled = useCallback((modelValue: Model) => {
+    const option = MODEL_CREDIT_SETTINGS[modelValue];
+    return option && creditSettings ? creditSettings[option.enabledKey] : false;
+  }, [creditSettings]);
 
   // healthCheck에 따라 기본 모델 계산
   const defaultModel = useMemo(
-    () =>
-      stableHealthCheck?.healthy
-        ? Model.STABLE_DIFFUSION_XL
-        : zimageHealthCheck?.healthy
-          ? Model.Z_IMAGE
-          : Model.DALL_E_3,
-    [stableHealthCheck?.healthy, zimageHealthCheck?.healthy],
+    () => {
+      if (
+        stableHealthCheck?.healthy &&
+        isCreditModelEnabled(Model.STABLE_DIFFUSION_XL)
+      ) {
+        return Model.STABLE_DIFFUSION_XL;
+      }
+
+      if (zimageHealthCheck?.healthy && isCreditModelEnabled(Model.Z_IMAGE)) {
+        return Model.Z_IMAGE;
+      }
+
+      return (
+        [Model.DALL_E_3, Model.GOOGLE_IMAGEN, Model.NANO_BANANA].find((item) =>
+          isCreditModelEnabled(item),
+        ) ?? Model.DALL_E_3
+      );
+    },
+    [
+      stableHealthCheck?.healthy,
+      zimageHealthCheck?.healthy,
+      isCreditModelEnabled,
+    ],
   );
 
   // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
@@ -71,6 +99,15 @@ export default function ImageGenPage() {
 
   // 실제 사용할 모델 (수동 선택이 있으면 그것을, 없으면 기본 모델 사용)
   const model = manualModel ?? defaultModel;
+  const isSelectedModelEnabled = isCreditModelEnabled(model);
+  const isSelectedModelHealthy =
+    model === Model.STABLE_DIFFUSION_XL
+      ? stableHealthCheck?.healthy === true
+      : model === Model.Z_IMAGE
+        ? zimageHealthCheck?.healthy === true
+        : true;
+  const isSelectedModelAvailable =
+    isSelectedModelEnabled && isSelectedModelHealthy;
 
   const handleModelChange = (value: Model) => {
     setManualModel(value);
@@ -222,6 +259,27 @@ export default function ImageGenPage() {
       return;
     }
 
+    if (isCreditSettingsLoading || creditSettingsError || !creditSettings) {
+      toast.error("모델 설정을 불러올 수 없습니다", {
+        description: "크레딧 설정을 확인한 뒤 다시 시도해주세요.",
+      });
+      return;
+    }
+
+    if (!isSelectedModelAvailable) {
+      toast.error(
+        isSelectedModelEnabled
+          ? "현재 모델을 사용할 수 없습니다"
+          : "현재 사용할 수 없는 모델입니다",
+        {
+          description: isSelectedModelEnabled
+            ? "모델 서버 상태를 확인하거나 다른 모델을 선택해주세요."
+            : "관리자 설정에서 비활성화된 모델입니다.",
+        },
+      );
+      return;
+    }
+
     // 크레딧 체크
     if (credit && credit < 1) {
       toast.error("크레딧이 부족합니다", {
@@ -265,7 +323,14 @@ export default function ImageGenPage() {
 
   const isPending = isMutationPending || isStreaming;
   const isGenerateDisabled =
-    isPending || isSuggestingCategories || !prompt.trim() || (credit ?? 0) < 1;
+    isPending ||
+    isSuggestingCategories ||
+    !prompt.trim() ||
+    (credit ?? 0) < 1 ||
+    isCreditSettingsLoading ||
+    Boolean(creditSettingsError) ||
+    !creditSettings ||
+    !isSelectedModelAvailable;
 
   return (
     <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-800 dark:via-gray-900 dark:to-purple-950/30 p-4 gap-4 md:gap-8 md:p-8">

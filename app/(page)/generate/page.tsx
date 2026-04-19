@@ -201,6 +201,8 @@ export default function ImageGenPage() {
   };
 
   const handleGenerate = async () => {
+    if (isSuggestingCategories) return;
+
     if (!prompt.trim()) {
       toast.error("프롬프트를 입력해주세요", {
         description: "이미지 생성을 위한 설명을 입력해주세요.",
@@ -250,6 +252,8 @@ export default function ImageGenPage() {
   }, [prompt, selectedCategories]);
 
   const isPending = isMutationPending || isStreaming;
+  const isGenerateDisabled =
+    isPending || isSuggestingCategories || !prompt.trim() || (credit ?? 0) < 1;
 
   return (
     <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-800 dark:via-gray-900 dark:to-purple-950/30 p-4 gap-4 md:gap-8 md:p-8">
@@ -335,7 +339,7 @@ export default function ImageGenPage() {
               <div className="flex gap-3">
                 <Button
                   onClick={handleGenerate}
-                  disabled={isPending || !prompt.trim() || (credit ?? 0) < 1}
+                  disabled={isGenerateDisabled}
                   className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-3 rounded-lg transition-all duration-200 transform disabled:transform-none disabled:opacity-50"
                 >
                   {isPending ? (

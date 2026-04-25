@@ -62,37 +62,39 @@ export default function ImageGenPage() {
     error: creditSettingsError,
   } = useGetCreditSettingsQuery();
 
-  const isCreditModelEnabled = useCallback((modelValue: Model) => {
-    const option = MODEL_CREDIT_SETTINGS[modelValue];
-    return option && creditSettings ? creditSettings[option.enabledKey] : false;
-  }, [creditSettings]);
+  const isCreditModelEnabled = useCallback(
+    (modelValue: Model) => {
+      const option = MODEL_CREDIT_SETTINGS[modelValue];
+      return option && creditSettings
+        ? creditSettings[option.enabledKey]
+        : false;
+    },
+    [creditSettings],
+  );
 
   // healthCheck에 따라 기본 모델 계산
-  const defaultModel = useMemo(
-    () => {
-      if (
-        stableHealthCheck?.healthy &&
-        isCreditModelEnabled(Model.STABLE_DIFFUSION_XL)
-      ) {
-        return Model.STABLE_DIFFUSION_XL;
-      }
+  const defaultModel = useMemo(() => {
+    if (
+      stableHealthCheck?.healthy &&
+      isCreditModelEnabled(Model.STABLE_DIFFUSION_XL)
+    ) {
+      return Model.STABLE_DIFFUSION_XL;
+    }
 
-      if (zimageHealthCheck?.healthy && isCreditModelEnabled(Model.Z_IMAGE)) {
-        return Model.Z_IMAGE;
-      }
+    if (zimageHealthCheck?.healthy && isCreditModelEnabled(Model.Z_IMAGE)) {
+      return Model.Z_IMAGE;
+    }
 
-      return (
-        [Model.DALL_E_3, Model.GOOGLE_IMAGEN, Model.NANO_BANANA].find((item) =>
-          isCreditModelEnabled(item),
-        ) ?? Model.DALL_E_3
-      );
-    },
-    [
-      stableHealthCheck?.healthy,
-      zimageHealthCheck?.healthy,
-      isCreditModelEnabled,
-    ],
-  );
+    return (
+      [Model.DALL_E_3, Model.GOOGLE_IMAGEN, Model.NANO_BANANA].find((item) =>
+        isCreditModelEnabled(item),
+      ) ?? Model.DALL_E_3
+    );
+  }, [
+    stableHealthCheck?.healthy,
+    zimageHealthCheck?.healthy,
+    isCreditModelEnabled,
+  ]);
 
   // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
   const [manualModel, setManualModel] = useState<Model | null>(null);
@@ -332,6 +334,23 @@ export default function ImageGenPage() {
     !creditSettings ||
     !isSelectedModelAvailable;
 
+  const getPreviewStyle = (targetRatio: ImageRatio) => ({
+    aspectRatio:
+      targetRatio === ImageRatio.RATIO_9_16
+        ? "9/16"
+        : targetRatio === ImageRatio.RATIO_16_9
+          ? "16/9"
+          : "1/1",
+    maxHeight: "min(70dvh, 620px)",
+    maxWidth:
+      targetRatio === ImageRatio.RATIO_9_16
+        ? "min(calc(70dvh * 9 / 16), 349px)"
+        : targetRatio === ImageRatio.RATIO_1_1
+          ? "min(70dvh, 620px)"
+          : "100%",
+    width: "100%",
+  });
+
   return (
     <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-800 dark:via-gray-900 dark:to-purple-950/30 p-4 gap-4 md:gap-8 md:p-8">
       {/* 크레딧 정보 섹션 */}
@@ -438,37 +457,44 @@ export default function ImageGenPage() {
           {/* 결과 섹션 */}
           <Card
             ref={resultImageRef}
-            className="shadow-xl border-0 bg-background/80 backdrop-blur-sm"
+            className="overflow-hidden border-0 bg-background/85 py-0 shadow-xl ring-1 ring-black/5 backdrop-blur-sm dark:ring-white/10"
           >
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-semibold text-foreground">
-                생성된 이미지
-              </CardTitle>
+            <CardHeader className="border-b border-border/60 px-5 py-4 md:px-6">
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle className="text-lg font-semibold text-foreground md:text-xl">
+                  생성된 이미지
+                </CardTitle>
+                <span className="rounded-full border border-border/70 bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
+                  {imageUrl ? displayRatio : ratio}
+                </span>
+              </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-1 flex-col p-0">
               {imageUrl ? (
-                <div className="space-y-4">
-                  <div
-                    className={cn(
-                      "relative mx-auto border-2 max-h-[500px] border-border rounded-xl overflow-hidden",
-                      "bg-background flex items-center justify-center",
-                      getRatio(displayRatio),
-                    )}
-                  >
-                    <Image
-                      src={imageUrl}
-                      alt="생성된 이미지"
-                      fill
-                      className="w-full h-auto object-cover"
-                      unoptimized
-                    />
+                <div className="flex flex-1 flex-col">
+                  <div className="flex min-h-[360px] flex-1 items-center justify-center bg-[linear-gradient(135deg,rgba(15,23,42,0.04)_0%,rgba(99,102,241,0.08)_45%,rgba(255,255,255,0.35)_100%)] p-3 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.72)_0%,rgba(67,56,202,0.25)_45%,rgba(15,23,42,0.85)_100%)] md:p-5">
+                    <div
+                      className={cn(
+                        "relative mx-auto overflow-hidden rounded-2xl bg-background shadow-2xl shadow-slate-950/15 ring-1 ring-black/10 dark:ring-white/10",
+                        getRatio(displayRatio),
+                      )}
+                      style={getPreviewStyle(displayRatio)}
+                    >
+                      <Image
+                        src={imageUrl}
+                        alt="생성된 이미지"
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex gap-2 mt-8">
+                  <div className="grid grid-cols-2 gap-2 border-t border-border/60 bg-background/95 p-3 md:p-4">
                     <Button
                       onClick={() => downloadImage(imageUrl)}
                       variant="outline"
-                      className="flex-1 border-purple-200 text-purple-400 hover:bg-purple-50"
+                      className="h-11 border-purple-200 text-purple-500 hover:bg-purple-50 dark:border-purple-900/60 dark:hover:bg-purple-950/30"
                     >
                       <Download className="mr-1 h-4 w-4" />
                       다운로드
@@ -477,7 +503,7 @@ export default function ImageGenPage() {
                       <Button
                         asChild
                         variant="outline"
-                        className="flex-1 border-blue-200 text-blue-400 hover:bg-blue-50"
+                        className="h-11 border-blue-200 text-blue-500 hover:bg-blue-50 dark:border-blue-900/60 dark:hover:bg-blue-950/30"
                       >
                         <Link href={`/image/${imageId}`}>
                           <Eye className="mr-1 h-4 w-4" />
@@ -488,55 +514,60 @@ export default function ImageGenPage() {
                   </div>
                 </div>
               ) : isPending ? (
-                <div
-                  className="aurora-bg relative mx-auto rounded-xl overflow-hidden"
-                  style={{
-                    aspectRatio:
-                      ratio === ImageRatio.RATIO_9_16
-                        ? "9/16"
-                        : ratio === ImageRatio.RATIO_16_9
-                          ? "16/9"
-                          : "1/1",
-                    maxHeight: "500px",
-                    maxWidth:
-                      ratio === ImageRatio.RATIO_9_16
-                        ? `${Math.round(500 * (9 / 16))}px`
-                        : ratio === ImageRatio.RATIO_1_1
-                          ? "500px"
-                          : "100%",
-                    width: "100%",
-                  }}
-                >
-                  {/* 부드러운 노이즈 오버레이 */}
-                  <div className="absolute inset-0 bg-black/10" />
-                  {/* 중앙 글로우 */}
+                <div className="flex flex-1 flex-col">
+                  <div className="flex min-h-[360px] flex-1 items-center justify-center bg-muted/40 p-3 md:p-5">
+                    <div
+                      className="aurora-bg relative mx-auto overflow-hidden rounded-2xl shadow-2xl shadow-slate-950/10 ring-1 ring-black/10 dark:ring-white/10"
+                      style={getPreviewStyle(ratio)}
+                    >
+                      {/* 부드러운 노이즈 오버레이 */}
+                      <div className="absolute inset-0 bg-black/10" />
+                      {/* 중앙 글로우 */}
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,255,255,0.12) 0%, transparent 70%)",
+                        }}
+                      />
+                      {/* 텍스트 */}
+                      <div className="absolute inset-x-6 bottom-6 rounded-xl border border-white/20 bg-black/20 px-4 py-3 text-center text-sm font-medium text-white/90 shadow-lg backdrop-blur-md">
+                        {generationProgress ?? "이미지를 생성하는 중입니다"}
+                      </div>
+                    </div>
+                  </div>
+
                   <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,255,255,0.12) 0%, transparent 70%)",
-                    }}
-                  />
-                  {/* 텍스트 */}
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6">
-                    {generationProgress && (
-                      <p className="text-sm font-medium text-white/90 text-center drop-shadow-md">
-                        {generationProgress}
-                      </p>
-                    )}
+                    aria-hidden="true"
+                    className="invisible grid grid-cols-2 gap-2 border-t border-border/60 bg-background/95 p-3 md:p-4"
+                  >
+                    <div className="h-11" />
+                    <div className="h-11" />
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-16 text-gray-500">
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-700/70 dark:to-blue-700/70 flex items-center justify-center mb-4">
-                    <Sparkles className="h-12 w-12 text-purple-400" />
+                <div className="flex flex-1 flex-col">
+                  <div className="flex min-h-[360px] flex-1 items-center justify-center bg-muted/35 p-6">
+                    <div className="flex max-w-sm flex-col items-center text-center text-muted-foreground">
+                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-background shadow-sm">
+                        <Sparkles className="h-8 w-8 text-purple-400" />
+                      </div>
+                      <p className="mb-2 text-base font-semibold text-foreground">
+                        이미지가 생성되면 여기에 표시됩니다
+                      </p>
+                      <p className="text-sm">
+                        프롬프트와 비율을 선택한 뒤 생성 버튼을 눌러주세요.
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-lg font-medium mb-2">
-                    이미지가 생성되면 여기에 표시됩니다
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    프롬프트를 입력하고 생성 버튼을 눌러보세요
-                  </p>
+
+                  <div
+                    aria-hidden="true"
+                    className="invisible grid grid-cols-2 gap-2 border-t border-border/60 bg-background/95 p-3 md:p-4"
+                  >
+                    <div className="h-11" />
+                    <div className="h-11" />
+                  </div>
                 </div>
               )}
             </CardContent>

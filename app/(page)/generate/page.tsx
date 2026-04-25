@@ -29,6 +29,7 @@ import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
 import Link from "next/link";
 import { useScrollStore } from "@/stores/scrollStore";
+import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer";
 
 export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
@@ -43,6 +44,7 @@ export default function ImageGenPage() {
   const [displayRatio, setDisplayRatio] = useState<ImageRatio>(
     ImageRatio.RATIO_1_1,
   );
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const { setScrollPos } = useScrollStore();
@@ -475,10 +477,11 @@ export default function ImageGenPage() {
                   <div className="flex min-h-[360px] flex-1 items-center justify-center bg-[linear-gradient(135deg,rgba(15,23,42,0.04)_0%,rgba(99,102,241,0.08)_45%,rgba(255,255,255,0.35)_100%)] p-3 dark:bg-[linear-gradient(135deg,rgba(15,23,42,0.72)_0%,rgba(67,56,202,0.25)_45%,rgba(15,23,42,0.85)_100%)] md:p-5">
                     <div
                       className={cn(
-                        "relative mx-auto overflow-hidden rounded-2xl bg-background shadow-2xl shadow-slate-950/15 ring-1 ring-black/10 dark:ring-white/10",
+                        "relative mx-auto cursor-zoom-in overflow-hidden rounded-2xl bg-background shadow-2xl shadow-slate-950/15 ring-1 ring-black/10 dark:ring-white/10",
                         getRatio(displayRatio),
                       )}
                       style={getPreviewStyle(displayRatio)}
+                      onClick={() => setIsFullscreenOpen(true)}
                     >
                       <Image
                         src={imageUrl}
@@ -574,6 +577,15 @@ export default function ImageGenPage() {
           </Card>
         </div>
       </div>
+      {imageUrl && (
+        <ImageFullscreenViewer
+          open={isFullscreenOpen}
+          onOpenChange={setIsFullscreenOpen}
+          src={imageUrl}
+          alt="생성된 이미지 전체보기"
+          ratio={displayRatio}
+        />
+      )}
     </Layout.Content>
   );
 }

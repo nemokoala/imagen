@@ -35,6 +35,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageCard } from "./ImageCard";
 import { Separator } from "@/components/ui/separator";
 import { useMarkAsReadByImageIdMutation } from "@/queries/notification/mutations";
+import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer";
 
 interface ImageDetailProps {
   image: ImageType;
@@ -49,6 +50,7 @@ export function ImageDetail({
 }: ImageDetailProps) {
   const router = useRouter();
   const [imageData, setImageData] = useState<ImageType>(initialImage);
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
   const { changeModalContent } = useModal();
   const { user } = useUserStore();
 
@@ -143,7 +145,8 @@ export function ImageDetail({
             <div className="space-y-6">
               {/* 이미지 */}
               <div
-                className={`flex justify-center w-auto mx-auto ${getRatio(imageData.ratio)} md:max-h-[70dvh] relative`}
+                className={`relative mx-auto flex w-auto cursor-zoom-in justify-center ${getRatio(imageData.ratio)} md:max-h-[70dvh]`}
+                onClick={() => setIsFullscreenOpen(true)}
               >
                 <Image
                   src={imageData.imageUrl}
@@ -156,6 +159,13 @@ export function ImageDetail({
                   itemProp="image"
                 />
               </div>
+              <ImageFullscreenViewer
+                open={isFullscreenOpen}
+                onOpenChange={setIsFullscreenOpen}
+                src={imageData.imageUrl}
+                alt={imageData.prompt || "AI 생성 이미지"}
+                ratio={imageData.ratio}
+              />
 
               {/* 프롬프트 */}
               <div className="space-y-3">

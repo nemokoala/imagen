@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface KakaoLoginButtonProps {
   disabled?: boolean;
@@ -21,9 +22,10 @@ export function KakaoLoginButton({
     <Button
       type="button"
       onClick={handleKakaoLogin}
-      className={`w-full bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90 ${
-        className || ""
-      }`}
+      className={cn(
+        "w-full rounded-full bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90",
+        className,
+      )}
       disabled={disabled}
     >
       <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">

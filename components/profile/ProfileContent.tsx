@@ -16,6 +16,7 @@ import { useGetUserCommentsInfiniteQuery } from "@/queries/user/queries";
 import { ProfileHeader } from "./ProfileHeader";
 import { UserGeneratedImages } from "./UserGeneratedImages";
 import { useUrlParams } from "@/hooks/use-url-params";
+import { MessageSquare } from "lucide-react";
 import { DecorativeBackground } from "../ui/decorative-background";
 
 interface ProfileContentProps {
@@ -154,17 +155,28 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
           </TabsContent>
 
           <TabsContent value="comments" className="w-full max-w-6xl pb-8">
-            <div className="mb-4 self-start w-full">
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                유저가 작성한 댓글
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 ">
-                {userCommentsData?.pages[0]?.totalCount
-                  ? `총 ${userCommentsData.pages[0].totalCount}개의 댓글`
-                  : "작성한 댓글 목록"}
+            <div className="mb-6 self-start w-full">
+              <div className="mb-1 flex items-center gap-2.5">
+                <span className="flex size-9 items-center justify-center rounded-xl border border-border/60 bg-gradient-to-br from-purple-500/15 to-blue-500/10 text-purple-600 dark:text-purple-400">
+                  <MessageSquare className="size-4" />
+                </span>
+                <h2 className="text-2xl font-bold tracking-tight text-foreground">
+                  {isOwnProfile
+                    ? "작성한 댓글"
+                    : `${userInfo.nickname}님의 댓글`}
+                </h2>
+              </div>
+              <p className="text-muted-foreground pl-[2.75rem] text-sm sm:text-base">
+                {userCommentsData?.pages[0]?.totalCount != null
+                  ? `총 ${userCommentsData.pages[0].totalCount}개`
+                  : "댓글을 불러오는 중…"}
               </p>
             </div>
-            <UserCommentList userId={userInfo.id} />
+            <UserCommentList
+              userId={userInfo.id}
+              nickname={userInfo.nickname}
+              isOwnProfile={isOwnProfile}
+            />
           </TabsContent>
         </Tabs>
       </div>

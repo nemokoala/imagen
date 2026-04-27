@@ -60,8 +60,8 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
 
   if ((isOwnProfile && storeLoading) || userInfoLoading) {
     return (
-      <Layout.Content className="flex items-center">
-        <div className="container flex flex-col items-center mx-auto px-4 pt-8 max-w-6xl">
+      <Layout.Content className="flex items-center px-2">
+        <div className="w-full max-w-6xl mx-auto flex flex-col items-center pt-8">
           <Card className="relative w-full overflow-hidden mb-12 border-none shadow-xl bg-muted/20">
             <div className="h-32 bg-muted/10" />
             <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 px-8 pb-8 pt-16">
@@ -110,10 +110,10 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
   return (
     <Layout.Content
       ref={scrollContainerRef}
-      className="h-[calc(100dvh-60px)] items-center"
+      className="h-[calc(100dvh-60px)] items-center px-2"
     >
       <DecorativeBackground />
-      <div className="container flex flex-col items-center mx-auto px-4 pt-8 max-w-6xl z-10">
+      <div className="w-full max-w-6xl mx-auto flex flex-col items-center pt-8 z-10">
         {/* 프로필 헤더 */}
         <ProfileHeader
           userInfo={userInfo}
@@ -143,7 +143,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="images" className="w-full max-w-6xl px-2 pb-8">
+          <TabsContent value="images" className="w-full max-w-6xl pb-8">
             <UserGeneratedImages
               userInfo={userInfo}
               isOwnProfile={isOwnProfile}
@@ -153,20 +153,18 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
             />
           </TabsContent>
 
-          <TabsContent value="comments" className="w-full max-w-6xl px-2 pb-8">
-            <div className="container mx-auto px-2 max-w-6xl">
-              <div className="mb-4 self-start w-full">
-                <h2 className="text-2xl font-bold text-foreground mb-2">
-                  유저가 작성한 댓글
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 ">
-                  {userCommentsData?.pages[0]?.totalCount
-                    ? `총 ${userCommentsData.pages[0].totalCount}개의 댓글`
-                    : "작성한 댓글 목록"}
-                </p>
-              </div>
-              <UserCommentList userId={userInfo.id} />
+          <TabsContent value="comments" className="w-full max-w-6xl pb-8">
+            <div className="mb-4 self-start w-full">
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                유저가 작성한 댓글
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 ">
+                {userCommentsData?.pages[0]?.totalCount
+                  ? `총 ${userCommentsData.pages[0].totalCount}개의 댓글`
+                  : "작성한 댓글 목록"}
+              </p>
             </div>
+            <UserCommentList userId={userInfo.id} />
           </TabsContent>
         </Tabs>
       </div>

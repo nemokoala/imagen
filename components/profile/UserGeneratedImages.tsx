@@ -23,7 +23,7 @@ export function UserGeneratedImages({
   scrollContainerRef,
 }: UserGeneratedImagesProps) {
   return (
-    <div className="container mx-auto px-2 max-w-6xl">
+    <div className="w-full">
       <div className="mb-4 self-start w-full">
         <h2 className="text-2xl font-bold text-foreground mb-2">
           유저가 생성한 이미지
@@ -36,7 +36,7 @@ export function UserGeneratedImages({
       {!imagesLoading &&
       userImagesData &&
       userImagesData.pages[0]?.images.length === 0 ? (
-        <div className="container mx-auto max-w-6xl flex-shrink-0">
+        <div className="w-full flex-shrink-0">
           <Card className="p-12 text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
             <UserIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600 dark:text-gray-400 mb-4">

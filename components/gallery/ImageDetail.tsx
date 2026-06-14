@@ -9,6 +9,7 @@ import {
   Sparkles,
   MessageCircle,
   Trash2,
+  Pencil,
   ArrowLeft,
   User,
   Languages,
@@ -85,6 +86,9 @@ export function ImageDetail({
     imageData &&
     user &&
     (imageData.user.id === user.id || user.role === "admin");
+
+  // 편집 권한 확인: 본인 이미지인 경우
+  const canEdit = imageData && user && imageData.user.id === user.id;
 
   const showDeleteModal = () => {
     changeModalContent(
@@ -182,6 +186,15 @@ export function ImageDetail({
                       <Download className="mr-2 h-4 w-4" />
                       다운로드
                     </Button>
+                    {canEdit && (
+                      <Button
+                        variant="outline"
+                        onClick={() => router.push(`/editor/${imageData.id}`)}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        편집
+                      </Button>
+                    )}
                     {canDelete && (
                       <Button
                         variant="destructive"

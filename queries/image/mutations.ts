@@ -187,3 +187,25 @@ export const useDeleteImageMutation = () => {
     },
   });
 };
+
+export const useSaveImageEditMutation = (imageId: number) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: {
+      editData: string; // fabric 캔버스 JSON
+      editedImage: Blob; // 캔버스 렌더 결과 PNG blob
+    }): Promise<{ success: boolean }> => {
+      const formData = new FormData();
+      formData.append("editData", data.editData);
+      formData.append("editedImage", data.editedImage, "edited.png");
+
+      const response = await FetchUtil.patch(`/api/images/${imageId}`, formData);
+      return response as { success: boolean };
+    },
+    onSuccess: () => {
+      // 편집 결과 반영
+      queryClient.invalidateQueries({ queryKey: ["image", imageId] });
+    },
+  });
+};

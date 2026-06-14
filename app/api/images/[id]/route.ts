@@ -65,6 +65,52 @@ export async function GET(
   }
 }
 
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const resolvedParams = await params;
+    const imageId = parseInt(resolvedParams.id);
+
+    if (!resolvedParams.id || Number.isNaN(imageId)) {
+      throw new ApiError("이미지 ID가 필요합니다.", 400, "IMAGE_ID_REQUIRED");
+    }
+
+    const formData = await req.formData();
+    const editData = formData.get("editData");
+    const editedImage = formData.get("editedImage");
+
+    if (typeof editData !== "string" || !(editedImage instanceof Blob)) {
+      throw new ApiError(
+        "editData와 editedImage가 필요합니다.",
+        400,
+        "INVALID_EDIT_PAYLOAD",
+      );
+    }
+
+    const editedImageBuffer = Buffer.from(await editedImage.arrayBuffer());
+
+    const cookieStore = await cookies();
+    const currentUserId = await authService.getUserIdFromCookie(cookieStore);
+
+    const updated = await imageService.updateImageEdit({
+      imageId,
+      userId: currentUserId,
+      editData,
+      editedImageBuffer,
+    });
+
+    return NextResponse.json(
+      { success: true, image: updated },
+      { status: 200 },
+    );
+  } catch (error: unknown) {
+    console.error("Update image edit error:", error);
+    return errorHandler(error);
+  }
+}
+
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

@@ -5,6 +5,8 @@ export interface GeneratedImage {
   imageUrl: string;
   model: string;
   size: string;
+  editData?: string | null;
+  editedImageUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
   user?: {

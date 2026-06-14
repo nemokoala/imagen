@@ -775,29 +775,44 @@ export const imageGenerationService = {
         throw new ApiError(`지원하지 않는 이미지 URL 형식: ${imageUrl}`, 400);
       }
 
-      // 저장할 디렉토리 생성 (환경 변수 우선, 기본값 process.cwd()/uploads)
-      const uploadBaseDir =
-        process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
-
-      const uploadDir = join(uploadBaseDir, "images", userId.toString());
-      await mkdir(uploadDir, { recursive: true });
-
-      // 파일명 생성 (timestamp + random string)
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 15);
-      const fileName = `${timestamp}_${randomString}.png`;
-      const filePath = join(uploadDir, fileName);
-
-      // 파일 저장
-      await writeFile(filePath, Buffer.from(imageBuffer));
-      console.log("🔍 [DEBUG] Saved file to:", filePath);
-      // API 라우트를 통한 접근 경로 반환
-      return `/api/uploads/images/${userId}/${fileName}`;
+      // 버퍼를 파일로 저장
+      return await imageGenerationService.saveImageBufferToFileSystem(
+        imageBuffer,
+        userId,
+      );
     } catch (error) {
       console.error("Error saving image to file system:", error);
       if (error instanceof ApiError) throw error;
       throw new ApiError("이미지 파일 저장에 실패했습니다.", 500);
     }
+  },
+
+  /**
+   * 이미지 버퍼를 파일 시스템에 저장하고 접근 경로를 반환한다.
+   * (FormData 업로드 등 이미 버퍼를 가진 경우 직접 사용)
+   */
+  async saveImageBufferToFileSystem(
+    imageBuffer: Buffer,
+    userId: number,
+  ): Promise<string> {
+    // 저장할 디렉토리 생성 (환경 변수 우선, 기본값 process.cwd()/uploads)
+    const uploadBaseDir =
+      process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
+
+    const uploadDir = join(uploadBaseDir, "images", userId.toString());
+    await mkdir(uploadDir, { recursive: true });
+
+    // 파일명 생성 (timestamp + random string)
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileName = `${timestamp}_${randomString}.png`;
+    const filePath = join(uploadDir, fileName);
+
+    // 파일 저장
+    await writeFile(filePath, imageBuffer);
+    console.log("🔍 [DEBUG] Saved file to:", filePath);
+    // API 라우트를 통한 접근 경로 반환
+    return `/api/uploads/images/${userId}/${fileName}`;
   },
 
   async saveImageToDatabase(imageData: {
@@ -835,6 +850,48 @@ export const imageGenerationService = {
       console.error("Error saving image to database:", error);
       throw new ApiError("이미지 정보 저장에 실패했습니다.", 500);
     }
+  },
+
+  /**
+   * 편집기에서 수정한 이미지를 저장한다.
+   * - editData: fabric 캔버스 JSON (재편집용)
+   * - editedImageBuffer: 캔버스 렌더 결과 PNG 버퍼 (파일로 저장 후 editedImageUrl 갱신)
+   * 본인 이미지일 때만 수정 가능하다.
+   */
+  async updateImageEdit(params: {
+    imageId: number;
+    userId: number;
+    editData: string;
+    editedImageBuffer: Buffer;
+  }) {
+    const { imageId, userId, editData, editedImageBuffer } = params;
+
+    const image = await prisma.generatedImage.findUnique({
+      where: { id: imageId },
+      select: { id: true, userId: true },
+    });
+
+    if (!image) {
+      throw new ApiError("이미지를 찾을 수 없습니다.", 404, "IMAGE_NOT_FOUND");
+    }
+
+    if (image.userId !== userId) {
+      throw new ApiError("이미지를 편집할 권한이 없습니다.", 403, "FORBIDDEN");
+    }
+
+    // 캔버스 렌더 결과를 파일로 저장
+    const editedImageUrl =
+      await imageGenerationService.saveImageBufferToFileSystem(
+        editedImageBuffer,
+        userId,
+      );
+
+    const updated = await prisma.generatedImage.update({
+      where: { id: imageId },
+      data: { editData, editedImageUrl },
+    });
+
+    return updated;
   },
 
   async stableHealthCheck(): Promise<boolean> {

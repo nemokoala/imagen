@@ -22,7 +22,14 @@ interface LoginDTO {
   password: string;
 }
 
-type PublicUser = Omit<User, "password">;
+type PublicUser = Omit<User, "password" | "fcmToken">;
+
+/** 비밀번호·FCM 토큰 등 민감 정보를 제외한 공개용 사용자 정보를 반환한다. */
+function toPublicUser(user: User): PublicUser {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { password, fcmToken, ...publicUser } = user;
+  return publicUser;
+}
 
 interface RegisterResult extends VerificationDispatchResult {
   user: PublicUser;
@@ -89,12 +96,10 @@ export const authService = {
       baseUrl,
     );
 
-    // 비밀번호를 제외한 사용자 정보 반환
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
+    // 비밀번호·FCM 토큰을 제외한 사용자 정보 반환
     return {
       ...verification,
-      user: userWithoutPassword,
+      user: toPublicUser(user),
     };
   },
 
@@ -283,7 +288,7 @@ export const authService = {
   async login(
     email: string,
     password: string,
-  ): Promise<Omit<User, "password"> & { refreshExpiresAt: Date }> {
+  ): Promise<PublicUser & { refreshExpiresAt: Date }> {
     // 로그인 데이터 검증
     await this.validateLoginData({ email, password });
 
@@ -294,9 +299,8 @@ export const authService = {
     await this.createAccessToken(user);
 
     const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    // 비밀번호를 제외한 사용자 정보 반환
-    const { password: _, ...userWithoutPassword } = user;
-    return { ...userWithoutPassword, refreshExpiresAt };
+    // 비밀번호·FCM 토큰을 제외한 사용자 정보 반환
+    return { ...toPublicUser(user), refreshExpiresAt };
   },
 
   async resendVerificationEmail(email: string, baseUrl: string) {
@@ -416,15 +420,14 @@ export const authService = {
     });
   },
 
-  async getUserInfoById(userId: number): Promise<Omit<User, "password">> {
+  async getUserInfoById(userId: number): Promise<PublicUser> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
     if (!user) {
       throw new ApiError("사용자를 찾을 수 없습니다.", 400, "USER_NOT_FOUND");
     }
-    const { password: _, ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    return toPublicUser(user);
   },
 
   async loginWithKakao(data: {
@@ -432,7 +435,7 @@ export const authService = {
     email: string;
     nickname: string;
     profileImageUrl: string | null;
-  }): Promise<Omit<User, "password"> & { refreshExpiresAt: Date }> {
+  }): Promise<PublicUser & { refreshExpiresAt: Date }> {
     const { kakaoId, email, nickname, profileImageUrl } = data;
 
     // 입력 데이터 검증
@@ -502,8 +505,7 @@ export const authService = {
 
     const refreshExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     // 비밀번호를 제외한 사용자 정보 반환
-    const { password: _, ...userWithoutPassword } = user;
-    return { ...userWithoutPassword, refreshExpiresAt };
+    return { ...toPublicUser(user), refreshExpiresAt };
   },
   async deleteProfileImage(imageUrl: string): Promise<void> {
     try {
@@ -535,7 +537,7 @@ export const authService = {
   async updateUserProfile(
     userId: number,
     data: { nickname?: string; profileImageUrl?: string },
-  ): Promise<Omit<User, "password">> {
+  ): Promise<PublicUser> {
     // 닉네임 중복 확인 (본인 닉네임 제외)
     if (data.nickname) {
       const existingUser = await prisma.user.findFirst({
@@ -579,7 +581,6 @@ export const authService = {
       },
     });
 
-    const { password: _, ...userWithoutPassword } = updatedUser;
-    return userWithoutPassword;
+    return toPublicUser(updatedUser);
   },
 };

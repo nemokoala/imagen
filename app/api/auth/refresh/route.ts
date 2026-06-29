@@ -7,7 +7,6 @@ export async function POST(_req: NextRequest) {
   try {
     const cookieStore = await cookies();
     const refreshToken = cookieStore.get("refreshToken")?.value;
-    console.log("refreshToken", refreshToken);
 
     if (!refreshToken) {
       return NextResponse.json(
@@ -19,7 +18,6 @@ export async function POST(_req: NextRequest) {
     // authService를 사용하여 새로운 액세스 토큰 생성
     const { accessToken: newAccessToken } =
       await authService.refreshAccessToken(refreshToken);
-    console.log("newAccessToken", newAccessToken);
 
     return NextResponse.json(
       {

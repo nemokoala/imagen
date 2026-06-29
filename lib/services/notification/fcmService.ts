@@ -64,8 +64,6 @@ export const fcmService = {
       throw new ApiError("토큰이 없습니다.", 400);
     }
 
-    console.log("updateFCMToken", userId, "-", token);
-
     // 이미 사용 중인 토큰 삭제
     await prisma.user.updateMany({
       where: { fcmToken: token },

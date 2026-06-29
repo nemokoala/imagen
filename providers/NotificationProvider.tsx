@@ -108,8 +108,6 @@ export const NotificationProvider = ({
       });
 
       if (token) {
-        console.log("FCM Token:", token);
-
         setFcmToken(token);
         await FetchUtil.post("/api/fcm", {
           token: token,

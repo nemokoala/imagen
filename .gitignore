@@ -39,3 +39,6 @@ next-env.d.ts
 /uploads
 
 /.claude
+
+# editor
+.vscode/settings.json

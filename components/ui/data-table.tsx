@@ -56,11 +56,10 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="border rounded-lg overflow-x-auto relative">
+    <div className="border rounded-lg overflow-x-auto relative w-fit max-w-full">
       <Table
         style={{
           width: table.getTotalSize(),
-          minWidth: "100%",
           tableLayout: "fixed",
         }}
       >

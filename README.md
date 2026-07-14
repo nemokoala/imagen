@@ -8,17 +8,22 @@ Next.js와 여러 이미지 모델을 사용한 AI 이미지 생성 웹 애플�
 - 이미지 생성 시 공유
 - 좋아요 및 댓글 추가
 - 프로필 조회 및 수정
-<img width="2331" height="1923" alt="image" src="https://github.com/user-attachments/assets/de5dea6c-c1a2-4575-aae1-392ad28f6045" />
+- 관리자 대시보드 (유저/이미지 관리, 크레딧 비용 및 LLM 모델 설정)
+![메인 화면](docs/images/main.webp)
 
-<img width="2313" height="1924" alt="image" src="https://github.com/user-attachments/assets/e52cfcea-1cf6-48c1-82be-1a3dc15ddd69" />
+![이미지 생성](docs/images/generate.webp)
 
-<img width="2336" height="1920" alt="image" src="https://github.com/user-attachments/assets/d4b497c3-9c9e-44d6-97c4-8dca53e0206b" />
+![갤러리](docs/images/gallery.webp)
 
-<img width="2339" height="1911" alt="image" src="https://github.com/user-attachments/assets/e6d071d9-6b32-4d9b-b1ce-1c70505a6b02" />
+![이미지 상세](docs/images/detail.webp)
 
-<img width="2335" height="1602" alt="image" src="https://github.com/user-attachments/assets/db2849ee-f077-408b-8047-b7ae17860cfd" />
+![댓글](docs/images/comment.webp)
 
+![프로필](docs/images/profile.webp)
 
+![관리자 - 이미지 관리](docs/images/admin1.webp)
+
+![관리자 - 크레딧 비용 설정](docs/images/admin2.webp)
 
 ## 🏗️ 인프라 아키텍처 및 특징
 

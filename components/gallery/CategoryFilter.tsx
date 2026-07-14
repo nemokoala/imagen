@@ -80,7 +80,7 @@ export function CategoryFilter({
           onClick={() => setIsCollapsed(false)}
           className={cn(
             iconButtonClass,
-            "!bg-background backdrop-blur-md shadow-lg border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:text-primary",
+            "!bg-background backdrop-blur-md shadow-lg border border-gray-200 dark:border-zinc-800 text-gray-700 dark:text-zinc-300 hover:text-primary",
           )}
         >
           <ChevronDown size={18} />
@@ -99,7 +99,7 @@ export function CategoryFilter({
         <div className="overflow-hidden">
           <div
             className={cn(
-              "backdrop-blur-md bg-white/80 dark:bg-gray-800/80 py-1.5 px-1.5 w-max max-w-full mx-auto border border-gray-300 dark:border-gray-600 font-medium text-gray-800 dark:text-gray-200",
+              "backdrop-blur-md bg-white/80 dark:bg-zinc-900/80 py-1.5 px-1.5 w-max max-w-full mx-auto border border-gray-300 dark:border-zinc-700 font-medium text-gray-800 dark:text-zinc-200",
               onToggleRatio ? "rounded-2xl" : "rounded-full",
             )}
           >
@@ -114,7 +114,7 @@ export function CategoryFilter({
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
                     placeholder="검색어 입력..."
-                    className="h-9 rounded-full border-none bg-gray-100/80 dark:bg-gray-900/80 focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px] text-gray-800 dark:text-gray-200"
+                    className="h-9 rounded-full border-none bg-gray-100/80 dark:bg-zinc-950/80 focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px] text-gray-800 dark:text-zinc-200"
                     autoFocus
                   />
                   <Button

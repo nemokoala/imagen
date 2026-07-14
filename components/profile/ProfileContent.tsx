@@ -129,7 +129,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
           onValueChange={handleTabChange}
           className="w-full flex flex-col items-center"
         >
-          <TabsList className="w-full max-w-md bg-gray-100 dark:bg-gray-800 p-1 h-auto mb-8">
+          <TabsList className="w-full max-w-md bg-gray-100 dark:bg-zinc-800 p-1 h-auto mb-8">
             <TabsTrigger
               value="images"
               className="flex-1 py-2 hover:cursor-pointer"

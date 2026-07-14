@@ -266,7 +266,7 @@ export function InfiniteImageGallery({
         <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="relative mb-6">
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-25"></div>
-            <div className="relative p-6 rounded-full bg-white dark:bg-gray-900 shadow-xl">
+            <div className="relative p-6 rounded-full bg-white dark:bg-zinc-900 shadow-xl">
               <Search className="w-12 h-12 text-purple-600" />
             </div>
           </div>

@@ -37,7 +37,7 @@ export function UserGeneratedImages({
       userImagesData &&
       userImagesData.pages[0]?.images.length === 0 ? (
         <div className="w-full flex-shrink-0">
-          <Card className="p-12 text-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-0 shadow-xl">
+          <Card className="p-12 text-center bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm border-0 shadow-xl">
             <UserIcon className="w-16 h-16 mx-auto mb-4 text-gray-400" />
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {isOwnProfile

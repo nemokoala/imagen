@@ -354,7 +354,7 @@ export default function ImageGenPage() {
   });
 
   return (
-    <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-800 dark:via-gray-900 dark:to-purple-950/30 p-4 gap-4 md:gap-8 md:p-8">
+    <Layout.Content className="bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-purple-950/30 p-4 gap-4 md:gap-8 md:p-8">
       {/* 크레딧 정보 섹션 */}
       <div className="container flex flex-col gap-4 md:gap-6 max-w-7xl mx-auto">
         <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />

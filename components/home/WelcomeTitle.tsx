@@ -20,7 +20,7 @@ export function WelcomeTitle() {
     <main
       className={cn(
         "mx-auto max-w-7xl px-6 py-10 w-full min-h-fit flex-shrink-0 rounded-[2rem] relative shadow-md overflow-hidden group my-2",
-        "bg-gradient-to-br from-white/90 via-purple-50/50 to-blue-50/90 dark:from-gray-900/90 dark:via-gray-800/50 dark:to-gray-900/90",
+        "bg-gradient-to-br from-white/90 via-purple-50/50 to-blue-50/90 dark:from-zinc-950/90 dark:via-zinc-900/50 dark:to-zinc-950/90",
         "backdrop-blur-3xl border border-white/40 dark:border-white/10",
         "animate-in fade-in slide-in-from-bottom-5 duration-500",
         isLoading ? "opacity-0" : "",

@@ -361,7 +361,7 @@ export default function ImageGenPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
           {/* 입력 섹션 */}
-          <Card className="shadow-xl border-0 bg-background/80 backdrop-blur-sm">
+          <Card className="shadow-xl border-0 bg-card/80 backdrop-blur-sm ring-1 ring-black/5 dark:ring-white/10">
             <CardHeader className="pb-4">
               <CardTitle className="text-xl font-semibold text-foreground">
                 이미지 생성 설정
@@ -459,7 +459,7 @@ export default function ImageGenPage() {
           {/* 결과 섹션 */}
           <Card
             ref={resultImageRef}
-            className="overflow-hidden border-0 bg-background/85 py-0 shadow-xl ring-1 ring-black/5 backdrop-blur-sm dark:ring-white/10"
+            className="overflow-hidden border-0 bg-card/85 py-0 shadow-xl ring-1 ring-black/5 backdrop-blur-sm dark:ring-white/10"
           >
             <CardHeader className="border-b border-border/60 px-5 py-4 md:px-6">
               <div className="flex items-center justify-between gap-3">

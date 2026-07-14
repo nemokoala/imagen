@@ -93,21 +93,21 @@ body {
 .dark {
   /* 다크 팔레트: 브랜드(보라)에 맞춘 은은한 바이올렛 틴트의 단일 그레이 램프.
      명암 순서: background < card ≈ sidebar < popover < background-plus < secondary/muted/accent */
-  --background: oklch(0.16 0.008 285);
-  --background-plus: oklch(0.24 0.011 285);
+  --background: oklch(0.19 0.01 285);
+  --background-plus: oklch(0.27 0.013 285);
   --foreground: oklch(0.97 0.004 285);
-  --card: oklch(0.2 0.01 285);
+  --card: oklch(0.235 0.012 285);
   --card-foreground: oklch(0.97 0.004 285);
-  --popover: oklch(0.22 0.011 285);
+  --popover: oklch(0.25 0.013 285);
   --popover-foreground: oklch(0.97 0.004 285);
   --primary: oklch(0.93 0.008 285);
   --primary-foreground: oklch(0.2 0.01 285);
-  --secondary: oklch(0.27 0.012 285);
+  --secondary: oklch(0.3 0.014 285);
   --secondary-foreground: oklch(0.97 0.004 285);
-  --muted: oklch(0.27 0.012 285);
+  --muted: oklch(0.3 0.014 285);
   --muted-foreground: oklch(0.72 0.015 285);
   --subtitle: oklch(0.78 0.012 285);
-  --accent: oklch(0.27 0.012 285);
+  --accent: oklch(0.3 0.014 285);
   --accent-foreground: oklch(0.97 0.004 285);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -118,7 +118,7 @@ body {
   --chart-3: oklch(0.7 0.15 195);
   --chart-4: oklch(0.68 0.2 330);
   --chart-5: oklch(0.75 0.16 70);
-  --sidebar: oklch(0.2 0.01 285);
+  --sidebar: oklch(0.235 0.012 285);
   --sidebar-foreground: oklch(0.97 0.004 285);
   --sidebar-primary: oklch(0.55 0.22 285);
   --sidebar-primary-foreground: oklch(0.985 0 0);
@@ -156,7 +156,21 @@ body {
 
   /* 페이지 공용 배경 그라디언트 (Layout.Content 기본 배경) */
   .bg-page-gradient {
-    @apply bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-purple-950/40;
+    background-image: linear-gradient(
+      to bottom right,
+      var(--color-blue-50),
+      var(--color-white),
+      var(--color-purple-50)
+    );
+  }
+
+  .dark .bg-page-gradient {
+    background-image: linear-gradient(
+      to bottom right,
+      var(--background) 0%,
+      var(--background) 50%,
+      color-mix(in oklab, var(--color-purple-950) 40%, var(--background)) 100%
+    );
   }
 
   /* Marquee 애니메이션 */

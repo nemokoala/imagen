@@ -37,24 +37,19 @@ export async function GET(
         );
     }
 
-    return NextResponse.json(
-      {
-        target,
-        status: response ? "healthy" : "unhealthy",
-        healthy: response,
-      },
-      { status: response ? 200 : 400 },
-    );
+    // 서버가 꺼져 있는 것은 정상 응답으로 취급한다(200 + healthy: false)
+    return NextResponse.json({
+      target,
+      status: response ? "healthy" : "unhealthy",
+      healthy: response,
+    });
   } catch (error) {
-    console.error(`Health check failed for ${target}:`, error);
-    return NextResponse.json(
-      {
-        target,
-        status: "error",
-        healthy: false,
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 },
-    );
+    console.warn(`Health check failed for ${target}:`, error);
+    return NextResponse.json({
+      target,
+      status: "error",
+      healthy: false,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
   }
 }

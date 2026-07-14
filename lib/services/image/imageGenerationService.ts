@@ -894,6 +894,7 @@ export const imageGenerationService = {
     return updated;
   },
 
+  // 모델 서버가 꺼져 있는 것은 정상적인 상태이므로 throw하지 않고 false를 반환한다
   async stableHealthCheck(): Promise<boolean> {
     try {
       const response = await fetch(
@@ -901,15 +902,9 @@ export const imageGenerationService = {
         { signal: AbortSignal.timeout(3000) },
       );
 
-      if (!response.ok) {
-        throw new ApiError("Failed to check stable health", response.status);
-      }
-
       return response.ok;
-    } catch (error) {
-      console.error("Error checking stable health:", error);
-      if (error instanceof ApiError) throw error;
-      throw new ApiError("Failed to check stable health", 500);
+    } catch {
+      return false;
     }
   },
 
@@ -924,18 +919,9 @@ export const imageGenerationService = {
         signal: AbortSignal.timeout(2000),
       });
 
-      if (!response.ok) {
-        throw new ApiError(
-          `ComfyUI health check failed: ${response.status}`,
-          response.status,
-        );
-      }
-
       return response.ok;
-    } catch (error) {
-      console.error("Error checking ComfyUI health:", error);
-      if (error instanceof ApiError) throw error;
-      throw new ApiError("Failed to check ComfyUI health", 500);
+    } catch {
+      return false;
     }
   },
 };

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Skeleton } from "../ui/skeleton";
-import Image from "next/image";
+import { Logo } from "./Logo";
 import { useLogoutMutation } from "@/queries/auth/mutations";
 import { toast } from "sonner";
 import { ThemeToggle } from "./ThemeToggle";
@@ -41,16 +41,11 @@ export const Header = () => {
   return (
     <header className="sticky h-15 top-0 z-50 w-full flex items-center justify-between px-2">
       <Link
-        className="relative w-32 h-9 flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80"
+        className="flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80"
         href="/"
+        aria-label="ImageGen 홈"
       >
-        <Image
-          src="/images/logo.png"
-          alt="ImageGen"
-          fill
-          className="object-contain"
-          priority
-        />
+        <Logo />
       </Link>
 
       <div className="flex items-center gap-2 sm:gap-4 mr-2">

@@ -27,7 +27,7 @@ export function ProfileHeader({
       <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 px-8 py-8">
         {/* Avatar Section */}
         <div className="relative group my-auto">
-          <div className="relative p-1 rounded-full bg-white dark:bg-zinc-950 shadow-xl transition-transform duration-500 group-hover:scale-105">
+          <div className="relative p-1 rounded-full bg-card shadow-xl transition-transform duration-500 group-hover:scale-105">
             <ProfileAvatar
               profileImageUrl={userInfo.profileImageUrl || ""}
               nickname={userInfo.nickname || ""}

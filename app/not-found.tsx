@@ -15,7 +15,7 @@ export default function NotFound() {
       <DecorativeBackground />
 
       <div className="relative z-10 text-center flex flex-col items-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 dark:bg-black/30 border border-purple-200 dark:border-purple-900/50 backdrop-blur-md mb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background/50 border border-purple-200 dark:border-purple-900/50 backdrop-blur-md mb-6">
           <Compass className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
           <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
             Page Not Found
@@ -30,7 +30,7 @@ export default function NotFound() {
           페이지를 찾을 수 없습니다
         </h2>
 
-        <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-xl mx-auto leading-relaxed font-light">
+        <p className="text-lg md:text-xl text-subtitle mb-10 max-w-xl mx-auto leading-relaxed font-light">
           요청하신 페이지가 존재하지 않거나
           <br className="hidden md:block" />
           이동되었을 수 있어요.

@@ -19,8 +19,7 @@ const Content = ({
   return (
     <div
       className={cn(
-        "flex flex-col h-full max-h-[calc(100dvh-60px)] overflow-y-auto [scrollbar-gutter:stable] bg-gradient-to-br from-blue-50 via-white to-purple-50",
-        "dark:from-zinc-950 dark:via-zinc-900 dark:to-purple-950/40",
+        "flex flex-col h-full max-h-[calc(100dvh-60px)] overflow-y-auto [scrollbar-gutter:stable] bg-page-gradient",
         "outline-none flex-shrink-0",
         className,
       )}

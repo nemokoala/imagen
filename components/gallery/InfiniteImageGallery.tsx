@@ -266,14 +266,14 @@ export function InfiniteImageGallery({
         <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="relative mb-6">
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-25"></div>
-            <div className="relative p-6 rounded-full bg-white dark:bg-zinc-900 shadow-xl">
+            <div className="relative p-6 rounded-full bg-card shadow-xl">
               <Search className="w-12 h-12 text-purple-600" />
             </div>
           </div>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-3">
+          <h3 className="text-2xl font-bold text-foreground mb-3">
             이미지를 찾지 못했어요
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto leading-relaxed">
+          <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
             {search ? (
               <>
                 <span className="font-semibold text-purple-600">

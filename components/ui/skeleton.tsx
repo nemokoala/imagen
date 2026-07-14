@@ -9,7 +9,7 @@ function Skeleton({
     <div
       data-slot="skeleton"
       className={cn(
-        "bg-gray-300 dark:bg-zinc-800 relative overflow-hidden rounded-md",
+        "bg-muted-foreground/20 dark:bg-muted relative overflow-hidden rounded-md",
         className,
       )}
       {...props}

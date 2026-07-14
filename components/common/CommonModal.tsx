@@ -42,16 +42,16 @@ export const CommonModal = () => {
       }}
     >
       <DialogContent
-        className="w-fit max-w-screen-sm bg-white dark:bg-[#33302f] rounded-[20px] p-6 px-8 gap-1.5 z-[999]"
+        className="w-fit max-w-screen-sm bg-popover rounded-[20px] p-6 px-8 gap-1.5 z-[999]"
         aria-describedby={undefined}
       >
         <DialogHeader>
-          <DialogTitle className="text-center text-[#1c1918] dark:text-white font-bold text-lg whitespace-pre-line pt-4">
+          <DialogTitle className="text-center text-foreground font-bold text-lg whitespace-pre-line pt-4">
             {modalContent.title}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="text-[#6f6b6a] dark:text-stone-200 text-sm font-normal text-center whitespace-pre-line max-w-full overflow-x-hidden break-words">
+        <div className="text-subtitle text-sm font-normal text-center whitespace-pre-line max-w-full overflow-x-hidden break-words">
           {modalContent.content ?? <span />}
         </div>
         <div className="flex justify-center gap-[10px] mt-2">

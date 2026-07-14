@@ -97,7 +97,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
     return (
       <Layout.Content className="flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             사용자를 찾을 수 없습니다.
           </p>
           <Link href="/">
@@ -129,7 +129,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
           onValueChange={handleTabChange}
           className="w-full flex flex-col items-center"
         >
-          <TabsList className="w-full max-w-md bg-gray-100 dark:bg-zinc-800 p-1 h-auto mb-8">
+          <TabsList className="w-full max-w-md bg-muted p-1 h-auto mb-8">
             <TabsTrigger
               value="images"
               className="flex-1 py-2 hover:cursor-pointer"

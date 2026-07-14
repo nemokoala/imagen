@@ -24,7 +24,7 @@ export default function LandingPage() {
       <NeedLoginHandler />
 
       <div className="relative z-10 text-center flex flex-col items-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 dark:bg-black/30 border border-purple-200 dark:border-purple-900/50 backdrop-blur-md mb-6">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background/50 border border-purple-200 dark:border-purple-900/50 backdrop-blur-md mb-6">
           <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
           <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
             AI Creative Studio
@@ -39,7 +39,7 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+        <p className="text-xl md:text-2xl text-subtitle mb-10 max-w-2xl mx-auto leading-relaxed font-light">
           DALL-E 3, Google Imagen 등 다양한 AI 모델로
           <br className="hidden md:block" />
           나만의 이미지를 생성하고 공유해보세요.

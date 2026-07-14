@@ -35,12 +35,12 @@ export function WelcomeTitle() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <X
-        className="absolute top-6 right-6 size-5 cursor-pointer text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors z-10"
+        className="absolute top-6 right-6 size-5 cursor-pointer text-muted-foreground hover:text-foreground transition-colors z-10"
         onClick={() => setIsCollapsed(true)}
       />
 
       <div className="relative z-10 text-center flex flex-col items-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/50 dark:bg-black/30 border border-purple-200 dark:border-purple-900/50 backdrop-blur-md mb-6 animate-in zoom-in-95 fade-in duration-500 delay-200 fill-mode-both">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-background/50 border border-purple-200 dark:border-purple-900/50 backdrop-blur-md mb-6 animate-in zoom-in-95 fade-in duration-500 delay-200 fill-mode-both">
           <Sparkles className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
           <span className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
             AI Creative Studio
@@ -55,7 +55,7 @@ export function WelcomeTitle() {
           </span>
         </h1>
 
-        <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+        <p className="text-xl md:text-2xl text-subtitle mb-10 max-w-2xl mx-auto leading-relaxed font-light">
           ImageGen와 함께 AI 이미지를 생성해보세요.
         </p>
 

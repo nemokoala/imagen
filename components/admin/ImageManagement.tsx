@@ -66,7 +66,6 @@ export function ImageManagement() {
       {
         accessorKey: "imageUrl",
         header: "이미지",
-        size: 100,
         enableSorting: false,
         cell: ({ row }) => (
           <Button
@@ -86,12 +85,10 @@ export function ImageManagement() {
       {
         accessorKey: "id",
         header: "ID",
-        size: 80,
       },
       {
         accessorKey: "user",
         header: "사용자",
-        size: 150,
         cell: ({ row }) => (
           <div>
             <div className="font-medium">{row.original.user.nickname}</div>
@@ -104,12 +101,10 @@ export function ImageManagement() {
       {
         accessorKey: "prompt",
         header: "프롬프트",
-        size: 300,
       },
       {
         accessorKey: "model",
         header: "모델",
-        size: 120,
         cell: ({ row }) => (
           <span className="text-sm">{row.original.model}</span>
         ),
@@ -117,19 +112,16 @@ export function ImageManagement() {
       {
         accessorKey: "likeCount",
         header: "좋아요",
-        size: 80,
         cell: ({ row }) => row.original.likeCount || 0,
       },
       {
         accessorKey: "commentCount",
         header: "댓글",
-        size: 80,
         cell: ({ row }) => row.original.commentCount || 0,
       },
       {
         accessorKey: "createdAt",
         header: "생성일",
-        size: 150,
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleDateString("ko-KR", {
             year: "numeric",
@@ -142,7 +134,6 @@ export function ImageManagement() {
       {
         id: "actions",
         header: "작업",
-        size: 70,
         enableSorting: false,
         cell: ({ row }) => (
           <Button

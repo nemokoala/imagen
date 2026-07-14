@@ -126,7 +126,6 @@ export function CreditSettingsComponent() {
       {
         accessorKey: "name",
         header: "모델",
-        size: 220,
         cell: ({ row }) => (
           <span className="font-medium">{row.original.name}</span>
         ),
@@ -134,7 +133,6 @@ export function CreditSettingsComponent() {
       {
         accessorKey: "enabled",
         header: "사용 여부",
-        size: 160,
         cell: ({ row }) => (
           <ModelEnabledCell
             initialValue={row.original.enabled}
@@ -148,7 +146,6 @@ export function CreditSettingsComponent() {
       {
         accessorKey: "cost",
         header: "크레딧 비용",
-        size: 260,
         cell: ({ row }) => (
           <CreditSettingCell
             initialValue={row.original.cost}

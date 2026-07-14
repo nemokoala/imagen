@@ -50,22 +50,18 @@ export function UserManagement() {
       {
         accessorKey: "id",
         header: "ID",
-        size: 80,
       },
       {
         accessorKey: "email",
         header: "이메일",
-        size: 200,
       },
       {
         accessorKey: "nickname",
         header: "닉네임",
-        size: 150,
       },
       {
         accessorKey: "credits",
         header: "크레딧",
-        size: 200,
         cell: ({ row }) => {
           const user = row.original;
           return (
@@ -83,7 +79,6 @@ export function UserManagement() {
       {
         accessorKey: "role",
         header: "역할",
-        size: 100,
         cell: ({ row }) => (
           <Badge
             variant={row.original.role === "admin" ? "default" : "secondary"}
@@ -95,7 +90,6 @@ export function UserManagement() {
       {
         accessorKey: "provider",
         header: "로그인 방식",
-        size: 120,
         cell: ({ row }) => (
           <Badge variant="outline">
             {row.original.provider === "kakao" ? "카카오" : "로컬"}
@@ -105,14 +99,12 @@ export function UserManagement() {
       {
         accessorKey: "createdAt",
         header: "가입일",
-        size: 150,
         cell: ({ row }) =>
           new Date(row.original.createdAt).toLocaleDateString("ko-KR"),
       },
       {
         id: "actions",
         header: "작업",
-        size: 80,
         cell: () => "-",
         enableSorting: false,
       },

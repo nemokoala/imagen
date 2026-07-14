@@ -48,7 +48,6 @@ export function DataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: manualSorting ? undefined : getSortedRowModel(),
-    columnResizeMode: "onChange",
     manualSorting,
     state: {
       sorting,
@@ -56,29 +55,20 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="border rounded-lg overflow-x-auto relative w-fit max-w-full">
-      <Table
-        style={{
-          width: table.getTotalSize(),
-          tableLayout: "fixed",
-        }}
-      >
-        <TableHeader>
+    <div className="border rounded-lg overflow-x-auto relative w-full bg-card">
+      <Table>
+        <TableHeader className="bg-muted/70">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="hover:bg-transparent">
               {headerGroup.headers.map((header) => {
                 const canSort = header.column.getCanSort();
                 return (
-                  <TableHead
-                    key={header.id}
-                    style={{ width: header.getSize() }}
-                    className="relative px-2 group"
-                  >
+                  <TableHead key={header.id} className="px-3 group">
                     {!header.isPlaceholder && (
                       <div
                         className={`flex items-center gap-1 ${
                           canSort
-                            ? "cursor-pointer select-none hover:text-foreground hover:bg-muted/50 rounded-sm px-1 -mx-1 py-1 transition-colors"
+                            ? "cursor-pointer select-none hover:text-foreground rounded-sm transition-colors"
                             : ""
                         }`}
                         onClick={
@@ -87,12 +77,10 @@ export function DataTable<TData, TValue>({
                             : undefined
                         }
                       >
-                        <div className="truncate">
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                        </div>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                         {canSort && (
                           <div className="w-4 flex-shrink-0 flex items-center justify-center">
                             {{
@@ -104,15 +92,6 @@ export function DataTable<TData, TValue>({
                           </div>
                         )}
                       </div>
-                    )}
-                    {header.column.getCanResize() && (
-                      <div
-                        onMouseDown={header.getResizeHandler()}
-                        onTouchStart={header.getResizeHandler()}
-                        className={`absolute right-0 top-0 h-full w-1 cursor-col-resize select-none touch-none bg-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity ${
-                          header.column.getIsResizing() ? "opacity-100" : ""
-                        }`}
-                      />
                     )}
                   </TableHead>
                 );
@@ -126,13 +105,10 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="odd:bg-muted/25 hover:bg-accent/60"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell
-                    key={cell.id}
-                    style={{ width: cell.column.getSize() }}
-                    className="px-2 truncate"
-                  >
+                  <TableCell key={cell.id} className="px-3">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

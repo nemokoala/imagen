@@ -53,15 +53,25 @@ export function CoverflowShowcase() {
   if (isLoading) {
     return (
       <div className="w-full py-8 mx-[-8px] overflow-hidden min-h-[630px]">
-        <div className="flex justify-center items-center gap-4 pt-4 pb-20">
-          <Skeleton className="hidden h-auto w-[22%] max-w-[320px] aspect-[3/4] rounded-2xl opacity-40 sm:block" />
-          <Skeleton className="w-[80%] max-w-[400px] aspect-[3/4] rounded-2xl" />
-          <Skeleton className="hidden h-auto w-[22%] max-w-[320px] aspect-[3/4] rounded-2xl opacity-40 sm:block" />
+        <div className="flex justify-center items-center pt-4 pb-20 [perspective:1200px]">
+          <Skeleton className="hidden lg:block w-[18%] max-w-[260px] aspect-[3/4] shrink-0 rounded-2xl opacity-30 -mr-12 [transform:rotateY(28deg)_scale(0.88)]" />
+          <Skeleton className="hidden sm:block w-[22%] max-w-[320px] aspect-[3/4] shrink-0 rounded-2xl opacity-60 -mr-8 [transform:rotateY(22deg)_scale(0.94)]" />
+          <Skeleton className="relative z-10 w-[80%] max-w-[400px] aspect-[3/4] shrink-0 rounded-2xl shadow-xl">
+            <div className="absolute inset-x-0 bottom-0 space-y-3 p-5">
+              <div className="flex items-center gap-2.5">
+                <div className="h-8 w-8 rounded-full bg-foreground/10" />
+                <div className="h-3 w-24 rounded-full bg-foreground/10" />
+              </div>
+              <div className="h-3.5 w-3/4 rounded-full bg-foreground/10" />
+            </div>
+          </Skeleton>
+          <Skeleton className="hidden sm:block w-[22%] max-w-[320px] aspect-[3/4] shrink-0 rounded-2xl opacity-60 -ml-8 [transform:rotateY(-22deg)_scale(0.94)]" />
+          <Skeleton className="hidden lg:block w-[18%] max-w-[260px] aspect-[3/4] shrink-0 rounded-2xl opacity-30 -ml-12 [transform:rotateY(-28deg)_scale(0.88)]" />
         </div>
-        <div className="flex justify-center gap-2 -mt-4">
-          <Skeleton className="h-2 w-2 rounded-full" />
-          <Skeleton className="h-2 w-6 rounded-full" />
-          <Skeleton className="h-2 w-2 rounded-full" />
+        <div className="flex justify-center items-center gap-2 -mt-4">
+          <div className="h-2 w-2 rounded-full bg-muted-foreground/20" />
+          <div className="h-2 w-6 rounded-full bg-muted-foreground/40 animate-pulse" />
+          <div className="h-2 w-2 rounded-full bg-muted-foreground/20" />
         </div>
       </div>
     );

@@ -46,7 +46,9 @@ const handleFetchJSON = async (
 
   if (!response.ok) {
     const errorMessage = data.message || "요청에 실패했습니다";
-    console.error(errorMessage);
+    // 호출부에서 toast 등으로 처리되는 예상된 에러이므로 warn 사용
+    // (console.error는 dev overlay를 띄움)
+    console.warn(`[${response.status}] ${endpoint}: ${errorMessage}`);
     const error = new Error(errorMessage) as Error & {
       code?: string;
       statusCode?: number;

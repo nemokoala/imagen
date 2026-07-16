@@ -17,6 +17,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-border": "var(--border)",
         } as React.CSSProperties
       }
+      toastOptions={{
+        // backdrop-filter는 CSS 빌드 과정에서 제거되어 인라인으로 적용 (글래스 효과)
+        style: {
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+        },
+      }}
       {...props}
     />
   )

@@ -267,3 +267,130 @@ body {
     display: none; /* Chrome, Safari and Opera */
   }
 }
+
+/* ─── Sonner 토스트 커스텀 디자인 ───
+   sonner 자체 스타일시트가 globals.css 뒤에 주입되므로
+   [data-sonner-toaster] 프리픽스로 특이도를 한 단계 높여 덮어쓴다. */
+html [data-sonner-toaster] {
+  font-family: var(--font-sans);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  /* 타입별 액센트 (기본: 브랜드 보라) */
+  --toast-accent: var(--color-violet-500);
+  --toast-accent-to: var(--color-blue-500);
+
+  align-items: center;
+  gap: 0.75rem;
+  /* 오른쪽은 X 버튼(닫기) 자리 확보 */
+  padding: 14px 40px 14px 20px;
+  border-radius: calc(var(--radius) + 4px);
+  border: 1px solid color-mix(in oklab, var(--toast-accent) 22%, var(--border));
+  background: color-mix(in oklab, var(--popover) 90%, transparent);
+  /* backdrop-filter(글래스 효과)는 빌드에서 제거되어 sonner.tsx의 toastOptions.style로 적용 */
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 6%),
+    0 8px 28px -8px color-mix(in oklab, var(--toast-accent) 35%, transparent);
+  overflow: hidden;
+}
+
+/* 좌측 그라데이션 액센트 바 */
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(
+    to bottom,
+    var(--toast-accent),
+    var(--toast-accent-to)
+  );
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="success"] {
+  --toast-accent: var(--color-emerald-500);
+  --toast-accent-to: var(--color-teal-500);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="error"] {
+  --toast-accent: var(--color-rose-500);
+  --toast-accent-to: var(--color-red-500);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="warning"] {
+  --toast-accent: var(--color-amber-500);
+  --toast-accent-to: var(--color-orange-500);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-type="info"] {
+  --toast-accent: var(--color-sky-500);
+  --toast-accent-to: var(--color-blue-500);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] {
+  color: var(--toast-accent);
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-title] {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-description] {
+  color: var(--muted-foreground);
+}
+
+/* X 버튼: 기본(왼쪽 위 모서리 걸침)은 overflow: hidden에 잘리므로
+   토스트 안쪽 오른쪽 중앙으로 이동 + 고스트 스타일.
+   html 프리픽스: sonner의 다크 테마 규칙([data-sonner-theme="dark"])보다 우선 */
+html [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-close-button] {
+  position: absolute;
+  left: auto;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--radius) - 2px);
+  color: var(--muted-foreground);
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"]
+  [data-close-button]:hover {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* 액션/취소 버튼 */
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-button] {
+  border-radius: calc(var(--radius) - 2px);
+  background: linear-gradient(
+    to right,
+    var(--toast-accent),
+    var(--toast-accent-to)
+  );
+  color: #fff;
+  font-weight: 600;
+}
+
+[data-sonner-toaster]
+  [data-sonner-toast][data-styled="true"]
+  [data-button][data-cancel] {
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.dark [data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  background: color-mix(in oklab, var(--popover) 85%, transparent);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 30%),
+    0 8px 28px -8px color-mix(in oklab, var(--toast-accent) 45%, transparent);
+}

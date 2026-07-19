@@ -39,7 +39,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky h-15 top-0 z-50 w-full flex items-center justify-between px-2">
+    <header className="sticky h-15 top-0 z-50 w-full flex items-center justify-between pl-3.5 pr-2">
       <Link
         className="flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80"
         href="/"

@@ -29,11 +29,12 @@ export function RecommendPrompt({
   }));
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex min-w-0 flex-col gap-3">
       <p className="text-sm text-subtitle -mb-1">추천 프롬프트</p>
       {randomPrompts.map((prompt) => (
         <motion.div
           key={prompt}
+          className="min-w-0"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -41,10 +42,10 @@ export function RecommendPrompt({
           <Button
             key={prompt}
             variant="outline"
-            className="w-full truncate"
+            className="w-full min-w-0 justify-start overflow-hidden"
             onClick={() => setPrompt(prompt)}
           >
-            {prompt}
+            <span className="truncate">{prompt}</span>
           </Button>
         </motion.div>
       ))}

@@ -1,44 +1,40 @@
-"use client";
+import {
+  HydrationBoundary,
+  QueryClient,
+  dehydrate,
+} from "@tanstack/react-query";
+import { cookies } from "next/headers";
+import { imageService } from "@/lib/services/image/imageService";
+import { authService } from "@/lib/services/auth/authService";
+import {
+  SHOWCASE_IMAGE_LIMIT,
+  topLikedImagesQueryKey,
+} from "@/constants/image.constants";
+import { ExploreContent } from "./ExploreContent";
 
-import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery";
-import { Layout } from "@/components/layout/Layout";
-import { ImageCreatButton } from "@/components/home/ImageCreatButton";
-import { CoverflowShowcase } from "@/components/home/CoverflowShowcase";
-import { LayoutGrid } from "lucide-react";
-import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
-import { useRef } from "react";
-import { DecorativeBackground } from "@/components/ui/decorative-background";
+export default async function ExplorePage() {
+  const queryClient = new QueryClient();
+  const cookieStore = await cookies();
 
-export default function ExplorePage() {
-  const { isVisible, handleScrollChange } = useScrollVisibility({
-    threshold: 100,
+  // 서버 컴포넌트에서는 쿠키를 수정할 수 없으므로 리프레시 없이 액세스 토큰만 확인한다.
+  // 만료된 경우 비로그인으로 간주하고, isLiked는 클라이언트 재요청 시 채워진다.
+  let currentUserId: number | undefined;
+  try {
+    currentUserId = await authService.getUserIdFromCookie(cookieStore);
+  } catch {
+    currentUserId = undefined;
+  }
+
+  // 상단 쇼케이스 이미지를 서버에서 미리 채워 LCP 이미지가 초기 HTML에 포함되게 한다.
+  await queryClient.prefetchQuery({
+    queryKey: topLikedImagesQueryKey(SHOWCASE_IMAGE_LIMIT),
+    queryFn: () =>
+      imageService.getTopLikedImages(SHOWCASE_IMAGE_LIMIT, currentUserId),
   });
 
-  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-
   return (
-    <Layout.Content
-      className="h-[calc(100dvh-60px)] px-2"
-      ref={scrollContainerRef}
-      onScrollChange={handleScrollChange}
-    >
-      <DecorativeBackground />
-      <CoverflowShowcase />
-      <div className="relative flex items-center gap-3 max-w-7xl mx-auto w-full my-2">
-        <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
-        <div className="flex items-center gap-2 px-4 py-1.5 rounded-full border bg-background/50 backdrop-blur-sm shrink-0">
-          <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
-          <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-            전체 갤러리
-          </span>
-        </div>
-        <div className="flex-1 h-px bg-gradient-to-l from-border to-transparent" />
-      </div>
-      <InfiniteImageGallery
-        maintainScrollPosition={true}
-        scrollElementRef={scrollContainerRef}
-      />
-      <ImageCreatButton isVisible={isVisible} />
-    </Layout.Content>
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <ExploreContent />
+    </HydrationBoundary>
   );
 }

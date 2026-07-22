@@ -16,15 +16,26 @@ import { toast } from "sonner";
 interface ImageCardProps {
   image: ImageType;
   index?: number;
+  /**
+   * LCP 후보 이미지에만 true를 넘긴다.
+   * 미지정 시 index 기준 첫 화면에 들어올 카드만 자동으로 우선 로딩한다.
+   */
+  priority?: boolean;
 }
 
-export function ImageCard({ image }: ImageCardProps) {
+/** priority 미지정 시 우선 로딩할 카드 개수 (첫 화면 한 줄 분량) */
+const AUTO_PRIORITY_COUNT = 4;
+
+export function ImageCard({ image, index, priority }: ImageCardProps) {
   const router = useRouter();
   const prefetchedRef = useRef(false); // 중복 prefetch 방지
   const [isLoaded, setIsLoaded] = useState(false);
   const { isAuthenticated } = useUserStore();
 
   const likeMutation = useToggleLikeMutation(image.id);
+
+  const isPriority =
+    priority ?? (index !== undefined && index < AUTO_PRIORITY_COUNT);
 
   const [liked, setLiked] = useState(image.isLiked);
   const [likeCount, setLikeCount] = useState(image.likeCount);
@@ -101,8 +112,7 @@ export function ImageCard({ image }: ImageCardProps) {
               alt={image.prompt}
               fill
               className="object-cover transition-transform duration-300"
-              loading="eager"
-              priority={true}
+              priority={isPriority}
               sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               onLoad={() => setIsLoaded(true)}
             />

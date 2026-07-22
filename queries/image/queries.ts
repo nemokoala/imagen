@@ -9,6 +9,7 @@ import { HealthCheckResponse } from "../../types/common.interfaces";
 import { GalleryResponse } from "../../types/image.interfaces";
 import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import { Comment } from "@/types/image.interfaces";
+import { topLikedImagesQueryKey } from "@/constants/image.constants";
 
 export const useGetUserImagesQuery = (
   userId: number,
@@ -176,7 +177,7 @@ export const useGetCommentsQuery = (imageId: number | null) => {
 
 export const useGetTopLikedImagesQuery = (limit: number = 10) => {
   return useQuery({
-    queryKey: ["topLikedImages", limit],
+    queryKey: topLikedImagesQueryKey(limit),
     queryFn: async () => {
       const response = (await FetchUtil.get(
         `/api/images/ranking/top-liked?limit=${limit}`,

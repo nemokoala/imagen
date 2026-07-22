@@ -15,9 +15,14 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import { Button } from "../ui/button";
 import { useGetTopLikedImagesQuery } from "@/queries/image/queries";
+import {
+  MOBILE_SHOWCASE_COUNT,
+  SHOWCASE_IMAGE_LIMIT,
+} from "@/constants/image.constants";
 
 export function CoverflowShowcase() {
-  const { data: images, isLoading } = useGetTopLikedImagesQuery(16);
+  const { data: images, isLoading } =
+    useGetTopLikedImagesQuery(SHOWCASE_IMAGE_LIMIT);
   const swiperRef = useRef<SwiperClass | null>(null);
   const width = useWindowWidth();
 
@@ -80,8 +85,13 @@ export function CoverflowShowcase() {
   if (!images || images.length === 0) return null;
 
   const isMobile = width < 768;
-  const showcaseImages = images.slice(0, isMobile ? 8 : 16);
+  const showcaseImages = images.slice(
+    0,
+    isMobile ? MOBILE_SHOWCASE_COUNT : SHOWCASE_IMAGE_LIMIT,
+  );
   const enableLoop = showcaseImages.length > 2;
+  // 첫 화면에 보이는 중앙 슬라이드가 LCP 요소이므로 그 주변만 우선 로딩한다
+  const initialSlideIndex = Math.floor(showcaseImages.length / 2);
 
   return (
     <section className="w-vw py-8 mx-[-8px]">
@@ -96,7 +106,7 @@ export function CoverflowShowcase() {
             slidesPerView={"auto"}
             roundLengths={true}
             loop={enableLoop}
-            initialSlide={Math.floor(showcaseImages.length / 2)}
+            initialSlide={initialSlideIndex}
             onSwiper={(swiper) => {
               swiperRef.current = swiper;
             }}
@@ -130,7 +140,10 @@ export function CoverflowShowcase() {
                 className="max-w-[80%] sm:max-w-[400px]"
               >
                 <div className="w-full aspect-[3/4] relative rounded-2xl overflow-hidden bg-background shadow-none md:shadow-md">
-                  <ImageCard image={image} />
+                  <ImageCard
+                    image={image}
+                    priority={Math.abs(index - initialSlideIndex) <= 1}
+                  />
                 </div>
               </SwiperSlide>
             ))}

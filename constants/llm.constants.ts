@@ -45,3 +45,14 @@ export function getOllamaModelLabel(value: string): string {
     value
   );
 }
+
+/**
+ * 편집 모델이 지워진 자리를 주변 배경으로 메우게 하는 지시문.
+ * 무엇으로 채울지 사용자가 말하지 않은 제거 요청에 쓴다. LLM은 이미지를 볼 수 없어
+ * 대체할 내용을 스스로 지어내면 엉뚱한 결과가 나온다.
+ */
+export const REMOVAL_INSTRUCTION =
+  "Remove the subject and seamlessly fill the area with the surrounding background, matching its lighting, texture and perspective.";
+
+export const REMOVAL_FALLBACK_RULE =
+  `If the user did not say what should replace it, answer exactly: "${REMOVAL_INSTRUCTION}"`;

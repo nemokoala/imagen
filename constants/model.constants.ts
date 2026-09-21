@@ -125,3 +125,10 @@ export function getResolution(model: Model, ratio: ImageRatio): RatioResolution 
 export function isSupportedRatio(model: Model, ratio: ImageRatio): boolean {
   return MODEL_RATIO_CONFIG[model]?.supportedRatios.includes(ratio) ?? false;
 }
+
+/**
+ * Qwen 편집에 넣을 수 있는 참고 이미지 최대 장수(<image2>부터).
+ * TextEncodeQwenImage21 노드는 image_16까지 받지만 한 장마다 시퀀스가 길어져
+ * VRAM과 생성 시간이 늘어난다. 늘리려면 이 값만 올리면 된다.
+ */
+export const MAX_REFERENCE_IMAGES = 3;

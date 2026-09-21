@@ -1,6 +1,6 @@
 import { prisma } from "../prisma";
 import { ApiError } from "@/lib/errors/AppError";
-import { DEFAULT_OLLAMA_MODEL } from "@/constants/llm.constants";
+import { DEFAULT_OLLAMA_MODEL, REMOVAL_FALLBACK_RULE } from "@/constants/llm.constants";
 
 export interface TranslateAndClassifyResult {
   prompt: string;
@@ -86,6 +86,76 @@ export const ollamaService = {
       } catch (parseError) {
         console.error("Failed to parse AI response:", parseError);
         // 파싱 실패시 원본 프롬프트 반환
+        return userPrompt;
+      }
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new ApiError("AI 배포 서버 응답 시간이 초과되었습니다.", 408);
+      }
+      if (error instanceof ApiError) throw error;
+      throw new ApiError("AI 배포 서버 연결 중 오류가 발생했습니다.", 500);
+    }
+  },
+
+  /**
+   * 이미지 편집 지시문을 영어 명령문 한 줄로 정리합니다.
+   * `translateText`는 SDXL용 키워드 나열을 만들기 때문에 편집 모델에는 쓸 수 없습니다.
+   */
+  async translateEditInstruction(
+    userPrompt: string,
+    model = DEFAULT_OLLAMA_MODEL,
+    masked = false,
+  ): Promise<string> {
+    const systemPrompt = `
+Rewrite the image editing instruction below as ONE short English imperative sentence for an image editing model.
+${
+      masked
+        ? "The user painted a region of the image and the instruction applies only to that region."
+        : "The instruction applies to the whole image."
+    }
+
+Rules:
+- Describe the desired RESULT, not the act of editing. Never use the words edit, select, selected, region, area, mask or painted.
+- To delete, remove, erase or hide something, name what should be there instead. ${REMOVAL_FALLBACK_RULE}
+- Keep whatever the user wants preserved. Do not invent new subjects, styles or quality keywords.
+- Keep any <image1> or <image2> placeholder exactly as written.
+- Always respond in JSON format: { "instruction": "<final instruction only>" }
+
+User input:
+${userPrompt}
+`;
+
+    await this.healthCheck();
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
+    try {
+      const response = await fetch(`${getOllamaApiUrl()}/api/generate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ model, prompt: systemPrompt, stream: false }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new ApiError("편집 지시문 변환에 실패했습니다.", response.status);
+      }
+
+      const data = await response.json();
+      // 모델이 JSON을 두 번 뱉는 경우가 있어 첫 객체만 비탐욕으로 집는다.
+      const jsonMatch = data.response?.match(/\{[\s\S]*?\}/);
+      if (!jsonMatch) return userPrompt;
+
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return typeof parsed.instruction === "string" && parsed.instruction.trim()
+          ? parsed.instruction.trim()
+          : userPrompt;
+      } catch (parseError) {
+        console.error("Failed to parse AI edit instruction:", parseError);
         return userPrompt;
       }
     } catch (error) {

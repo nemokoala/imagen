@@ -7,6 +7,7 @@ import { localImageQueue } from "@/lib/services/image/localImageQueue";
 import type { EditImageRequest } from "@/lib/services/image/qwenImageService";
 import type { GenerateImageResponse } from "@/lib/services/image/imageService";
 import { Model } from "@/types/model.interfaces";
+import { MAX_REFERENCE_IMAGES } from "@/constants/model.constants";
 import { ApiError } from "@/lib/errors/AppError";
 import { errorHandler } from "@/lib/errors/errorHandler";
 import { promptSafetyService } from "@/lib/services/image/promptSafetyService";
@@ -88,12 +89,27 @@ export async function POST(req: NextRequest) {
     if (!source) {
       throw new ApiError("원본 이미지가 필요합니다.", 400, "IMAGE_REQUIRED");
     }
-    const reference = await readImage(form.get("reference"), false);
+    const referenceEntries = form.getAll("reference").filter((value) => value !== null);
+    if (referenceEntries.length > MAX_REFERENCE_IMAGES) {
+      throw new ApiError(
+        `참고 이미지는 최대 ${MAX_REFERENCE_IMAGES}장까지 사용할 수 있습니다.`,
+        400,
+        "TOO_MANY_REFERENCES",
+      );
+    }
+    const references = (
+      await Promise.all(referenceEntries.map((value) => readImage(value, true)))
+    ).filter((item) => item !== undefined);
+    const mask = await readImage(form.get("mask"), false);
+    if (mask && mask.mimeType !== "image/png") {
+      throw new ApiError("편집 영역 마스크는 PNG여야 합니다.", 400, "INVALID_MASK_TYPE");
+    }
     const request: EditImageRequest = {
       prompt: prompt.trim(),
       userId,
       source,
-      reference,
+      references,
+      mask,
     };
     const generator = localImageQueue.enqueue({
       userId,

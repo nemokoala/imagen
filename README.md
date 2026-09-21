@@ -63,6 +63,16 @@ Next.js와 여러 이미지 모델을 사용한 AI 이미지 생성 웹 애플�
 
 관리자 페이지의 **LLM 모델 설정 → 선정성 프롬프트 필터**를 켜면 NSFW 허용 모델의 이미지 생성과 편집 요청 전에 JEV가 입력 프롬프트를 검사합니다. 현재 대상은 Qwen Image 2.1만이며, 대상 목록은 `constants/model.constants.ts`의 `NSFW_CAPABLE_MODELS`에서 관리합니다. 다른 모델에서는 필터 설정용 DB 조회와 JEV 호출을 건너뜁니다. 기본값은 꺼짐이며, 켠 상태에서 JEV를 사용할 수 없으면 대상 모델의 생성 요청을 중단합니다. 필터 기준은 `lib/services/image/promptSafetyService.ts`의 `SEXUAL_CONTENT_THRESHOLD`에서 조정할 수 있습니다.
 
+### Qwen Image 2.1 영역 편집
+
+이미지 편집 탭에서 **편집 영역 지정**을 켜면 원본 위에 브러시로 칠한 부분만 새로 생성하고 나머지는 원본 픽셀을 그대로 유지합니다. 브라우저가 칠한 영역을 흑백 PNG 마스크로 만들어 `mask` 필드로 전송하고, 서버는 `lib/services/image/qwen-image-21-mask-edit-workflow.json`을 사용합니다.
+
+참고 이미지는 `constants/model.constants.ts`의 `MAX_REFERENCE_IMAGES`장까지 넣을 수 있고 지시문에서 `<image2>`, `<image3>` 순서로 가리킵니다(`<image1>`은 원본). `TextEncodeQwenImage21` 노드는 `image_16`까지 받지만 한 장마다 시퀀스가 길어져 VRAM과 생성 시간이 늘어나므로 기본값을 3으로 제한했습니다. 지시문이 언급하지 않은 참고 이미지는 모델이 무시하기 쉬워 `Use <imageN> as visual references.` 한 줄을 자동으로 덧붙입니다.
+
+편집 지시문은 `llmService.translateEditInstruction`으로 영어 명령문 한 줄로 바꿔서 모델에 넘깁니다. 생성용 `translateText`는 SDXL 키워드 나열을 만들기 때문에 편집 모델에는 쓸 수 없습니다. "지워줘"처럼 무엇으로 채울지 말하지 않은 제거 요청은 `constants/llm.constants.ts`의 `REMOVAL_INSTRUCTION`으로 치환합니다. LLM은 이미지를 볼 수 없어 대체할 내용을 스스로 지어내면 엉뚱한 결과가 나오기 때문입니다. 관리자 **LLM 모델 설정 → 번역**이 꺼져 있으면 원문이 그대로 전달되며, 이때 한국어 지시문은 결과가 크게 나빠집니다.
+
+이 워크플로는 원본을 약 1MP·32 배수 크기로 맞춘 뒤 VAE로 인코딩한 latent에 노이즈 마스크를 걸어 샘플링하고, 마지막에 `ImageCompositeMasked`로 마스크 밖 영역을 원본으로 되돌립니다. `TextEncodeQwenImage21`의 latent 출력은 빈 latent라 마스크 편집의 기준으로 쓸 수 없으므로 `VAEEncode`를 따로 둔 구조입니다. 경계 번짐은 `GrowMask`/`FeatherMask`의 픽셀 값으로 조정합니다.
+
 ## 라이선스
 
 MIT License

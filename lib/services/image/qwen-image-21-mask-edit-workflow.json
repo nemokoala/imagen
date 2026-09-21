@@ -1,0 +1,121 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": { "image": "portrait_model_denim.png" }
+  },
+  "11": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": ["4", 0],
+      "upscale_method": "lanczos",
+      "megapixels": 1.0,
+      "resolution_steps": 32
+    }
+  },
+  "12": {
+    "class_type": "LoadImageMask",
+    "inputs": { "image": "mask.png", "channel": "red" }
+  },
+  "13": {
+    "class_type": "GrowMask",
+    "inputs": { "mask": ["12", 0], "expand": 16, "tapered_corners": true }
+  },
+  "14": {
+    "class_type": "FeatherMask",
+    "inputs": {
+      "mask": ["13", 0],
+      "left": 16,
+      "top": 16,
+      "right": 16,
+      "bottom": 16
+    }
+  },
+  "15": {
+    "class_type": "VAEEncode",
+    "inputs": { "pixels": ["11", 0], "vae": ["3", 0] }
+  },
+  "16": {
+    "class_type": "SetLatentNoiseMask",
+    "inputs": { "samples": ["15", 0], "mask": ["14", 0] }
+  },
+  "5": {
+    "class_type": "TextEncodeQwenImage21",
+    "inputs": {
+      "clip": ["2", 0],
+      "vae": ["3", 0],
+      "prompt": "Edit <image1>: add a small red flower to the shirt.",
+      "negative_prompt": "",
+      "resolution": 0,
+      "images.image_1": ["11", 0]
+    }
+  },
+  "6": {
+    "class_type": "QwenImage21Cache",
+    "inputs": {
+      "model": ["1", 0],
+      "device": "auto",
+      "dtype": "default"
+    }
+  },
+  "7": {
+    "class_type": "KSampler",
+    "inputs": {
+      "seed": 1,
+      "steps": 40,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1,
+      "model": ["6", 0],
+      "positive": ["5", 0],
+      "negative": ["5", 1],
+      "latent_image": ["16", 0]
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["7", 0],
+      "vae": ["3", 0]
+    }
+  },
+  "17": {
+    "class_type": "ImageCompositeMasked",
+    "inputs": {
+      "destination": ["11", 0],
+      "source": ["8", 0],
+      "x": 0,
+      "y": 0,
+      "resize_source": false,
+      "mask": ["14", 0]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "ImageGen_Qwen21_MaskEdit",
+      "images": ["17", 0]
+    }
+  }
+}

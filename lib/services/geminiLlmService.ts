@@ -1,6 +1,7 @@
 import { prisma } from "../prisma";
 import { ApiError } from "@/lib/errors/AppError";
 import { TranslateAndClassifyResult } from "./ollamaService";
+import { REMOVAL_FALLBACK_RULE } from "@/constants/llm.constants";
 
 const GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
@@ -98,6 +99,47 @@ Input: ${userPrompt}`;
       return parsed.prompt || parsed.promt || userPrompt;
     } catch {
       console.error("Failed to parse Gemini response");
+      return userPrompt;
+    }
+  },
+
+  /**
+   * 이미지 편집 지시문을 영어 명령문 한 줄로 정리한다.
+   * `translateText`는 SDXL용 키워드 나열을 만들기 때문에 편집 모델에는 쓸 수 없다.
+   */
+  async translateEditInstruction(
+    userPrompt: string,
+    model: string = "gemini-2.5-flash-lite",
+    masked = false,
+  ): Promise<string> {
+    const systemPrompt = `Rewrite the image editing instruction below as ONE short English imperative sentence for an image editing model.
+${
+      masked
+        ? "The user painted a region of the image and the instruction applies only to that region."
+        : "The instruction applies to the whole image."
+    }
+Rules:
+- Describe the desired RESULT, not the act of editing. Never use the words edit, select, selected, region, area, mask or painted.
+- To delete, remove, erase or hide something, name what should be there instead. ${REMOVAL_FALLBACK_RULE}
+- Keep whatever the user wants preserved. Do not invent new subjects, styles or quality keywords.
+- Keep any <image1> or <image2> placeholder exactly as written.
+JSON: {"instruction":"..."}
+
+Input: ${userPrompt}`;
+
+    const responseText = await callGemini(model, systemPrompt);
+
+    try {
+      // 모델이 JSON을 두 번 뱉는 경우가 있어 첫 객체만 비탐욕으로 집는다.
+      const jsonMatch = responseText.match(/\{[\s\S]*?\}/);
+      if (!jsonMatch) return userPrompt;
+
+      const parsed = JSON.parse(jsonMatch[0]);
+      return typeof parsed.instruction === "string" && parsed.instruction.trim()
+        ? parsed.instruction.trim()
+        : userPrompt;
+    } catch {
+      console.error("Failed to parse Gemini edit instruction response");
       return userPrompt;
     }
   },

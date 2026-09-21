@@ -6,6 +6,7 @@ import { creditSettingsService } from "@/lib/services/admin/creditSettingsServic
 import { getResolution } from "@/constants/model.constants";
 import { ImageRatio } from "@/types/image.interfaces";
 import { Model } from "@/types/model.interfaces";
+import { llmService } from "../llmService";
 import { imageGenerationService } from "./imageGenerationService";
 import type {
   GenerateImageRequest,
@@ -35,6 +36,14 @@ const editWorkflowPath = join(
   "qwen-image-21-edit-workflow.json",
 );
 
+const maskEditWorkflowPath = join(
+  process.cwd(),
+  "lib",
+  "services",
+  "image",
+  "qwen-image-21-mask-edit-workflow.json",
+);
+
 interface EditUpload {
   data: Buffer;
   mimeType: "image/png" | "image/jpeg" | "image/webp";
@@ -44,7 +53,10 @@ export interface EditImageRequest {
   prompt: string;
   userId: number;
   source: EditUpload;
-  reference?: EditUpload;
+  /** <image2>부터 순서대로 매핑되는 참고 이미지. */
+  references?: EditUpload[];
+  /** 흰색 영역만 편집하는 마스크. 원본과 같은 비율이어야 한다. */
+  mask?: EditUpload;
 }
 
 async function uploadImage(comfyUrl: string, image: EditUpload): Promise<string> {
@@ -90,13 +102,20 @@ export const qwenImageService = {
   async *editImageByQwenImage21Stream(
     request: EditImageRequest,
   ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
-    const { prompt, userId, source, reference } = request;
+    const { prompt, userId, source, references = [], mask } = request;
     if (!prompt.trim()) {
       yield { success: false, error: "편집 지시문이 필요합니다." };
       return;
     }
-    if (!reference && prompt.includes("<image2>")) {
-      yield { success: false, error: "<image2>를 사용하려면 참고 이미지를 추가해주세요." };
+    // <image1>은 원본이므로 참고 이미지는 <image2>부터 번호가 붙는다.
+    const missingSlot = [...prompt.matchAll(/<image(\d+)>/g)]
+      .map((match) => Number(match[1]))
+      .find((index) => index > references.length + 1);
+    if (missingSlot !== undefined) {
+      yield {
+        success: false,
+        error: `<image${missingSlot}>를 사용하려면 참고 이미지를 ${missingSlot - 1}장 이상 추가해주세요.`,
+      };
       return;
     }
 
@@ -115,28 +134,74 @@ export const qwenImageService = {
         return;
       }
 
+      yield "편집 지시문을 정리하는 중입니다...";
+      let instruction = prompt.trim();
+      try {
+        instruction = await llmService.translateEditInstruction(
+          prompt.trim(),
+          Boolean(mask),
+        );
+      } catch {
+        // 변환 실패는 치명적이지 않으므로 원문 지시문을 그대로 사용한다.
+        console.error("edit instruction translation failed");
+      }
+      console.log("[qwen-edit] instruction:", {
+        original: prompt.trim(),
+        instruction,
+        masked: Boolean(mask),
+      });
+      yield `편집 지시문: ${instruction}`;
+
       yield "원본 이미지를 ComfyUI에 업로드하는 중입니다...";
       const sourceName = await uploadImage(comfyUrl, source);
-      const referenceName = reference
-        ? await uploadImage(comfyUrl, reference)
-        : undefined;
+      const referenceNames: string[] = [];
+      for (const [index, item] of references.entries()) {
+        yield `참고 이미지를 업로드하는 중입니다... (${index + 1}/${references.length})`;
+        referenceNames.push(await uploadImage(comfyUrl, item));
+      }
+      let maskName: string | undefined;
+      if (mask) {
+        yield "편집 영역 마스크를 업로드하는 중입니다...";
+        maskName = await uploadImage(comfyUrl, mask);
+      }
 
-      const workflow = JSON.parse(await readFile(editWorkflowPath, "utf-8"));
+      const workflow = JSON.parse(
+        await readFile(maskName ? maskEditWorkflowPath : editWorkflowPath, "utf-8"),
+      );
       workflow["4"].inputs.image = sourceName;
-      const editPrompt = prompt.includes("<image1>")
-        ? prompt.trim()
-        : `Edit <image1>: ${prompt.trim()}`;
-      workflow["5"].inputs.prompt = referenceName && !editPrompt.includes("<image2>")
-        ? `${editPrompt} Use <image2> as a visual reference.`
+      const editPrompt = instruction.includes("<image1>")
+        ? instruction
+        : `Edit <image1>: ${instruction}`;
+      // 지시문이 언급하지 않은 참고 이미지는 모델이 무시하기 쉬우므로 한 줄로 덧붙인다.
+      const unusedSlots = referenceNames
+        .map((_, index) => `<image${index + 2}>`)
+        .filter((slot) => !editPrompt.includes(slot));
+      workflow["5"].inputs.prompt = unusedSlots.length
+        ? `${editPrompt} Use ${unusedSlots.join(" and ")} as visual references.`
         : editPrompt;
       workflow["7"].inputs.seed = Math.floor(Math.random() * 2 ** 48);
-      if (referenceName) {
-        workflow["10"] = {
-          class_type: "LoadImage",
-          inputs: { image: referenceName },
-        };
-        workflow["5"].inputs["images.image_2"] = ["10", 0];
-      }
+      if (maskName) workflow["12"].inputs.image = maskName;
+
+      referenceNames.forEach((name, index) => {
+        // 기존 워크플로 노드 번호와 겹치지 않도록 참고 이미지는 100번대를 쓴다.
+        const loadId = String(100 + index);
+        workflow[loadId] = { class_type: "LoadImage", inputs: { image: name } };
+        let outputId = loadId;
+        if (maskName) {
+          // 마스크 워크플로는 원본을 1MP·32 배수로 맞추므로 참고 이미지도 같은 기준으로 줄인다.
+          outputId = String(200 + index);
+          workflow[outputId] = {
+            class_type: "ImageScaleToTotalPixels",
+            inputs: {
+              image: [loadId, 0],
+              upscale_method: "lanczos",
+              megapixels: 1.0,
+              resolution_steps: 32,
+            },
+          };
+        }
+        workflow["5"].inputs[`images.image_${index + 2}`] = [outputId, 0];
+      });
 
       yield "Qwen Image 2.1 편집 작업을 등록하는 중입니다...";
       const promptResponse = await fetch(`${comfyUrl}/api/prompt`, {

@@ -47,6 +47,32 @@ export const llmService = {
     return ollamaService.translateText(userPrompt, config.ollamaModel);
   },
 
+  /**
+   * 이미지 편집 지시문 전용 변환. 편집 모델은 키워드 나열이 아니라 명령문을 받아야 한다.
+   */
+  async translateEditInstruction(
+    userPrompt: string,
+    masked = false,
+  ): Promise<string> {
+    const config = await getConfig();
+
+    if (!config.translateEnabled) return userPrompt;
+
+    if (config.provider === "gemini") {
+      return geminiLlmService.translateEditInstruction(
+        userPrompt,
+        config.geminiModel,
+        masked,
+      );
+    }
+
+    return ollamaService.translateEditInstruction(
+      userPrompt,
+      config.ollamaModel,
+      masked,
+    );
+  },
+
   async translateAndClassify(
     userPrompt: string,
   ): Promise<TranslateAndClassifyResult> {

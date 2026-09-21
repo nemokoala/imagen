@@ -6,11 +6,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery";
 import { PublicUser, User } from "@/types/user.interfaces";
+import type { InfiniteData } from "@tanstack/react-query";
+import type { GetUserImagesResponse } from "@/types/image.interfaces";
 
 interface UserGeneratedImagesProps {
   userInfo: User | PublicUser;
   isOwnProfile: boolean;
-  userImagesData: any;
+  userImagesData: InfiniteData<GetUserImagesResponse> | undefined;
   imagesLoading: boolean;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }

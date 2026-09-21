@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { authService } from "@/lib/services/auth/authService";
 import { notificationService } from "@/lib/services/notification/notificationService";
 import { errorHandler } from "@/lib/errors/errorHandler";
@@ -7,7 +7,7 @@ import { cookies } from "next/headers";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const userId = await authService.getUserIdFromCookie(cookieStore);
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 }
 
 // 모든 알림 읽음 처리
-export async function PATCH(req: NextRequest) {
+export async function PATCH() {
   try {
     const cookieStore = await cookies();
     const userId = await authService.getUserIdFromCookie(cookieStore);
@@ -43,7 +43,7 @@ export async function PATCH(req: NextRequest) {
 }
 
 // 모든 알림 삭제
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
     const cookieStore = await cookies();
     const userId = await authService.getUserIdFromCookie(cookieStore);

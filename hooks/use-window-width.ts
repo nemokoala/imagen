@@ -5,14 +5,10 @@ import { useEffect, useState } from "react";
  * @returns 현재 윈도우 너비 (픽셀 단위)
  */
 export function useWindowWidth(): number {
-  const [width, setWidth] = useState<number>(() => {
-    if (typeof window === "undefined") return 0;
-    return window.innerWidth;
-  });
+  // SSR과 hydration의 첫 렌더에서 같은 값을 사용한다.
+  const [width, setWidth] = useState<number>(0);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const handleResize = () => {
       setWidth(window.innerWidth);
     };

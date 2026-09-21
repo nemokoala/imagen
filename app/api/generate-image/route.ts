@@ -103,11 +103,13 @@ export async function POST(req: NextRequest) {
 
     // 🆕 Stable Diffusion과 Z-Image 제외하고 전체 요청 횟수 체크
     const isZImage = model === Model.Z_IMAGE;
+    const isQwenImage = model === Model.QWEN_IMAGE_21;
     const isStableDiffusion = model === Model.STABLE_DIFFUSION_XL;
 
     if (
       !isStableDiffusion &&
       !isZImage &&
+      !isQwenImage &&
       totalRequestCount >= MAX_TOTAL_REQUESTS
     ) {
       throw new ApiError(
@@ -121,7 +123,7 @@ export async function POST(req: NextRequest) {
     const userId = await authService.getUserIdFromCookie(cookieStore);
 
     // 스트림 응답 처리 (Z_IMAGE, STABLE_DIFFUSION_XL)
-    if (isZImage || isStableDiffusion) {
+    if (isZImage || isQwenImage || isStableDiffusion) {
       const request: GenerateImageRequest = {
         prompt,
         model,
@@ -137,6 +139,8 @@ export async function POST(req: NextRequest) {
         generator: () =>
           isZImage
             ? imageService.generateImageByZImageStream(request)
+            : isQwenImage
+              ? imageService.generateImageByQwenImage21Stream(request)
             : imageService.generateImageByStableDiffusionStream(request),
       });
 

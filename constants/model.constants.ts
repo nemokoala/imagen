@@ -84,6 +84,18 @@ export const MODEL_RATIO_CONFIG: Record<Model, ModelRatioConfig> = {
       [ImageRatio.RATIO_16_9]: { width: 1280, height: 720, size: "1280x720" },
     },
   },
+  [Model.QWEN_IMAGE_21]: {
+    supportedRatios: [
+      ImageRatio.RATIO_1_1,
+      ImageRatio.RATIO_9_16,
+      ImageRatio.RATIO_16_9,
+    ],
+    resolutions: {
+      [ImageRatio.RATIO_1_1]: { width: 1024, height: 1024, size: "1024x1024" },
+      [ImageRatio.RATIO_9_16]: { width: 768, height: 1376, size: "768x1376" },
+      [ImageRatio.RATIO_16_9]: { width: 1376, height: 768, size: "1376x768" },
+    },
+  },
   [Model.NANO_BANANA]: {
     supportedRatios: [ImageRatio.RATIO_1_1],
     resolutions: {

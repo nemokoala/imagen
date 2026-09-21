@@ -30,8 +30,12 @@ import { useSuggestCategories } from "@/queries/category/mutations";
 import Link from "next/link";
 import { useScrollStore } from "@/stores/scrollStore";
 import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer";
+import { ImageEditForm } from "@/components/image-gen/ImageEditForm";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ImageGenPage() {
+  const [activeTab, setActiveTab] = useState<"generate" | "edit">("generate");
+  const [resultMode, setResultMode] = useState<"generate" | "edit">("generate");
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageId, setImageId] = useState<number | null>(null);
@@ -56,6 +60,8 @@ export default function ImageGenPage() {
 
   const { data: zimageHealthCheck, isLoading: isZimageHealthCheckLoading } =
     useHealthCheckQuery({ target: "zimage" });
+  const { data: qwenHealthCheck, isLoading: isQwenHealthCheckLoading } =
+    useHealthCheckQuery({ target: "qwen-image-21" });
 
   const { data: credit, isLoading: isCreditLoading } = useGetUserCredit();
   const {
@@ -87,6 +93,10 @@ export default function ImageGenPage() {
       return Model.Z_IMAGE;
     }
 
+    if (qwenHealthCheck?.healthy && isCreditModelEnabled(Model.QWEN_IMAGE_21)) {
+      return Model.QWEN_IMAGE_21;
+    }
+
     return (
       [Model.DALL_E_3, Model.GOOGLE_IMAGEN, Model.NANO_BANANA].find((item) =>
         isCreditModelEnabled(item),
@@ -95,6 +105,7 @@ export default function ImageGenPage() {
   }, [
     stableHealthCheck?.healthy,
     zimageHealthCheck?.healthy,
+    qwenHealthCheck?.healthy,
     isCreditModelEnabled,
   ]);
 
@@ -109,6 +120,8 @@ export default function ImageGenPage() {
       ? stableHealthCheck?.healthy === true
       : model === Model.Z_IMAGE
         ? zimageHealthCheck?.healthy === true
+        : model === Model.QWEN_IMAGE_21
+          ? qwenHealthCheck?.healthy === true
         : true;
   const isSelectedModelAvailable =
     isSelectedModelEnabled && isSelectedModelHealthy;
@@ -161,19 +174,25 @@ export default function ImageGenPage() {
       },
     );
 
-  const handleStreamGenerate = async (categories: string[]) => {
+  const handleStreamGenerate = async (
+    categories: string[],
+    editForm?: FormData,
+  ) => {
     try {
       setIsStreaming(true);
+      setResultMode(editForm ? "edit" : "generate");
       setGenerationProgress("연결 중...");
       setImageUrl(null);
       setImageId(null);
 
-      const response = await FetchUtil.postRaw("/api/generate-image", {
-        prompt,
-        model,
-        ratio,
-        categories,
-      });
+      const response = editForm
+        ? await FetchUtil.postRaw("/api/edit-image", editForm)
+        : await FetchUtil.postRaw("/api/generate-image", {
+            prompt,
+            model,
+            ratio,
+            categories,
+          });
 
       if (!response.ok) {
         let message = `HTTP error! status: ${response.status}`;
@@ -219,8 +238,10 @@ export default function ImageGenPage() {
                 setImageId(data.id);
                 setDisplayRatio(data.ratio ?? ratio);
                 setGenerationProgress(null);
-                toast.success("이미지 생성 완료!", {
-                  description: "AI가 이미지를 생성했습니다.",
+                toast.success(editForm ? "이미지 편집 완료!" : "이미지 생성 완료!", {
+                  description: editForm
+                    ? "편집한 이미지가 갤러리에 저장됐습니다."
+                    : "AI가 이미지를 생성했습니다.",
                 });
                 recommendPromptRef.current?.refresh();
                 resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -305,7 +326,11 @@ export default function ImageGenPage() {
       }
     }
 
-    if (model === Model.Z_IMAGE || model === Model.STABLE_DIFFUSION_XL) {
+    if (
+      model === Model.Z_IMAGE ||
+      model === Model.QWEN_IMAGE_21 ||
+      model === Model.STABLE_DIFFUSION_XL
+    ) {
       await handleStreamGenerate(categoriesToUse);
     } else {
       setImageUrl(null);
@@ -326,6 +351,9 @@ export default function ImageGenPage() {
   }, [prompt, selectedCategories]);
 
   const isPending = isMutationPending || isStreaming;
+  const handleImageEdit = async (form: FormData) => {
+    await handleStreamGenerate([], form);
+  };
   const isGenerateDisabled =
     isPending ||
     isSuggestingCategories ||
@@ -359,7 +387,17 @@ export default function ImageGenPage() {
       <div className="container flex flex-col gap-4 md:gap-6 max-w-7xl mx-auto">
         <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as "generate" | "edit")}
+          className="gap-4"
+        >
+          <TabsList className="h-11 w-full max-w-sm">
+            <TabsTrigger value="generate" disabled={isPending}>이미지 생성</TabsTrigger>
+            <TabsTrigger value="edit" disabled={isPending}>이미지 편집</TabsTrigger>
+          </TabsList>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+          <TabsContent value="generate" className="mt-0">
           {/* 입력 섹션 */}
           <Card className="shadow-xl border-0 bg-card/80 backdrop-blur-sm ring-1 ring-black/5 dark:ring-white/10">
             <CardHeader className="pb-4">
@@ -393,8 +431,10 @@ export default function ImageGenPage() {
                     setModel={handleModelChange}
                     stableHealthCheck={stableHealthCheck}
                     zimageHealthCheck={zimageHealthCheck}
+                    qwenHealthCheck={qwenHealthCheck}
                     isStableHealthCheckLoading={isStableHealthCheckLoading}
                     isZimageHealthCheckLoading={isZimageHealthCheckLoading}
+                    isQwenHealthCheckLoading={isQwenHealthCheckLoading}
                   />
                 </div>
 
@@ -455,6 +495,18 @@ export default function ImageGenPage() {
               </div>
             </CardContent>
           </Card>
+          </TabsContent>
+          <TabsContent value="edit" className="mt-0">
+            <ImageEditForm
+              isPending={isPending}
+              isAvailable={
+                qwenHealthCheck?.healthy === true &&
+                isCreditModelEnabled(Model.QWEN_IMAGE_21)
+              }
+              creditCost={creditSettings?.qwenImage21}
+              onSubmit={handleImageEdit}
+            />
+          </TabsContent>
 
           {/* 결과 섹션 */}
           <Card
@@ -464,7 +516,7 @@ export default function ImageGenPage() {
             <CardHeader className="border-b border-border/60 px-5 py-4 md:px-6">
               <div className="flex items-center justify-between gap-3">
                 <CardTitle className="text-lg font-semibold text-foreground md:text-xl">
-                  생성된 이미지
+                  {resultMode === "edit" ? "편집된 이미지" : "생성된 이미지"}
                 </CardTitle>
                 <span className="rounded-full border border-border/70 bg-background px-3 py-1 text-xs font-medium text-muted-foreground">
                   {imageUrl ? displayRatio : ratio}
@@ -487,7 +539,7 @@ export default function ImageGenPage() {
                         src={imageUrl}
                         alt="생성된 이미지"
                         fill
-                        className="object-cover"
+                        className={resultMode === "edit" ? "object-contain" : "object-cover"}
                         unoptimized
                       />
                     </div>
@@ -556,10 +608,14 @@ export default function ImageGenPage() {
                         <Sparkles className="h-8 w-8 text-purple-400" />
                       </div>
                       <p className="mb-2 text-base font-semibold text-foreground">
-                        이미지가 생성되면 여기에 표시됩니다
+                        {activeTab === "edit"
+                          ? "이미지를 편집하면 여기에 표시됩니다"
+                          : "이미지가 생성되면 여기에 표시됩니다"}
                       </p>
                       <p className="text-sm">
-                        프롬프트와 비율을 선택한 뒤 생성 버튼을 눌러주세요.
+                        {activeTab === "edit"
+                          ? "원본 이미지를 올리고 편집 지시문을 입력해주세요."
+                          : "프롬프트와 비율을 선택한 뒤 생성 버튼을 눌러주세요."}
                       </p>
                     </div>
                   </div>
@@ -576,6 +632,7 @@ export default function ImageGenPage() {
             </CardContent>
           </Card>
         </div>
+        </Tabs>
       </div>
       {imageUrl && (
         <ImageFullscreenViewer

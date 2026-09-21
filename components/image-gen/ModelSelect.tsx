@@ -22,15 +22,19 @@ export const ModelSelect = ({
   setModel,
   stableHealthCheck,
   zimageHealthCheck,
+  qwenHealthCheck,
   isStableHealthCheckLoading,
   isZimageHealthCheckLoading,
+  isQwenHealthCheckLoading,
 }: {
   model: Model;
   setModel: (value: Model) => void;
   stableHealthCheck: HealthCheckResponse | undefined;
   zimageHealthCheck: HealthCheckResponse | undefined;
+  qwenHealthCheck: HealthCheckResponse | undefined;
   isStableHealthCheckLoading: boolean;
   isZimageHealthCheckLoading: boolean;
+  isQwenHealthCheckLoading: boolean;
 }) => {
   const {
     data: creditSettings,
@@ -46,6 +50,8 @@ export const ModelSelect = ({
           ? stableHealthCheck?.healthy === true
           : option.model === Model.Z_IMAGE
             ? zimageHealthCheck?.healthy === true
+            : option.model === Model.QWEN_IMAGE_21
+              ? qwenHealthCheck?.healthy === true
             : true;
 
       return {
@@ -55,12 +61,13 @@ export const ModelSelect = ({
         isAvailable: isEnabled && isHealthy,
       };
     });
-  }, [creditSettings, stableHealthCheck?.healthy, zimageHealthCheck?.healthy]);
+  }, [creditSettings, stableHealthCheck?.healthy, zimageHealthCheck?.healthy, qwenHealthCheck?.healthy]);
 
   useEffect(() => {
     if (
       isStableHealthCheckLoading ||
       isZimageHealthCheckLoading ||
+      isQwenHealthCheckLoading ||
       isCreditSettingsLoading ||
       creditSettingsError
     ) {
@@ -81,6 +88,7 @@ export const ModelSelect = ({
   }, [
     isStableHealthCheckLoading,
     isZimageHealthCheckLoading,
+    isQwenHealthCheckLoading,
     isCreditSettingsLoading,
     creditSettingsError,
     model,
@@ -152,6 +160,7 @@ export const ModelSelect = ({
       disabled={
         isStableHealthCheckLoading ||
         isZimageHealthCheckLoading ||
+        isQwenHealthCheckLoading ||
         isCreditSettingsLoading ||
         Boolean(creditSettingsError) ||
         !hasAvailableModel
@@ -162,6 +171,7 @@ export const ModelSelect = ({
           <div className="flex items-center gap-2">
             {isStableHealthCheckLoading ||
             isZimageHealthCheckLoading ||
+            isQwenHealthCheckLoading ||
             isCreditSettingsLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin text-gray-400" />

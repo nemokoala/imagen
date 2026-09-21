@@ -8301,6 +8301,7 @@ export namespace Prisma {
     googleImagen: number | null
     nanoBanana: number | null
     zImage: number | null
+    qwenImage21: number | null
   }
 
   export type CreditSettingsSumAggregateOutputType = {
@@ -8310,6 +8311,7 @@ export namespace Prisma {
     googleImagen: number | null
     nanoBanana: number | null
     zImage: number | null
+    qwenImage21: number | null
   }
 
   export type CreditSettingsMinAggregateOutputType = {
@@ -8319,11 +8321,13 @@ export namespace Prisma {
     googleImagen: number | null
     nanoBanana: number | null
     zImage: number | null
+    qwenImage21: number | null
     dallE3Enabled: boolean | null
     stableDiffusionXlEnabled: boolean | null
     googleImagenEnabled: boolean | null
     nanoBananaEnabled: boolean | null
     zImageEnabled: boolean | null
+    qwenImage21Enabled: boolean | null
     updatedAt: Date | null
   }
 
@@ -8334,11 +8338,13 @@ export namespace Prisma {
     googleImagen: number | null
     nanoBanana: number | null
     zImage: number | null
+    qwenImage21: number | null
     dallE3Enabled: boolean | null
     stableDiffusionXlEnabled: boolean | null
     googleImagenEnabled: boolean | null
     nanoBananaEnabled: boolean | null
     zImageEnabled: boolean | null
+    qwenImage21Enabled: boolean | null
     updatedAt: Date | null
   }
 
@@ -8349,11 +8355,13 @@ export namespace Prisma {
     googleImagen: number
     nanoBanana: number
     zImage: number
+    qwenImage21: number
     dallE3Enabled: number
     stableDiffusionXlEnabled: number
     googleImagenEnabled: number
     nanoBananaEnabled: number
     zImageEnabled: number
+    qwenImage21Enabled: number
     updatedAt: number
     _all: number
   }
@@ -8366,6 +8374,7 @@ export namespace Prisma {
     googleImagen?: true
     nanoBanana?: true
     zImage?: true
+    qwenImage21?: true
   }
 
   export type CreditSettingsSumAggregateInputType = {
@@ -8375,6 +8384,7 @@ export namespace Prisma {
     googleImagen?: true
     nanoBanana?: true
     zImage?: true
+    qwenImage21?: true
   }
 
   export type CreditSettingsMinAggregateInputType = {
@@ -8384,11 +8394,13 @@ export namespace Prisma {
     googleImagen?: true
     nanoBanana?: true
     zImage?: true
+    qwenImage21?: true
     dallE3Enabled?: true
     stableDiffusionXlEnabled?: true
     googleImagenEnabled?: true
     nanoBananaEnabled?: true
     zImageEnabled?: true
+    qwenImage21Enabled?: true
     updatedAt?: true
   }
 
@@ -8399,11 +8411,13 @@ export namespace Prisma {
     googleImagen?: true
     nanoBanana?: true
     zImage?: true
+    qwenImage21?: true
     dallE3Enabled?: true
     stableDiffusionXlEnabled?: true
     googleImagenEnabled?: true
     nanoBananaEnabled?: true
     zImageEnabled?: true
+    qwenImage21Enabled?: true
     updatedAt?: true
   }
 
@@ -8414,11 +8428,13 @@ export namespace Prisma {
     googleImagen?: true
     nanoBanana?: true
     zImage?: true
+    qwenImage21?: true
     dallE3Enabled?: true
     stableDiffusionXlEnabled?: true
     googleImagenEnabled?: true
     nanoBananaEnabled?: true
     zImageEnabled?: true
+    qwenImage21Enabled?: true
     updatedAt?: true
     _all?: true
   }
@@ -8516,11 +8532,13 @@ export namespace Prisma {
     googleImagen: number
     nanoBanana: number
     zImage: number
+    qwenImage21: number
     dallE3Enabled: boolean
     stableDiffusionXlEnabled: boolean
     googleImagenEnabled: boolean
     nanoBananaEnabled: boolean
     zImageEnabled: boolean
+    qwenImage21Enabled: boolean
     updatedAt: Date
     _count: CreditSettingsCountAggregateOutputType | null
     _avg: CreditSettingsAvgAggregateOutputType | null
@@ -8550,11 +8568,13 @@ export namespace Prisma {
     googleImagen?: boolean
     nanoBanana?: boolean
     zImage?: boolean
+    qwenImage21?: boolean
     dallE3Enabled?: boolean
     stableDiffusionXlEnabled?: boolean
     googleImagenEnabled?: boolean
     nanoBananaEnabled?: boolean
     zImageEnabled?: boolean
+    qwenImage21Enabled?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["creditSettings"]>
 
@@ -8567,15 +8587,17 @@ export namespace Prisma {
     googleImagen?: boolean
     nanoBanana?: boolean
     zImage?: boolean
+    qwenImage21?: boolean
     dallE3Enabled?: boolean
     stableDiffusionXlEnabled?: boolean
     googleImagenEnabled?: boolean
     nanoBananaEnabled?: boolean
     zImageEnabled?: boolean
+    qwenImage21Enabled?: boolean
     updatedAt?: boolean
   }
 
-  export type CreditSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "dallE3" | "stableDiffusionXl" | "googleImagen" | "nanoBanana" | "zImage" | "dallE3Enabled" | "stableDiffusionXlEnabled" | "googleImagenEnabled" | "nanoBananaEnabled" | "zImageEnabled" | "updatedAt", ExtArgs["result"]["creditSettings"]>
+  export type CreditSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "dallE3" | "stableDiffusionXl" | "googleImagen" | "nanoBanana" | "zImage" | "qwenImage21" | "dallE3Enabled" | "stableDiffusionXlEnabled" | "googleImagenEnabled" | "nanoBananaEnabled" | "zImageEnabled" | "qwenImage21Enabled" | "updatedAt", ExtArgs["result"]["creditSettings"]>
 
   export type $CreditSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "CreditSettings"
@@ -8587,11 +8609,13 @@ export namespace Prisma {
       googleImagen: number
       nanoBanana: number
       zImage: number
+      qwenImage21: number
       dallE3Enabled: boolean
       stableDiffusionXlEnabled: boolean
       googleImagenEnabled: boolean
       nanoBananaEnabled: boolean
       zImageEnabled: boolean
+      qwenImage21Enabled: boolean
       updatedAt: Date
     }, ExtArgs["result"]["creditSettings"]>
     composites: {}
@@ -8968,11 +8992,13 @@ export namespace Prisma {
     readonly googleImagen: FieldRef<"CreditSettings", 'Int'>
     readonly nanoBanana: FieldRef<"CreditSettings", 'Int'>
     readonly zImage: FieldRef<"CreditSettings", 'Int'>
+    readonly qwenImage21: FieldRef<"CreditSettings", 'Int'>
     readonly dallE3Enabled: FieldRef<"CreditSettings", 'Boolean'>
     readonly stableDiffusionXlEnabled: FieldRef<"CreditSettings", 'Boolean'>
     readonly googleImagenEnabled: FieldRef<"CreditSettings", 'Boolean'>
     readonly nanoBananaEnabled: FieldRef<"CreditSettings", 'Boolean'>
     readonly zImageEnabled: FieldRef<"CreditSettings", 'Boolean'>
+    readonly qwenImage21Enabled: FieldRef<"CreditSettings", 'Boolean'>
     readonly updatedAt: FieldRef<"CreditSettings", 'DateTime'>
   }
     
@@ -12401,11 +12427,13 @@ export namespace Prisma {
     googleImagen: 'googleImagen',
     nanoBanana: 'nanoBanana',
     zImage: 'zImage',
+    qwenImage21: 'qwenImage21',
     dallE3Enabled: 'dallE3Enabled',
     stableDiffusionXlEnabled: 'stableDiffusionXlEnabled',
     googleImagenEnabled: 'googleImagenEnabled',
     nanoBananaEnabled: 'nanoBananaEnabled',
     zImageEnabled: 'zImageEnabled',
+    qwenImage21Enabled: 'qwenImage21Enabled',
     updatedAt: 'updatedAt'
   };
 
@@ -13101,11 +13129,13 @@ export namespace Prisma {
     googleImagen?: IntFilter<"CreditSettings"> | number
     nanoBanana?: IntFilter<"CreditSettings"> | number
     zImage?: IntFilter<"CreditSettings"> | number
+    qwenImage21?: IntFilter<"CreditSettings"> | number
     dallE3Enabled?: BoolFilter<"CreditSettings"> | boolean
     stableDiffusionXlEnabled?: BoolFilter<"CreditSettings"> | boolean
     googleImagenEnabled?: BoolFilter<"CreditSettings"> | boolean
     nanoBananaEnabled?: BoolFilter<"CreditSettings"> | boolean
     zImageEnabled?: BoolFilter<"CreditSettings"> | boolean
+    qwenImage21Enabled?: BoolFilter<"CreditSettings"> | boolean
     updatedAt?: DateTimeFilter<"CreditSettings"> | Date | string
   }
 
@@ -13116,11 +13146,13 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
     dallE3Enabled?: SortOrder
     stableDiffusionXlEnabled?: SortOrder
     googleImagenEnabled?: SortOrder
     nanoBananaEnabled?: SortOrder
     zImageEnabled?: SortOrder
+    qwenImage21Enabled?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -13134,11 +13166,13 @@ export namespace Prisma {
     googleImagen?: IntFilter<"CreditSettings"> | number
     nanoBanana?: IntFilter<"CreditSettings"> | number
     zImage?: IntFilter<"CreditSettings"> | number
+    qwenImage21?: IntFilter<"CreditSettings"> | number
     dallE3Enabled?: BoolFilter<"CreditSettings"> | boolean
     stableDiffusionXlEnabled?: BoolFilter<"CreditSettings"> | boolean
     googleImagenEnabled?: BoolFilter<"CreditSettings"> | boolean
     nanoBananaEnabled?: BoolFilter<"CreditSettings"> | boolean
     zImageEnabled?: BoolFilter<"CreditSettings"> | boolean
+    qwenImage21Enabled?: BoolFilter<"CreditSettings"> | boolean
     updatedAt?: DateTimeFilter<"CreditSettings"> | Date | string
   }, "id">
 
@@ -13149,11 +13183,13 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
     dallE3Enabled?: SortOrder
     stableDiffusionXlEnabled?: SortOrder
     googleImagenEnabled?: SortOrder
     nanoBananaEnabled?: SortOrder
     zImageEnabled?: SortOrder
+    qwenImage21Enabled?: SortOrder
     updatedAt?: SortOrder
     _count?: CreditSettingsCountOrderByAggregateInput
     _avg?: CreditSettingsAvgOrderByAggregateInput
@@ -13172,11 +13208,13 @@ export namespace Prisma {
     googleImagen?: IntWithAggregatesFilter<"CreditSettings"> | number
     nanoBanana?: IntWithAggregatesFilter<"CreditSettings"> | number
     zImage?: IntWithAggregatesFilter<"CreditSettings"> | number
+    qwenImage21?: IntWithAggregatesFilter<"CreditSettings"> | number
     dallE3Enabled?: BoolWithAggregatesFilter<"CreditSettings"> | boolean
     stableDiffusionXlEnabled?: BoolWithAggregatesFilter<"CreditSettings"> | boolean
     googleImagenEnabled?: BoolWithAggregatesFilter<"CreditSettings"> | boolean
     nanoBananaEnabled?: BoolWithAggregatesFilter<"CreditSettings"> | boolean
     zImageEnabled?: BoolWithAggregatesFilter<"CreditSettings"> | boolean
+    qwenImage21Enabled?: BoolWithAggregatesFilter<"CreditSettings"> | boolean
     updatedAt?: DateTimeWithAggregatesFilter<"CreditSettings"> | Date | string
   }
 
@@ -13892,11 +13930,13 @@ export namespace Prisma {
     googleImagen?: number
     nanoBanana?: number
     zImage?: number
+    qwenImage21?: number
     dallE3Enabled?: boolean
     stableDiffusionXlEnabled?: boolean
     googleImagenEnabled?: boolean
     nanoBananaEnabled?: boolean
     zImageEnabled?: boolean
+    qwenImage21Enabled?: boolean
     updatedAt?: Date | string
   }
 
@@ -13907,11 +13947,13 @@ export namespace Prisma {
     googleImagen?: number
     nanoBanana?: number
     zImage?: number
+    qwenImage21?: number
     dallE3Enabled?: boolean
     stableDiffusionXlEnabled?: boolean
     googleImagenEnabled?: boolean
     nanoBananaEnabled?: boolean
     zImageEnabled?: boolean
+    qwenImage21Enabled?: boolean
     updatedAt?: Date | string
   }
 
@@ -13922,11 +13964,13 @@ export namespace Prisma {
     googleImagen?: IntFieldUpdateOperationsInput | number
     nanoBanana?: IntFieldUpdateOperationsInput | number
     zImage?: IntFieldUpdateOperationsInput | number
+    qwenImage21?: IntFieldUpdateOperationsInput | number
     dallE3Enabled?: BoolFieldUpdateOperationsInput | boolean
     stableDiffusionXlEnabled?: BoolFieldUpdateOperationsInput | boolean
     googleImagenEnabled?: BoolFieldUpdateOperationsInput | boolean
     nanoBananaEnabled?: BoolFieldUpdateOperationsInput | boolean
     zImageEnabled?: BoolFieldUpdateOperationsInput | boolean
+    qwenImage21Enabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -13937,11 +13981,13 @@ export namespace Prisma {
     googleImagen?: IntFieldUpdateOperationsInput | number
     nanoBanana?: IntFieldUpdateOperationsInput | number
     zImage?: IntFieldUpdateOperationsInput | number
+    qwenImage21?: IntFieldUpdateOperationsInput | number
     dallE3Enabled?: BoolFieldUpdateOperationsInput | boolean
     stableDiffusionXlEnabled?: BoolFieldUpdateOperationsInput | boolean
     googleImagenEnabled?: BoolFieldUpdateOperationsInput | boolean
     nanoBananaEnabled?: BoolFieldUpdateOperationsInput | boolean
     zImageEnabled?: BoolFieldUpdateOperationsInput | boolean
+    qwenImage21Enabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -13952,11 +13998,13 @@ export namespace Prisma {
     googleImagen?: number
     nanoBanana?: number
     zImage?: number
+    qwenImage21?: number
     dallE3Enabled?: boolean
     stableDiffusionXlEnabled?: boolean
     googleImagenEnabled?: boolean
     nanoBananaEnabled?: boolean
     zImageEnabled?: boolean
+    qwenImage21Enabled?: boolean
     updatedAt?: Date | string
   }
 
@@ -13967,11 +14015,13 @@ export namespace Prisma {
     googleImagen?: IntFieldUpdateOperationsInput | number
     nanoBanana?: IntFieldUpdateOperationsInput | number
     zImage?: IntFieldUpdateOperationsInput | number
+    qwenImage21?: IntFieldUpdateOperationsInput | number
     dallE3Enabled?: BoolFieldUpdateOperationsInput | boolean
     stableDiffusionXlEnabled?: BoolFieldUpdateOperationsInput | boolean
     googleImagenEnabled?: BoolFieldUpdateOperationsInput | boolean
     nanoBananaEnabled?: BoolFieldUpdateOperationsInput | boolean
     zImageEnabled?: BoolFieldUpdateOperationsInput | boolean
+    qwenImage21Enabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -13982,11 +14032,13 @@ export namespace Prisma {
     googleImagen?: IntFieldUpdateOperationsInput | number
     nanoBanana?: IntFieldUpdateOperationsInput | number
     zImage?: IntFieldUpdateOperationsInput | number
+    qwenImage21?: IntFieldUpdateOperationsInput | number
     dallE3Enabled?: BoolFieldUpdateOperationsInput | boolean
     stableDiffusionXlEnabled?: BoolFieldUpdateOperationsInput | boolean
     googleImagenEnabled?: BoolFieldUpdateOperationsInput | boolean
     nanoBananaEnabled?: BoolFieldUpdateOperationsInput | boolean
     zImageEnabled?: BoolFieldUpdateOperationsInput | boolean
+    qwenImage21Enabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14810,11 +14862,13 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
     dallE3Enabled?: SortOrder
     stableDiffusionXlEnabled?: SortOrder
     googleImagenEnabled?: SortOrder
     nanoBananaEnabled?: SortOrder
     zImageEnabled?: SortOrder
+    qwenImage21Enabled?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -14825,6 +14879,7 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
   }
 
   export type CreditSettingsMaxOrderByAggregateInput = {
@@ -14834,11 +14889,13 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
     dallE3Enabled?: SortOrder
     stableDiffusionXlEnabled?: SortOrder
     googleImagenEnabled?: SortOrder
     nanoBananaEnabled?: SortOrder
     zImageEnabled?: SortOrder
+    qwenImage21Enabled?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -14849,11 +14906,13 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
     dallE3Enabled?: SortOrder
     stableDiffusionXlEnabled?: SortOrder
     googleImagenEnabled?: SortOrder
     nanoBananaEnabled?: SortOrder
     zImageEnabled?: SortOrder
+    qwenImage21Enabled?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -14864,6 +14923,7 @@ export namespace Prisma {
     googleImagen?: SortOrder
     nanoBanana?: SortOrder
     zImage?: SortOrder
+    qwenImage21?: SortOrder
   }
 
   export type LlmSettingsOrderByRelevanceInput = {

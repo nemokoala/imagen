@@ -17,11 +17,13 @@ const toCreditSettings = (settings: CreditSettings): CreditSettings => ({
   googleImagen: settings.googleImagen,
   nanoBanana: settings.nanoBanana,
   zImage: settings.zImage,
+  qwenImage21: settings.qwenImage21,
   dallE3Enabled: settings.dallE3Enabled,
   stableDiffusionXlEnabled: settings.stableDiffusionXlEnabled,
   googleImagenEnabled: settings.googleImagenEnabled,
   nanoBananaEnabled: settings.nanoBananaEnabled,
   zImageEnabled: settings.zImageEnabled,
+  qwenImage21Enabled: settings.qwenImage21Enabled,
 });
 
 export const creditSettingsService = {

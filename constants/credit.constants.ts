@@ -6,6 +6,7 @@ export const CREDIT_MODEL_KEYS = [
   "googleImagen",
   "nanoBanana",
   "zImage",
+  "qwenImage21",
 ] as const;
 
 export const CREDIT_MODEL_ENABLED_KEYS = [
@@ -14,6 +15,7 @@ export const CREDIT_MODEL_ENABLED_KEYS = [
   "googleImagenEnabled",
   "nanoBananaEnabled",
   "zImageEnabled",
+  "qwenImage21Enabled",
 ] as const;
 
 export type CreditModelKey = (typeof CREDIT_MODEL_KEYS)[number];
@@ -29,11 +31,13 @@ export const DEFAULT_CREDIT_SETTINGS: CreditSettingsShape = {
   googleImagen: 20,
   nanoBanana: 20,
   zImage: 10,
+  qwenImage21: 10,
   dallE3Enabled: true,
   stableDiffusionXlEnabled: true,
   googleImagenEnabled: true,
   nanoBananaEnabled: true,
   zImageEnabled: true,
+  qwenImage21Enabled: true,
 };
 
 export type CreditModelSettingOption = {
@@ -58,6 +62,13 @@ export const CREDIT_MODEL_SETTING_OPTIONS: CreditModelSettingOption[] = [
     creditKey: "zImage",
     enabledKey: "zImageEnabled",
     defaultCost: DEFAULT_CREDIT_SETTINGS.zImage,
+  },
+  {
+    model: Model.QWEN_IMAGE_21,
+    label: "Qwen Image 2.1 (로컬)",
+    creditKey: "qwenImage21",
+    enabledKey: "qwenImage21Enabled",
+    defaultCost: DEFAULT_CREDIT_SETTINGS.qwenImage21,
   },
   {
     model: Model.DALL_E_3,
@@ -97,4 +108,5 @@ export const creditConstants = {
   GOOGLE_IMAGEN: DEFAULT_CREDIT_SETTINGS.googleImagen,
   NANO_BANANA: DEFAULT_CREDIT_SETTINGS.nanoBanana,
   ZIMAGE: DEFAULT_CREDIT_SETTINGS.zImage,
+  QWEN_IMAGE_21: DEFAULT_CREDIT_SETTINGS.qwenImage21,
 };

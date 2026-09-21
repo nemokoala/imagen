@@ -1,0 +1,3 @@
+ALTER TABLE `credit_settings`
+  ADD COLUMN `qwenImage21` INTEGER NOT NULL DEFAULT 10,
+  ADD COLUMN `qwenImage21Enabled` BOOLEAN NOT NULL DEFAULT true;

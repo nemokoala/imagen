@@ -27,11 +27,14 @@ export async function GET(
       case "zimage":
         response = await imageService.comfyUIHealthCheck();
         break;
+      case "qwen-image-21":
+        response = await imageService.qwenImage21HealthCheck();
+        break;
       default:
         return NextResponse.json(
           {
             error:
-              'Invalid target. Use "ollama", "llm", "stable", "comfyui", or "zimage"',
+              'Invalid target. Use "ollama", "llm", "stable", "comfyui", "zimage", or "qwen-image-21"',
           },
           { status: 400 },
         );

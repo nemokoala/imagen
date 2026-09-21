@@ -61,7 +61,7 @@ Next.js와 여러 이미지 모델을 사용한 AI 이미지 생성 웹 애플�
 
 서버 환경에 `TYPESAFE_API_KEY`를 설정하면 카테고리 추천 API가 JEV를 사용합니다. 로컬 개발은 `.env.local`, 배포 서버는 배포 워크플로가 읽는 `~/.env.next`에 설정합니다. 키가 없거나 JEV 요청이 실패하면 기존 Gemini/Ollama 추천으로 전환됩니다. 이미지 생성용 프롬프트 변환은 기존 LLM 설정을 계속 사용합니다.
 
-관리자 페이지의 **LLM 모델 설정 → 선정성 프롬프트 필터**를 켜면 이미지 생성과 편집 요청 전에 JEV가 입력 프롬프트를 검사합니다. 기본값은 꺼짐이며, 켠 상태에서 JEV를 사용할 수 없으면 생성 요청을 중단합니다. 필터 기준은 `lib/services/image/promptSafetyService.ts`의 `SEXUAL_CONTENT_THRESHOLD`에서 조정할 수 있습니다.
+관리자 페이지의 **LLM 모델 설정 → 선정성 프롬프트 필터**를 켜면 NSFW 허용 모델의 이미지 생성과 편집 요청 전에 JEV가 입력 프롬프트를 검사합니다. 현재 대상은 Qwen Image 2.1만이며, 대상 목록은 `constants/model.constants.ts`의 `NSFW_CAPABLE_MODELS`에서 관리합니다. 다른 모델에서는 필터 설정용 DB 조회와 JEV 호출을 건너뜁니다. 기본값은 꺼짐이며, 켠 상태에서 JEV를 사용할 수 없으면 대상 모델의 생성 요청을 중단합니다. 필터 기준은 `lib/services/image/promptSafetyService.ts`의 `SEXUAL_CONTENT_THRESHOLD`에서 조정할 수 있습니다.
 
 ## 라이선스
 

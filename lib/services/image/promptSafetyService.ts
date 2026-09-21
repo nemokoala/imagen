@@ -1,5 +1,7 @@
 import { ApiError } from "@/lib/errors/AppError";
 import { prisma } from "@/lib/prisma";
+import { NSFW_CAPABLE_MODELS } from "@/constants/model.constants";
+import { Model } from "@/types/model.interfaces";
 
 const JEV_API_URL = "https://api.typesafe.ai/v1/systemone";
 const SEXUAL_CONTENT_THRESHOLD = 0.7;
@@ -11,7 +13,9 @@ interface JevSafetyResponse {
 }
 
 export const promptSafetyService = {
-  async assertAllowed(prompt: string): Promise<void> {
+  async assertAllowed(prompt: string, model: Model): Promise<void> {
+    if (!NSFW_CAPABLE_MODELS.has(model)) return;
+
     const settings = await prisma.llmSettings.findUnique({
       where: { id: 1 },
       select: { sexualContentFilterEnabled: true },

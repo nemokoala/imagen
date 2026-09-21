@@ -148,7 +148,7 @@ export function LlmSettingsComponent() {
             <div>
               <p className="text-sm font-medium">선정성 프롬프트 필터</p>
               <p className="text-xs text-muted-foreground">
-                JEV로 생성·편집 프롬프트를 검사하고 선정적인 요청을 차단
+                Qwen 이미지 생성·편집 시 JEV로 선정적인 요청을 차단
               </p>
             </div>
             <Switch

@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
     const cookieStore = await cookies();
     const userId = await authService.getUserIdFromCookie(cookieStore);
 
-    await promptSafetyService.assertAllowed(prompt);
+    await promptSafetyService.assertAllowed(prompt, model);
 
     // 스트림 응답 처리 (Z_IMAGE, STABLE_DIFFUSION_XL)
     if (isZImage || isQwenImage || isStableDiffusion) {

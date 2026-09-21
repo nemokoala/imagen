@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     if (typeof prompt !== "string" || !prompt.trim()) {
       throw new ApiError("편집 지시문이 필요합니다.", 400, "PROMPT_REQUIRED");
     }
-    await promptSafetyService.assertAllowed(prompt);
+    await promptSafetyService.assertAllowed(prompt, Model.QWEN_IMAGE_21);
     const source = await readImage(form.get("source"), true);
     if (!source) {
       throw new ApiError("원본 이미지가 필요합니다.", 400, "IMAGE_REQUIRED");

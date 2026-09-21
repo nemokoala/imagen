@@ -1,6 +1,11 @@
 import { ImageRatio } from "@/types/image.interfaces";
 import { Model } from "@/types/model.interfaces";
 
+// 선정성 프롬프트를 자체적으로 허용할 수 있어 별도 검사가 필요한 모델
+export const NSFW_CAPABLE_MODELS: ReadonlySet<Model> = new Set([
+  Model.QWEN_IMAGE_21,
+]);
+
 interface RatioResolution {
   width: number;
   height: number;

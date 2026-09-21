@@ -14,6 +14,7 @@ interface JevSafetyResponse {
 
 export const promptSafetyService = {
   async assertAllowed(prompt: string, model: Model): Promise<void> {
+    // 대상 모델이 아니면 설정 DB 조회와 JEV 호출 모두 생략합니다.
     if (!NSFW_CAPABLE_MODELS.has(model)) return;
 
     const settings = await prisma.llmSettings.findUnique({

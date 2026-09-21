@@ -1,7 +1,8 @@
 import { ImageRatio } from "@/types/image.interfaces";
 import { Model } from "@/types/model.interfaces";
 
-// 선정성 프롬프트를 자체적으로 허용할 수 있어 별도 검사가 필요한 모델
+// 선정성 검사 API는 NSFW 생성이 가능한 모델에만 사용합니다.
+// 현재는 Qwen만 해당하며, 모델이 추가되면 이 목록을 갱신합니다.
 export const NSFW_CAPABLE_MODELS: ReadonlySet<Model> = new Set([
   Model.QWEN_IMAGE_21,
 ]);

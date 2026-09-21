@@ -45,6 +45,10 @@ export function LlmSettingsComponent() {
     editingValues.translateEnabled ?? data?.translateEnabled ?? true;
   const currentCategoryEnabled =
     editingValues.categoryEnabled ?? data?.categoryEnabled ?? true;
+  const currentSexualContentFilterEnabled =
+    editingValues.sexualContentFilterEnabled ??
+    data?.sexualContentFilterEnabled ??
+    false;
   const selectedOllamaPreset = OLLAMA_MODEL_OPTIONS.some(
     (option) => option.value === currentOllamaModel,
   )
@@ -134,6 +138,26 @@ export function LlmSettingsComponent() {
                 setEditingValues((prev) => ({
                   ...prev,
                   categoryEnabled: checked,
+                }))
+              }
+              disabled={!isEditing}
+            />
+          </div>
+
+          <div className="flex items-center justify-between rounded-lg border p-3">
+            <div>
+              <p className="text-sm font-medium">선정성 프롬프트 필터</p>
+              <p className="text-xs text-muted-foreground">
+                JEV로 생성·편집 프롬프트를 검사하고 선정적인 요청을 차단
+              </p>
+            </div>
+            <Switch
+              checked={currentSexualContentFilterEnabled}
+              onCheckedChange={(checked) =>
+                isEditing &&
+                setEditingValues((prev) => ({
+                  ...prev,
+                  sexualContentFilterEnabled: checked,
                 }))
               }
               disabled={!isEditing}
@@ -273,8 +297,8 @@ export function LlmSettingsComponent() {
               </div>
             )}
             <p className="text-xs text-muted-foreground">
-              Ollama에 설치된 모델 태그를 입력하세요. 저장 후 번역과 카테고리
-              추천에 바로 적용됩니다.
+              Ollama에 설치된 모델 태그를 입력하세요. 번역과 JEV 추천 실패 시
+              대체 추천에 사용됩니다.
             </p>
           </div>
         )}

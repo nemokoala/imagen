@@ -14,6 +14,7 @@ import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "@/lib/services/logs/logService";
 import { localImageQueue } from "@/lib/services/image/localImageQueue";
 import { creditSettingsService } from "@/lib/services/admin/creditSettingsService";
+import { promptSafetyService } from "@/lib/services/image/promptSafetyService";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest) {
       ? (ratio as ImageRatio)
       : ImageRatio.RATIO_1_1;
 
-    if (!prompt) {
+    if (typeof prompt !== "string" || !prompt.trim()) {
       throw new ApiError("프롬프트가 필요합니다.", 400, "PROMPT_REQUIRED");
     }
 
@@ -121,6 +122,8 @@ export async function POST(req: NextRequest) {
 
     const cookieStore = await cookies();
     const userId = await authService.getUserIdFromCookie(cookieStore);
+
+    await promptSafetyService.assertAllowed(prompt);
 
     // 스트림 응답 처리 (Z_IMAGE, STABLE_DIFFUSION_XL)
     if (isZImage || isQwenImage || isStableDiffusion) {

@@ -164,6 +164,7 @@ model LlmSettings {
   ollamaModel       String   @default("gemma3:4b")
   translateEnabled  Boolean  @default(true)  // 프롬프트 번역 on/off
   categoryEnabled   Boolean  @default(true)  // 카테고리 추천 on/off
+  sexualContentFilterEnabled Boolean @default(false) // 선정성 프롬프트 필터 on/off
   updatedAt         DateTime @updatedAt
 
   @@map("llm_settings")

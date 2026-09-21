@@ -16,6 +16,7 @@ export interface LlmSettings {
   ollamaModel: string;
   translateEnabled: boolean;
   categoryEnabled: boolean;
+  sexualContentFilterEnabled: boolean;
 }
 
 export const llmSettingsService = {
@@ -33,6 +34,7 @@ export const llmSettingsService = {
           ollamaModel: DEFAULT_OLLAMA_MODEL,
           translateEnabled: true,
           categoryEnabled: true,
+          sexualContentFilterEnabled: false,
         },
       });
     }
@@ -43,6 +45,7 @@ export const llmSettingsService = {
       ollamaModel: settings.ollamaModel,
       translateEnabled: settings.translateEnabled,
       categoryEnabled: settings.categoryEnabled,
+      sexualContentFilterEnabled: settings.sexualContentFilterEnabled,
     };
   },
 
@@ -81,6 +84,12 @@ export const llmSettingsService = {
     if (data.categoryEnabled !== undefined) {
       updateData.categoryEnabled = data.categoryEnabled;
     }
+    if (data.sexualContentFilterEnabled !== undefined) {
+      if (typeof data.sexualContentFilterEnabled !== "boolean") {
+        throw new ApiError("선정성 필터 설정이 올바르지 않습니다.", 400);
+      }
+      updateData.sexualContentFilterEnabled = data.sexualContentFilterEnabled;
+    }
 
     if (data.ollamaModel !== undefined) {
       const ollamaModel = data.ollamaModel.trim();
@@ -105,6 +114,7 @@ export const llmSettingsService = {
         ollamaModel: DEFAULT_OLLAMA_MODEL,
         translateEnabled: true,
         categoryEnabled: true,
+        sexualContentFilterEnabled: false,
         ...updateData,
       },
       update: updateData,

@@ -1,5 +1,6 @@
 import { ApiError } from "@/lib/errors/AppError";
 import { prisma } from "../../prisma";
+import { jevCategoryService } from "./jevCategoryService";
 
 export interface CategoryDto {
   id: number;
@@ -60,10 +61,22 @@ export const categoryService = {
    * 프롬프트 기반 카테고리 추천 (AI 분석)
    */
   async suggestCategoriesFromPrompt(prompt: string): Promise<string[]> {
-    // llmService 동적 import (순환 참조 방지)
-    const { llmService } = await import("../llmService");
-
     try {
+      const settings = await prisma.llmSettings.findUnique({
+        where: { id: 1 },
+        select: { categoryEnabled: true },
+      });
+      if (settings?.categoryEnabled === false) return [];
+
+      if (process.env.TYPESAFE_API_KEY) {
+        try {
+          return await jevCategoryService.suggestCategories(prompt);
+        } catch (error) {
+          console.error("JEV 카테고리 추천 실패, 기존 LLM으로 재시도:", error);
+        }
+      }
+
+      const { llmService } = await import("../llmService");
       const result = await llmService.translateAndClassify(prompt);
       return result.categories;
     } catch (error) {

@@ -9348,6 +9348,7 @@ export namespace Prisma {
     ollamaModel: string | null
     translateEnabled: boolean | null
     categoryEnabled: boolean | null
+    sexualContentFilterEnabled: boolean | null
     updatedAt: Date | null
   }
 
@@ -9358,6 +9359,7 @@ export namespace Prisma {
     ollamaModel: string | null
     translateEnabled: boolean | null
     categoryEnabled: boolean | null
+    sexualContentFilterEnabled: boolean | null
     updatedAt: Date | null
   }
 
@@ -9368,6 +9370,7 @@ export namespace Prisma {
     ollamaModel: number
     translateEnabled: number
     categoryEnabled: number
+    sexualContentFilterEnabled: number
     updatedAt: number
     _all: number
   }
@@ -9388,6 +9391,7 @@ export namespace Prisma {
     ollamaModel?: true
     translateEnabled?: true
     categoryEnabled?: true
+    sexualContentFilterEnabled?: true
     updatedAt?: true
   }
 
@@ -9398,6 +9402,7 @@ export namespace Prisma {
     ollamaModel?: true
     translateEnabled?: true
     categoryEnabled?: true
+    sexualContentFilterEnabled?: true
     updatedAt?: true
   }
 
@@ -9408,6 +9413,7 @@ export namespace Prisma {
     ollamaModel?: true
     translateEnabled?: true
     categoryEnabled?: true
+    sexualContentFilterEnabled?: true
     updatedAt?: true
     _all?: true
   }
@@ -9505,6 +9511,7 @@ export namespace Prisma {
     ollamaModel: string
     translateEnabled: boolean
     categoryEnabled: boolean
+    sexualContentFilterEnabled: boolean
     updatedAt: Date
     _count: LlmSettingsCountAggregateOutputType | null
     _avg: LlmSettingsAvgAggregateOutputType | null
@@ -9534,6 +9541,7 @@ export namespace Prisma {
     ollamaModel?: boolean
     translateEnabled?: boolean
     categoryEnabled?: boolean
+    sexualContentFilterEnabled?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["llmSettings"]>
 
@@ -9546,10 +9554,11 @@ export namespace Prisma {
     ollamaModel?: boolean
     translateEnabled?: boolean
     categoryEnabled?: boolean
+    sexualContentFilterEnabled?: boolean
     updatedAt?: boolean
   }
 
-  export type LlmSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "provider" | "geminiModel" | "ollamaModel" | "translateEnabled" | "categoryEnabled" | "updatedAt", ExtArgs["result"]["llmSettings"]>
+  export type LlmSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "provider" | "geminiModel" | "ollamaModel" | "translateEnabled" | "categoryEnabled" | "sexualContentFilterEnabled" | "updatedAt", ExtArgs["result"]["llmSettings"]>
 
   export type $LlmSettingsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "LlmSettings"
@@ -9561,6 +9570,7 @@ export namespace Prisma {
       ollamaModel: string
       translateEnabled: boolean
       categoryEnabled: boolean
+      sexualContentFilterEnabled: boolean
       updatedAt: Date
     }, ExtArgs["result"]["llmSettings"]>
     composites: {}
@@ -9937,6 +9947,7 @@ export namespace Prisma {
     readonly ollamaModel: FieldRef<"LlmSettings", 'String'>
     readonly translateEnabled: FieldRef<"LlmSettings", 'Boolean'>
     readonly categoryEnabled: FieldRef<"LlmSettings", 'Boolean'>
+    readonly sexualContentFilterEnabled: FieldRef<"LlmSettings", 'Boolean'>
     readonly updatedAt: FieldRef<"LlmSettings", 'DateTime'>
   }
     
@@ -12447,6 +12458,7 @@ export namespace Prisma {
     ollamaModel: 'ollamaModel',
     translateEnabled: 'translateEnabled',
     categoryEnabled: 'categoryEnabled',
+    sexualContentFilterEnabled: 'sexualContentFilterEnabled',
     updatedAt: 'updatedAt'
   };
 
@@ -13228,6 +13240,7 @@ export namespace Prisma {
     ollamaModel?: StringFilter<"LlmSettings"> | string
     translateEnabled?: BoolFilter<"LlmSettings"> | boolean
     categoryEnabled?: BoolFilter<"LlmSettings"> | boolean
+    sexualContentFilterEnabled?: BoolFilter<"LlmSettings"> | boolean
     updatedAt?: DateTimeFilter<"LlmSettings"> | Date | string
   }
 
@@ -13238,6 +13251,7 @@ export namespace Prisma {
     ollamaModel?: SortOrder
     translateEnabled?: SortOrder
     categoryEnabled?: SortOrder
+    sexualContentFilterEnabled?: SortOrder
     updatedAt?: SortOrder
     _relevance?: LlmSettingsOrderByRelevanceInput
   }
@@ -13252,6 +13266,7 @@ export namespace Prisma {
     ollamaModel?: StringFilter<"LlmSettings"> | string
     translateEnabled?: BoolFilter<"LlmSettings"> | boolean
     categoryEnabled?: BoolFilter<"LlmSettings"> | boolean
+    sexualContentFilterEnabled?: BoolFilter<"LlmSettings"> | boolean
     updatedAt?: DateTimeFilter<"LlmSettings"> | Date | string
   }, "id">
 
@@ -13262,6 +13277,7 @@ export namespace Prisma {
     ollamaModel?: SortOrder
     translateEnabled?: SortOrder
     categoryEnabled?: SortOrder
+    sexualContentFilterEnabled?: SortOrder
     updatedAt?: SortOrder
     _count?: LlmSettingsCountOrderByAggregateInput
     _avg?: LlmSettingsAvgOrderByAggregateInput
@@ -13280,6 +13296,7 @@ export namespace Prisma {
     ollamaModel?: StringWithAggregatesFilter<"LlmSettings"> | string
     translateEnabled?: BoolWithAggregatesFilter<"LlmSettings"> | boolean
     categoryEnabled?: BoolWithAggregatesFilter<"LlmSettings"> | boolean
+    sexualContentFilterEnabled?: BoolWithAggregatesFilter<"LlmSettings"> | boolean
     updatedAt?: DateTimeWithAggregatesFilter<"LlmSettings"> | Date | string
   }
 
@@ -14049,6 +14066,7 @@ export namespace Prisma {
     ollamaModel?: string
     translateEnabled?: boolean
     categoryEnabled?: boolean
+    sexualContentFilterEnabled?: boolean
     updatedAt?: Date | string
   }
 
@@ -14059,6 +14077,7 @@ export namespace Prisma {
     ollamaModel?: string
     translateEnabled?: boolean
     categoryEnabled?: boolean
+    sexualContentFilterEnabled?: boolean
     updatedAt?: Date | string
   }
 
@@ -14069,6 +14088,7 @@ export namespace Prisma {
     ollamaModel?: StringFieldUpdateOperationsInput | string
     translateEnabled?: BoolFieldUpdateOperationsInput | boolean
     categoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    sexualContentFilterEnabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14079,6 +14099,7 @@ export namespace Prisma {
     ollamaModel?: StringFieldUpdateOperationsInput | string
     translateEnabled?: BoolFieldUpdateOperationsInput | boolean
     categoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    sexualContentFilterEnabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14089,6 +14110,7 @@ export namespace Prisma {
     ollamaModel?: string
     translateEnabled?: boolean
     categoryEnabled?: boolean
+    sexualContentFilterEnabled?: boolean
     updatedAt?: Date | string
   }
 
@@ -14099,6 +14121,7 @@ export namespace Prisma {
     ollamaModel?: StringFieldUpdateOperationsInput | string
     translateEnabled?: BoolFieldUpdateOperationsInput | boolean
     categoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    sexualContentFilterEnabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14109,6 +14132,7 @@ export namespace Prisma {
     ollamaModel?: StringFieldUpdateOperationsInput | string
     translateEnabled?: BoolFieldUpdateOperationsInput | boolean
     categoryEnabled?: BoolFieldUpdateOperationsInput | boolean
+    sexualContentFilterEnabled?: BoolFieldUpdateOperationsInput | boolean
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -14939,6 +14963,7 @@ export namespace Prisma {
     ollamaModel?: SortOrder
     translateEnabled?: SortOrder
     categoryEnabled?: SortOrder
+    sexualContentFilterEnabled?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -14953,6 +14978,7 @@ export namespace Prisma {
     ollamaModel?: SortOrder
     translateEnabled?: SortOrder
     categoryEnabled?: SortOrder
+    sexualContentFilterEnabled?: SortOrder
     updatedAt?: SortOrder
   }
 
@@ -14963,6 +14989,7 @@ export namespace Prisma {
     ollamaModel?: SortOrder
     translateEnabled?: SortOrder
     categoryEnabled?: SortOrder
+    sexualContentFilterEnabled?: SortOrder
     updatedAt?: SortOrder
   }
 

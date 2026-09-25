@@ -24,6 +24,8 @@ interface KakaoUserInfo {
 }
 
 export async function GET(req: NextRequest) {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin;
+
   try {
     const searchParams = req.nextUrl.searchParams;
     const code = searchParams.get("code");
@@ -36,7 +38,7 @@ export async function GET(req: NextRequest) {
           `/auth/login?error=${encodeURIComponent(
             "카카오 로그인이 취소되었습니다.",
           )}`,
-          req.url,
+          baseUrl,
         ),
       );
     }
@@ -46,7 +48,7 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("인증 코드를 받을 수 없습니다."),
-          req.url,
+          baseUrl,
         ),
       );
     }
@@ -54,14 +56,13 @@ export async function GET(req: NextRequest) {
     const kakaoClientId = process.env.KAKAO_CLIENT_ID;
     const kakaoClientSecret = process.env.KAKAO_CLIENT_SECRET;
     const kakaoRedirectUri = process.env.KAKAO_REDIRECT_URI;
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || req.nextUrl.origin;
 
     if (!kakaoClientId || !kakaoClientSecret || !kakaoRedirectUri) {
       return NextResponse.redirect(
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("카카오 OAuth 설정이 완료되지 않았습니다."),
-          req.url,
+          baseUrl,
         ),
       );
     }
@@ -88,7 +89,7 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("카카오 토큰을 받을 수 없습니다."),
-          req.url,
+          baseUrl,
         ),
       );
     }
@@ -110,7 +111,7 @@ export async function GET(req: NextRequest) {
         new URL(
           "/auth/login?error=" +
             encodeURIComponent("카카오 사용자 정보를 가져올 수 없습니다."),
-          req.url,
+          baseUrl,
         ),
       );
     }
@@ -147,7 +148,7 @@ export async function GET(req: NextRequest) {
       new URL(
         "/auth/login?error=" +
           encodeURIComponent("카카오 로그인 중 오류가 발생했습니다."),
-        req.url,
+        baseUrl,
       ),
     );
   }

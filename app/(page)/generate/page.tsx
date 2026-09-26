@@ -387,16 +387,23 @@ export default function ImageGenPage() {
       <div className="container flex flex-col gap-4 md:gap-6 max-w-7xl mx-auto">
         <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />
 
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as "generate" | "edit")}
-          className="gap-4"
-        >
-          <TabsList className="h-11 w-full max-w-sm">
-            <TabsTrigger value="generate" disabled={isPending}>이미지 생성</TabsTrigger>
-            <TabsTrigger value="edit" disabled={isPending}>이미지 편집</TabsTrigger>
-          </TabsList>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
+        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
+          <Tabs
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as "generate" | "edit")}
+            className="min-w-0 gap-2"
+          >
+            <TabsList
+              aria-label="이미지 작업 선택"
+              className="h-12 w-full rounded-xl border border-border/70 bg-card p-1 shadow-sm"
+            >
+              <TabsTrigger value="generate" disabled={isPending}>
+                이미지 생성
+              </TabsTrigger>
+              <TabsTrigger value="edit" disabled={isPending}>
+                이미지 편집
+              </TabsTrigger>
+            </TabsList>
           <TabsContent value="generate" className="mt-0">
           {/* 입력 섹션 */}
           <Card className="shadow-xl border-0 bg-card/80 backdrop-blur-sm ring-1 ring-black/5 dark:ring-white/10">
@@ -507,6 +514,7 @@ export default function ImageGenPage() {
               onSubmit={handleImageEdit}
             />
           </TabsContent>
+          </Tabs>
 
           {/* 결과 섹션 */}
           <Card
@@ -632,7 +640,6 @@ export default function ImageGenPage() {
             </CardContent>
           </Card>
         </div>
-        </Tabs>
       </div>
       {imageUrl && (
         <ImageFullscreenViewer

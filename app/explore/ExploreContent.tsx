@@ -3,7 +3,7 @@
 import { InfiniteImageGallery } from "@/components/gallery/InfiniteImageGallery";
 import { Layout } from "@/components/layout/Layout";
 import { ImageCreatButton } from "@/components/home/ImageCreatButton";
-import { CoverflowShowcase } from "@/components/home/CoverflowShowcase";
+import { FeaturedShowcase } from "@/components/home/FeaturedShowcase";
 import { useScrollVisibility } from "@/hooks/use-scroll-visibility";
 import { useRef } from "react";
 
@@ -20,8 +20,8 @@ export function ExploreContent() {
       ref={scrollContainerRef}
       onScrollChange={handleScrollChange}
     >
-      <CoverflowShowcase />
-      <div className="mb-3 mt-1 w-full text-center">
+      <FeaturedShowcase />
+      <div className="mb-1 w-full px-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           갤러리
         </h2>
@@ -32,6 +32,7 @@ export function ExploreContent() {
       <InfiniteImageGallery
         maintainScrollPosition={true}
         scrollElementRef={scrollContainerRef}
+        filterClassName="-mx-2 px-3"
       />
       <ImageCreatButton isVisible={isVisible} />
     </Layout.Content>

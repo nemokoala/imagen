@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGetCategories } from "@/queries/category/queries";
 import { Skeleton } from "../ui/skeleton";
@@ -17,8 +17,24 @@ interface CategoryFilterProps {
   setSearch?: (value: string) => void;
   selectedRatio?: string;
   onToggleRatio?: (ratio: RatioOption) => void;
+  /** 스크롤 컨테이너 여백만큼 툴바를 넓힐 때 등 바깥에서 덧붙이는 클래스 */
+  className?: string;
 }
 
+/** 비율 모양을 그리는 작은 아이콘 */
+function RatioShape({ ratio }: { ratio: RatioOption }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "rounded-[2px] border-[1.5px] border-current",
+        ratio === "16:9" ? "h-2 w-3.5" : ratio === "9:16" ? "h-3.5 w-2" : "size-3",
+      )}
+    />
+  );
+}
+
+/** 갤러리 위에 붙는 한 줄 필터 툴바 (카테고리 · 비율 · 검색) */
 export function CategoryFilter({
   selectedCategories,
   handleSelectAll,
@@ -27,10 +43,10 @@ export function CategoryFilter({
   setSearch,
   selectedRatio,
   onToggleRatio,
+  className,
 }: CategoryFilterProps) {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState(search);
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const { data: categories = [], isLoading } = useGetCategories();
 
@@ -42,13 +58,9 @@ export function CategoryFilter({
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (localSearch.trim()) {
-      setSearch?.(localSearch);
-      setIsSearchOpen(false); // 검색 후 입력창 닫기
+      setSearch?.(localSearch.trim());
+      setIsSearchOpen(false);
     }
-  };
-
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
   };
 
   const clearSearch = () => {
@@ -57,165 +69,139 @@ export function CategoryFilter({
     setIsSearchOpen(false);
   };
 
-  // 공통 버튼 스타일
-  const iconButtonClass = "rounded-lg h-8 w-8 flex-shrink-0";
-  const categoryButtonClass = "rounded-lg h-8 whitespace-nowrap px-3.5";
+  const chipClass = "h-8 shrink-0 rounded-lg px-3 text-sm font-medium";
   // 선택된 칩은 연한 포인트색, 나머지는 배경 없이 둔다.
   const chipVariant = (selected: boolean) => (selected ? "soft" : "ghost");
 
-  if (isCollapsed === null) return null; // avoid TS error if any
-
   return (
-    <div className="sticky top-2 z-20 mx-auto w-fit flex flex-col items-center max-w-[calc(100%-2rem)] perspective-1000">
-      {/* 축소된 상태의 버튼 */}
-      <div
-        className={cn(
-          "transition-all duration-300 ease-spring absolute top-0 z-30",
-          isCollapsed
-            ? "opacity-100 scale-100 translate-y-0"
-            : "opacity-0 scale-75 -translate-y-4 pointer-events-none",
-        )}
-      >
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setIsCollapsed(false)}
-          className={cn(
-            iconButtonClass,
-            "rounded-full h-9 w-9 !bg-card shadow-md text-muted-foreground hover:text-foreground",
-          )}
-        >
-          <ChevronDown size={18} />
-        </Button>
-      </div>
-
-      {/* 확장된 상태의 패널 */}
-      <div
-        className={cn(
-          "transition-all duration-300 ease-spring origin-top w-full pb-1",
-          isCollapsed
-            ? "opacity-0 scale-95 pointer-events-none -translate-y-2"
-            : "opacity-100 scale-100 translate-y-0",
-        )}
-      >
-        <div className="overflow-hidden">
-          <div
-            className={cn(
-              "backdrop-blur-md bg-card/85 py-1.5 px-1.5 w-max max-w-full mx-auto border border-border shadow-sm font-medium text-foreground rounded-2xl",
-            )}
+    <div
+      className={cn(
+        "sticky top-0 z-20 border-b border-border bg-background/85 py-2.5 backdrop-blur-md",
+        className,
+      )}
+    >
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+        {isSearchOpen ? (
+          <form
+            onSubmit={handleSearchSubmit}
+            className="flex min-w-0 flex-1 items-center gap-2"
           >
-            {/* 1행: 카테고리 + 검색 */}
-            <div className="flex items-center gap-1 min-h-9 px-0.5">
-              {isSearchOpen ? (
-                <form
-                  onSubmit={handleSearchSubmit}
-                  className="w-full flex items-center gap-2 flex-1 py-0.5"
-                >
-                  <Input
-                    value={localSearch}
-                    onChange={(e) => setLocalSearch(e.target.value)}
-                    placeholder="검색어 입력..."
-                    className="h-8 rounded-lg border-none bg-muted focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px] text-foreground"
-                    autoFocus
-                  />
-                  <Button
-                    type="submit"
-                    variant="soft"
-                    size="icon"
-                    className={iconButtonClass}
-                  >
-                    <Search size={18} />
-                  </Button>
-                </form>
-              ) : (
-                <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide min-w-0 py-0.5">
-                  {search && (
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <Button
-                        onClick={clearSearch}
-                        variant="soft"
-                        className={cn(categoryButtonClass, "gap-2 pr-2")}
-                      >
-                        <span className="max-w-[100px] truncate">{search}</span>
-                        <X size={15} className="opacity-80" />
-                      </Button>
-                      <div className="w-px h-5 bg-border mx-1 flex-shrink-0" />
-                    </div>
-                  )}
-                  <Button
-                    onClick={handleSelectAll}
-                    variant={chipVariant(selectedCategories.length === 0)}
-                    className={categoryButtonClass}
-                  >
-                    전체
-                  </Button>
-                  {isLoading ? (
-                    <>
-                      {Array.from({ length: 6 }).map((_, i) => (
-                        <Skeleton key={i} className="h-8 w-16 rounded-lg" />
-                      ))}
-                    </>
-                  ) : (
-                    categories.map((cat) => (
-                      <Button
-                        key={cat.id}
-                        onClick={() => handleToggleCategory(cat.slug)}
-                        variant={chipVariant(
-                          selectedCategories.includes(cat.slug),
-                        )}
-                        className={categoryButtonClass}
-                      >
-                        {cat.name}
-                      </Button>
-                    ))
-                  )}
-                </div>
-              )}
-
-              <div className="flex-shrink-0 flex items-center justify-center border-l border-border pl-1 ml-0.5">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleSearch}
-                  className={cn(
-                    iconButtonClass,
-                    isSearchOpen
-                      ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {isSearchOpen ? <X size={18} /> : <Search size={18} />}
-                </Button>
-              </div>
+            <div className="relative min-w-0 flex-1">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={localSearch}
+                onChange={(e) => setLocalSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") setIsSearchOpen(false);
+                }}
+                placeholder="프롬프트로 검색"
+                aria-label="프롬프트 검색"
+                className="h-9 bg-card pl-9"
+                autoFocus
+              />
             </div>
-
-            {/* 2행: 비율 필터 + 축소 버튼 */}
-            {onToggleRatio && (
-              <div className="flex justify-center items-center gap-1 px-0.5 pt-1.5 py-0.5 mt-1 border-t border-border">
-                {RATIO_OPTIONS.map((r) => (
-                  <Button
-                    key={r}
-                    onClick={() => onToggleRatio(r)}
-                    variant={chipVariant(selectedRatio === r)}
-                    className={categoryButtonClass}
-                  >
-                    {r}
-                  </Button>
-                ))}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsCollapsed(true)}
-                  className={cn(
-                    iconButtonClass,
-                    "ml-auto text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  <ChevronUp size={18} />
-                </Button>
-              </div>
+            <Button type="submit" size="sm" className="h-9">
+              검색
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              className="h-9 text-muted-foreground"
+              onClick={() => setIsSearchOpen(false)}
+            >
+              취소
+            </Button>
+          </form>
+        ) : (
+          // 카테고리: 넘치면 가로로 스크롤하고 오른쪽 끝을 흐리게 처리한다
+          <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto pr-8 scrollbar-hide [mask-image:linear-gradient(to_right,#000_calc(100%-40px),transparent)]">
+            {search && (
+              <Button
+                variant="soft"
+                onClick={clearSearch}
+                aria-label={`검색어 "${search}" 지우기`}
+                className={cn(chipClass, "gap-1.5 pr-2")}
+              >
+                <Search className="size-3.5" />
+                <span className="max-w-[120px] truncate">{search}</span>
+                <X className="size-3.5 opacity-70" />
+              </Button>
             )}
+            <Button
+              onClick={handleSelectAll}
+              variant={chipVariant(selectedCategories.length === 0)}
+              aria-pressed={selectedCategories.length === 0}
+              className={chipClass}
+            >
+              전체
+            </Button>
+            {isLoading
+              ? Array.from({ length: 7 }).map((_, i) => (
+                  <Skeleton key={i} className="h-8 w-16 shrink-0 rounded-lg" />
+                ))
+              : categories.map((cat) => {
+                  const selected = selectedCategories.includes(cat.slug);
+                  return (
+                    <Button
+                      key={cat.id}
+                      onClick={() => handleToggleCategory(cat.slug)}
+                      variant={chipVariant(selected)}
+                      aria-pressed={selected}
+                      className={cn(
+                        chipClass,
+                        !selected && "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {cat.name}
+                    </Button>
+                  );
+                })}
           </div>
+        )}
+
+        <div className="flex shrink-0 items-center justify-between gap-2 md:justify-end">
+          {onToggleRatio && (
+            <div
+              role="group"
+              aria-label="비율 필터"
+              className="flex items-center gap-0.5 rounded-lg bg-muted p-0.5"
+            >
+              {RATIO_OPTIONS.map((r) => {
+                const active = selectedRatio === r;
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    aria-pressed={active}
+                    title={active ? "다시 누르면 해제돼요" : `${r} 비율만 보기`}
+                    onClick={() => onToggleRatio(r)}
+                    className={cn(
+                      "flex h-7 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-xs font-medium transition-colors",
+                      active
+                        ? "bg-card text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <RatioShape ratio={r} />
+                    {r}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {!isSearchOpen && setSearch && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsSearchOpen(true)}
+              aria-label="검색"
+              className="size-8 rounded-lg text-muted-foreground hover:text-foreground"
+            >
+              <Search className="size-4" />
+            </Button>
+          )}
         </div>
       </div>
     </div>

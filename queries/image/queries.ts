@@ -7,7 +7,11 @@ import {
 } from "../../types/image.interfaces";
 import { HealthCheckResponse } from "../../types/common.interfaces";
 import { GalleryResponse } from "../../types/image.interfaces";
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useQuery,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 import { Comment } from "@/types/image.interfaces";
 import { topLikedImagesQueryKey } from "@/constants/image.constants";
 
@@ -99,6 +103,8 @@ export const useGetGalleryImagesInfiniteQuery = (
     },
     initialPageParam: 1,
     enabled,
+    // 필터를 바꾸는 동안 이전 결과를 남겨 두어 목록 높이가 갑자기 줄지 않게 한다.
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -125,6 +131,9 @@ export const useGetUserImagesInfiniteQuery = (
     },
     initialPageParam: 1,
     enabled: !!userId,
+    // 같은 사용자의 필터를 바꿀 때만 이전 결과를 남긴다 (다른 프로필로 옮기면 비운다).
+    placeholderData: (previousData, previousQuery) =>
+      previousQuery?.queryKey[1] === userId ? previousData : undefined,
   });
 };
 

@@ -15,6 +15,7 @@ import { Skeleton } from "../ui/skeleton";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { useInView } from "react-intersection-observer";
 import { Search } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 /** "WxH" 형태의 size 문자열에서 가로/세로 비율(w/h) 파싱 */
 function parseAspectRatio(size: string): number {
@@ -32,12 +33,15 @@ interface InfiniteImageGalleryProps {
   onScrollChange?: (scrollTop: number) => void;
   scrollElementRef?: React.RefObject<HTMLDivElement | null>;
   maintainScrollPosition?: boolean;
+  /** 필터 툴바에 덧붙일 클래스 (예: 스크롤 컨테이너 여백만큼 넓히기) */
+  filterClassName?: string;
 }
 
 export function InfiniteImageGallery({
   userId,
   scrollElementRef,
   maintainScrollPosition = false,
+  filterClassName,
 }: InfiniteImageGalleryProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const scrollElement = scrollElementRef || parentRef;
@@ -99,6 +103,7 @@ export function InfiniteImageGallery({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isPlaceholderData,
     refetch,
   } = userId ? userQuery : galleryQuery;
 
@@ -149,14 +154,47 @@ export function InfiniteImageGallery({
     removeParam("categories");
   }, [removeParam]);
 
-  // 카테고리, 검색어 변경 시 스크롤 위치 컨테이너 상단으로 이동
+  // 필터(카테고리 · 검색어 · 비율)가 바뀌었을 때 스크롤 처리.
+  // - 갤러리 시작점보다 위를 보고 있으면 스크롤을 건드리지 않는다.
+  // - 아래를 보고 있으면 결과 영역만 잠깐 감춘 사이에 갤러리 시작점으로 옮긴다.
+  //   필터 툴바는 상단에 붙어 있어 제자리에 보이므로 화면이 튀어 보이지 않는다.
+  //   (부드러운 스크롤은 결과가 바뀔 때 가상 스크롤이 위치를 다시 잡으면서 끊긴다)
+  const filterKey = `${categoryParam ?? ""}|${search}|${ratio ?? ""}`;
+  const prevFilterKeyRef = useRef(filterKey);
+  const contentRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (selectedCategories.length > 0)
-      scrollElement.current?.scrollTo({
-        top: containerRef.current?.offsetTop,
-        behavior: "instant",
-      });
-  }, [selectedCategories, search, scrollElement]);
+    if (prevFilterKeyRef.current === filterKey) return;
+    prevFilterKeyRef.current = filterKey;
+
+    const scroller = scrollElement.current;
+    const container = containerRef.current;
+    if (!scroller || !container) return;
+
+    const galleryTop =
+      container.getBoundingClientRect().top -
+      scroller.getBoundingClientRect().top +
+      scroller.scrollTop;
+    if (scroller.scrollTop <= galleryTop + 1) return;
+
+    const contentEl = contentRef.current;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (!contentEl || reduceMotion) {
+      scroller.scrollTo({ top: galleryTop });
+      return;
+    }
+
+    contentEl.style.opacity = "0";
+    const timer = window.setTimeout(() => {
+      scroller.scrollTo({ top: galleryTop });
+      contentEl.style.opacity = "";
+    }, 180);
+    return () => {
+      window.clearTimeout(timer);
+      contentEl.style.opacity = "";
+    };
+  }, [filterKey, scrollElement]);
 
   // ref callback - useCallback으로 메모이제이션하여 무한 루프 방지
   const containerRefCallback = useCallback((node: HTMLDivElement | null) => {
@@ -229,11 +267,12 @@ export function InfiniteImageGallery({
   });
 
   // useInView로 다음 페이지 로드
+  // 이전 필터 결과를 보여주는 동안에는 다음 페이지를 불러오지 않는다.
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inView && hasNextPage && !isFetchingNextPage && !isPlaceholderData) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [inView, hasNextPage, isFetchingNextPage, isPlaceholderData, fetchNextPage]);
 
   // LoadMore 감지용 기본 높이
   const loadMoreDetectHeight = useMemo(() => {
@@ -248,6 +287,13 @@ export function InfiniteImageGallery({
   // 공통 콘텐츠
   const content = (
     <div
+      ref={contentRef}
+      aria-busy={isPlaceholderData}
+      className={cn(
+        "transition-opacity duration-[180ms] ease-out",
+        // 새 필터 결과를 받는 동안 이전 결과를 흐리게 남겨 둔다
+        isPlaceholderData && "pointer-events-none opacity-40",
+      )}
       style={{
         height: `${containerHeight}px`,
         minHeight: "100dvh",
@@ -327,6 +373,7 @@ export function InfiniteImageGallery({
           setSearch={setSearch}
           selectedRatio={ratio}
           onToggleRatio={handleToggleRatio}
+          className={filterClassName}
         />
         {content}
       </div>
@@ -345,6 +392,7 @@ export function InfiniteImageGallery({
         handleToggleCategory={handleToggleCategory}
         search={search}
         setSearch={setSearch}
+        className={filterClassName}
       />
       <div
         ref={parentRef}

@@ -17,6 +17,11 @@ import { ProfileHeader } from "./ProfileHeader";
 import { UserGeneratedImages } from "./UserGeneratedImages";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { MessageSquare } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  WIDE_CONTAINER,
+  WIDE_PAGE_GUTTER,
+} from "@/constants/layout.constants";
 
 interface ProfileContentProps {
   targetUserId?: number | null;
@@ -60,8 +65,8 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
 
   if ((isOwnProfile && storeLoading) || userInfoLoading) {
     return (
-      <Layout.Content className="flex items-center px-2">
-        <div className="w-full max-w-6xl mx-auto flex flex-col items-center pt-8">
+      <Layout.Content className={cn("flex items-center", WIDE_PAGE_GUTTER)}>
+        <div className={cn(WIDE_CONTAINER, "flex flex-col items-center pt-6 md:pt-8")}>
           <Card className="relative w-full overflow-hidden mb-12 border-none shadow-xl bg-muted/20">
             <div className="h-32 bg-muted/10" />
             <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 px-8 pb-8 pt-16">
@@ -110,9 +115,11 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
   return (
     <Layout.Content
       ref={scrollContainerRef}
-      className="h-[calc(100dvh-60px)] items-center px-2"
+      className={cn("h-[calc(100dvh-60px)] items-center", WIDE_PAGE_GUTTER)}
     >
-      <div className="w-full max-w-6xl mx-auto flex flex-col items-center pt-8 z-10">
+      <div
+        className={cn(WIDE_CONTAINER, "z-10 flex flex-col items-center pt-6 md:pt-8")}
+      >
         {/* 프로필 헤더 */}
         <ProfileHeader
           userInfo={userInfo}
@@ -142,7 +149,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="images" className="w-full max-w-6xl pb-8">
+          <TabsContent value="images" className="w-full pb-8">
             <UserGeneratedImages
               userInfo={userInfo}
               isOwnProfile={isOwnProfile}

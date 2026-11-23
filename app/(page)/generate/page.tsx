@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles, Download, Eye, Maximize2 } from "lucide-react";
+import { Loader2, Sparkles, Download, Eye, Maximize2, Clock } from "lucide-react";
 import Image from "next/image";
 import { Layout } from "@/components/layout/Layout";
 import { useGenerateImageMutation } from "@/queries/image/mutations";
@@ -28,7 +28,7 @@ import {
 import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
-import { MODEL_RATIO_CONFIG } from "@/constants/model.constants";
+import { MODEL_RATIO_CONFIG, isLocalModel } from "@/constants/model.constants";
 import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
 import { cn, downloadImage } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
@@ -39,6 +39,15 @@ import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer
 import { ImageEditForm } from "@/components/image-gen/ImageEditForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GenerationLoader } from "@/components/image-gen/GenerationLoader";
+import { ImageJobQueue } from "@/components/image-gen/ImageJobQueue";
+import {
+  useEnqueueImageJobMutation,
+  useImageJobsQuery,
+} from "@/queries/image/jobs";
+import {
+  WIDE_CONTAINER,
+  WIDE_PAGE_GUTTER,
+} from "@/constants/layout.constants";
 
 /** 캔버스 틀 크기를 계산할 때 쓰는 가로/세로 비 */
 const RATIO_VALUE: Record<ImageRatio, number> = {
@@ -137,8 +146,9 @@ export default function ImageGenPage() {
         : model === Model.QWEN_IMAGE_21
           ? qwenHealthCheck?.healthy === true
         : true;
+  // 로컬 모델은 서버가 꺼져 있어도 대기열에 넣을 수 있다.
   const isSelectedModelAvailable =
-    isSelectedModelEnabled && isSelectedModelHealthy;
+    isSelectedModelEnabled && (isSelectedModelHealthy || isLocalModel(model));
 
   const handleModelChange = (value: Model) => {
     setManualModel(value);
@@ -166,21 +176,35 @@ export default function ImageGenPage() {
     setPrompt(prompt);
   };
 
+  const showResult = useCallback((
+    result: { imageUrl: string; id: number; ratio?: ImageRatio },
+    mode: "generate" | "edit",
+  ) => {
+    setImageUrl(result.imageUrl);
+    setImageId(result.id);
+    setDisplayRatio(result.ratio ?? ratio);
+    setGenerationProgress(null);
+    toast.success(mode === "edit" ? "이미지 편집 완료!" : "이미지 생성 완료!", {
+      description:
+        mode === "edit"
+          ? "편집한 이미지가 갤러리에 저장됐습니다."
+          : "AI가 이미지를 생성했습니다.",
+    });
+    recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
+    resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
+    queryClient.invalidateQueries({ queryKey: ["credit"] });
+    queryClient.removeQueries({ queryKey: ["galleryImagesInfinite"] });
+    queryClient.removeQueries({ queryKey: ["userImagesInfinite"] });
+    setScrollPos(0);
+  }, [ratio, queryClient, setScrollPos]);
+
   const { mutate: generateImage, isPending: isMutationPending } =
     useGenerateImageMutation(
       (data) => {
-        setImageUrl(data.imageUrl!);
-        setImageId(data.id);
-        setDisplayRatio(data.ratio ?? ratio);
-        toast.success("이미지 생성 완료!", {
-          description: "AI가 이미지를 생성했습니다.",
-        });
-        recommendPromptRef.current?.refresh(); // 추천 프롬프트 새로고침
-        resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
-        queryClient.invalidateQueries({ queryKey: ["credit"] });
-        queryClient.removeQueries({ queryKey: ["galleryImagesInfinite"] });
-        queryClient.removeQueries({ queryKey: ["userImagesInfinite"] });
-        setScrollPos(0);
+        showResult(
+          { imageUrl: data.imageUrl!, id: data.id!, ratio: data.ratio },
+          "generate",
+        );
       },
       (error) => {
         toast.error(error.message);
@@ -188,25 +212,16 @@ export default function ImageGenPage() {
       },
     );
 
-  const handleStreamGenerate = async (
-    categories: string[],
-    editForm?: FormData,
-  ) => {
+  // 편집은 서버가 켜져 있을 때만 받으므로 지금처럼 스트림으로 진행 상황을 받는다.
+  const handleEditStream = async (editForm: FormData) => {
     try {
       setIsStreaming(true);
-      setResultMode(editForm ? "edit" : "generate");
+      setResultMode("edit");
       setGenerationProgress("연결 중...");
       setImageUrl(null);
       setImageId(null);
 
-      const response = editForm
-        ? await FetchUtil.postRaw("/api/edit-image", editForm)
-        : await FetchUtil.postRaw("/api/generate-image", {
-            prompt,
-            model,
-            ratio,
-            categories,
-          });
+      const response = await FetchUtil.postRaw("/api/edit-image", editForm);
 
       if (!response.ok) {
         let message = `HTTP error! status: ${response.status}`;
@@ -248,23 +263,7 @@ export default function ImageGenPage() {
               if (data.status === "progress") {
                 setGenerationProgress(data.message);
               } else if (data.status === "complete") {
-                setImageUrl(data.imageUrl);
-                setImageId(data.id);
-                setDisplayRatio(data.ratio ?? ratio);
-                setGenerationProgress(null);
-                toast.success(editForm ? "이미지 편집 완료!" : "이미지 생성 완료!", {
-                  description: editForm
-                    ? "편집한 이미지가 갤러리에 저장됐습니다."
-                    : "AI가 이미지를 생성했습니다.",
-                });
-                recommendPromptRef.current?.refresh();
-                resultImageRef.current?.scrollIntoView({ behavior: "smooth" });
-                queryClient.invalidateQueries({ queryKey: ["credit"] });
-                queryClient.removeQueries({
-                  queryKey: ["galleryImagesInfinite"],
-                });
-                queryClient.removeQueries({ queryKey: ["userImagesInfinite"] });
-                setScrollPos(0);
+                showResult(data, "edit");
               } else if (data.status === "error" || data.status === "fail") {
                 toast.error(
                   data.message || "이미지 생성 중 오류가 발생했습니다.",
@@ -287,6 +286,64 @@ export default function ImageGenPage() {
       setGenerationProgress(null);
     }
   };
+
+  // 로컬 모델: 대기열에 접수하고, 서버가 켜져 있으면 이 화면에서 끝까지 따라간다.
+  const { mutateAsync: enqueueImageJob, isPending: isEnqueuing } =
+    useEnqueueImageJobMutation();
+  const { data: imageJobs } = useImageJobsQuery();
+  const [trackedJobId, setTrackedJobId] = useState<number | null>(null);
+  const trackedJob = imageJobs?.find((job) => job.id === trackedJobId);
+
+  const handleQueueGenerate = async (categories: string[]) => {
+    setResultMode("generate");
+    setImageUrl(null);
+    setImageId(null);
+    try {
+      const job = await enqueueImageJob({ prompt, model, ratio, categories });
+      if (job.waitingForServer) {
+        toast.info("AI 서버가 꺼져 있어 대기열에 넣었어요", {
+          description: "서버가 켜지면 순서대로 생성하고 알림으로 알려드려요.",
+        });
+      } else {
+        setTrackedJobId(job.id);
+      }
+    } catch (error: unknown) {
+      toast.error((error as Error)?.message || "대기열에 넣지 못했습니다.");
+    }
+  };
+
+  // 따라가던 작업이 끝나면 결과를 보여준다. 도중에 서버가 꺼지면 대기열에 맡기고 화면을 풀어 준다.
+  useEffect(() => {
+    if (!trackedJob) return;
+    if (trackedJob.status === "SUCCEEDED" && trackedJob.image) {
+      setTrackedJobId(null);
+      showResult(trackedJob.image, "generate");
+    } else if (
+      trackedJob.status === "FAILED" ||
+      trackedJob.status === "EXPIRED" ||
+      trackedJob.status === "CANCELED"
+    ) {
+      setTrackedJobId(null);
+      toast.error(trackedJob.error ?? "이미지를 생성하지 못했습니다.", {
+        description: `${trackedJob.creditCost} 크레딧을 돌려드렸어요.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["credit"] });
+    } else if (trackedJob.status === "PENDING" && trackedJob.waitingForServer) {
+      setTrackedJobId(null);
+      toast.info("AI 서버가 꺼져 대기열에 맡겼어요", {
+        description: "서버가 켜지면 이어서 생성하고 알림으로 알려드려요.",
+      });
+    }
+    // 끝난 작업은 바로 추적을 풀므로 폴링으로 다시 불려도 결과를 한 번만 보여준다.
+  }, [trackedJob, showResult, queryClient]);
+
+  const trackedJobMessage = trackedJobId
+    ? trackedJob?.status === "RUNNING"
+      ? trackedJob.progress
+      : trackedJob?.position
+        ? `대기열에서 앞의 ${trackedJob.position}개 작업을 기다리는 중입니다...`
+        : "곧 생성을 시작합니다..."
+    : null;
 
   const handleGenerate = async () => {
     if (isSuggestingCategories) return;
@@ -340,12 +397,8 @@ export default function ImageGenPage() {
       }
     }
 
-    if (
-      model === Model.Z_IMAGE ||
-      model === Model.QWEN_IMAGE_21 ||
-      model === Model.STABLE_DIFFUSION_XL
-    ) {
-      await handleStreamGenerate(categoriesToUse);
+    if (isLocalModel(model)) {
+      await handleQueueGenerate(categoriesToUse);
     } else {
       setImageUrl(null);
       setImageId(null);
@@ -364,9 +417,10 @@ export default function ImageGenPage() {
     }
   }, [prompt, selectedCategories]);
 
-  const isPending = isMutationPending || isStreaming;
+  const isPending =
+    isMutationPending || isStreaming || isEnqueuing || trackedJobId !== null;
   const handleImageEdit = async (form: FormData) => {
-    await handleStreamGenerate([], form);
+    await handleEditStream(form);
   };
   const isGenerateDisabled =
     isPending ||
@@ -383,6 +437,8 @@ export default function ImageGenPage() {
     isZimageHealthCheckLoading ||
     isQwenHealthCheckLoading ||
     isCreditSettingsLoading;
+  const isSelectedModelOffline =
+    isLocalModel(model) && !isModelStatusLoading && !isSelectedModelHealthy;
   const selectedCreditCost =
     creditSettings && MODEL_CREDIT_SETTINGS[model]
       ? creditSettings[MODEL_CREDIT_SETTINGS[model].creditKey]
@@ -392,7 +448,9 @@ export default function ImageGenPage() {
       ? "크레딧이 부족합니다. 다음 충전일까지 기다려주세요."
       : !isModelStatusLoading && creditSettings && !isSelectedModelAvailable
         ? "선택한 모델을 지금 쓸 수 없어요. 다른 모델을 골라주세요."
-        : null;
+        : isSelectedModelOffline
+          ? "AI 서버가 꺼져 있어요. 대기열에 넣어 두면 서버가 켜질 때 순서대로 생성돼요."
+          : null;
 
   // 캔버스 틀은 결과가 있으면 결과 비율, 없으면 지금 고른 비율로 그린다.
   // 편집은 결과 비율을 미리 알 수 없으므로 1:1 틀을 쓴다.
@@ -417,8 +475,8 @@ export default function ImageGenPage() {
       : "미리보기";
 
   return (
-    <Layout.Content className="p-4 md:p-6 lg:overflow-hidden">
-      <div className="mx-auto grid w-full max-w-[1600px] gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
+    <Layout.Content className={cn("py-4 md:py-6 lg:overflow-hidden", WIDE_PAGE_GUTTER)}>
+      <div className={cn(WIDE_CONTAINER, "grid gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6")}>
         {/* 설정 패널: 데스크톱에서는 안쪽만 스크롤되고 생성 버튼은 아래에 고정된다 */}
         <aside className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card lg:min-h-0">
           <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
@@ -557,8 +615,12 @@ export default function ImageGenPage() {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4" />
-                      이미지 생성
+                      {isSelectedModelOffline ? (
+                        <Clock className="h-4 w-4" />
+                      ) : (
+                        <Sparkles className="h-4 w-4" />
+                      )}
+                      {isSelectedModelOffline ? "대기열에 추가" : "이미지 생성"}
                       {selectedCreditCost !== undefined && (
                         <span className="text-sm font-normal opacity-80">
                           · {selectedCreditCost} 크레딧
@@ -641,7 +703,7 @@ export default function ImageGenPage() {
           <div className="flex items-center justify-center bg-muted/40 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] bg-[length:20px_20px] p-4 [container-type:inline-size] md:p-6 lg:min-h-0 lg:flex-1 lg:p-8 lg:[container-type:size]">
             {isPending ? (
               <GenerationLoader
-                message={generationProgress}
+                message={trackedJobMessage ?? generationProgress}
                 mode={resultMode}
                 className={frameClass}
                 style={frameStyle}
@@ -693,6 +755,8 @@ export default function ImageGenPage() {
               </div>
             )}
           </div>
+
+          <ImageJobQueue />
         </section>
       </div>
 

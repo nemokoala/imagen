@@ -236,6 +236,25 @@ body {
     }
   }
 
+  /* ─── 탐색 상단 스포트라이트 (FeaturedSpotlight) ─── */
+  @keyframes spotlight-zoom {
+    from {
+      transform: scale(1);
+    }
+    to {
+      transform: scale(1.08);
+    }
+  }
+
+  @keyframes spotlight-progress {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
   .gen-glow {
     background: radial-gradient(
       55% 45% at 50% 40%,

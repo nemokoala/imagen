@@ -28,6 +28,11 @@ function parseAspectRatio(size: string): number {
   return 1; // 기본 1:1
 }
 
+/** 갤러리 카드 목표 폭(px)과 열 개수 범위 */
+const TARGET_COLUMN_WIDTH = 300;
+const MIN_COLUMNS = 2;
+const MAX_COLUMNS = 5;
+
 interface InfiniteImageGalleryProps {
   userId?: number;
   onScrollChange?: (scrollTop: number) => void;
@@ -132,13 +137,15 @@ export function InfiniteImageGallery({
 
   const gap = 8;
 
+  // 열 개수는 창 폭이 아니라 갤러리 폭으로 정한다. 어느 페이지에 들어가도
+  // 카드가 비슷한 크기(TARGET_COLUMN_WIDTH 근처)가 되도록 2~5열 사이에서 고른다.
   const columnCount = useMemo(() => {
-    if (width === 0) return 4; // SSR 또는 초기 렌더링
-    if (width >= 1280) return 4; // xl
-    if (width >= 1024) return 3; // lg
-    if (width >= 768) return 2; // md
-    return 2;
-  }, [width]);
+    if (containerWidth === 0) return 4; // 첫 측정 전
+    const fit = Math.floor(
+      (containerWidth + gap) / (TARGET_COLUMN_WIDTH + gap),
+    );
+    return Math.min(MAX_COLUMNS, Math.max(MIN_COLUMNS, fit));
+  }, [containerWidth, gap]);
 
   // 카테고리 토글 핸들러 (URL 업데이트)
   const handleToggleCategory = useCallback(
@@ -303,7 +310,7 @@ export function InfiniteImageGallery({
       }}
     >
       {isLoading ? (
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
           {[...Array(20)].map((_, i) => (
             <Skeleton key={i} className="aspect-square rounded-xl" />
           ))}

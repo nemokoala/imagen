@@ -16,21 +16,47 @@ import {
 } from "@/constants/layout.constants";
 
 /** 캐러셀에서 돌아가며 보여줄 상위 이미지 수 */
-const SPOTLIGHT_COUNT = 5;
+const SPOTLIGHT_COUNT = 10;
 /** 가운데 카드 크기 (4:5) */
 const CARD_CLASS = "aspect-[4/5] w-[min(64vw,300px)] md:w-[340px]";
 
-/** 가운데(0)에서 몇 칸 떨어졌는지에 따른 카드 위치 · 크기 · 투명도 */
+/** 가운데에서 떨어진 칸 수(0~4)별 카드 크기와, 카드를 배경색으로 덮는 정도 */
+const CARD_SCALE = [1, 0.84, 0.7, 0.58, 0.48];
+const CARD_VEIL = [0, 0.22, 0.42, 0.58, 0.7];
+/** 넓은 화면에서 가운데 양옆으로 보여줄 카드 수 */
+const MAX_VISIBLE_DISTANCE = CARD_SCALE.length - 1;
+
+/**
+ * 칸별 카드 중심 위치(가운데 카드 폭 대비). 바깥 카드가 바로 안쪽 카드에 겹쳐
+ * 부채처럼 이어지도록, 각 카드가 안쪽 카드 밖으로 자기 폭의 45%만 드러나게 쌓는다.
+ */
+const CARD_SHIFT = CARD_SCALE.reduce<{ shifts: number[]; edge: number }>(
+  (acc, scale, distance) => {
+    if (distance === 0) return { shifts: [0], edge: 0.5 };
+    const edge = acc.edge + 0.45 * scale;
+    return { shifts: [...acc.shifts, edge - scale / 2], edge };
+  },
+  { shifts: [], edge: 0 },
+).shifts;
+
 function cardStyle(offset: number) {
-  const distance = Math.abs(offset);
-  const shift = distance === 0 ? 0 : distance === 1 ? 74 : 152;
-  const scale = distance === 0 ? 1 : distance === 1 ? 0.82 : 0.66;
-  const opacity = distance === 0 ? 1 : distance === 1 ? 0.6 : 0.25;
+  const distance = Math.min(Math.abs(offset), MAX_VISIBLE_DISTANCE);
+  const shift = Math.sign(offset) * CARD_SHIFT[distance] * 100;
   return {
-    transform: `translateX(calc(-50% + ${Math.sign(offset) * shift}%)) scale(${scale})`,
-    opacity,
-    zIndex: 10 - distance,
+    transform: `translateX(calc(-50% + ${shift}%)) scale(${CARD_SCALE[distance]})`,
+    opacity: Math.abs(offset) > MAX_VISIBLE_DISTANCE ? 0 : 1,
+    zIndex: 20 - Math.abs(offset),
   };
+}
+
+/** 화면이 좁을수록 바깥 카드를 감춘다: 모바일 1장, 태블릿 2장, 노트북 3장, 넓은 화면 4장 */
+function visibilityClass(distance: number) {
+  return cn(
+    distance >= 2 && "max-md:pointer-events-none max-md:opacity-0!",
+    distance >= 3 && "max-lg:pointer-events-none max-lg:opacity-0!",
+    distance >= 4 && "max-xl:pointer-events-none max-xl:opacity-0!",
+    distance > MAX_VISIBLE_DISTANCE && "pointer-events-none",
+  );
 }
 
 /**
@@ -172,8 +198,8 @@ export function FeaturedSpotlight() {
                 className={cn(
                   "absolute left-1/2 top-0 overflow-hidden rounded-3xl bg-background-plus shadow-2xl shadow-black/30 ring-1 ring-white/10 transition-[transform,opacity,filter] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   CARD_CLASS,
-                  !isActive && "saturate-[0.7]",
-                  Math.abs(offset) === 2 && "max-md:opacity-0!",
+                  !isActive && "saturate-[0.75]",
+                  visibilityClass(Math.abs(offset)),
                 )}
               >
                 <Image
@@ -191,6 +217,15 @@ export function FeaturedSpotlight() {
                 <span className="absolute left-3 top-3 rounded-full bg-black/45 px-2.5 py-1 text-xs font-semibold tabular-nums text-white backdrop-blur-md">
                   #{index + 1}
                 </span>
+                {/* 바깥 카드일수록 배경색으로 덮어 뒤로 물러나 보이게 한다 (투명하게 비치지 않음) */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 bg-background transition-opacity duration-700"
+                  style={{
+                    opacity:
+                      CARD_VEIL[Math.min(Math.abs(offset), MAX_VISIBLE_DISTANCE)],
+                  }}
+                />
               </Link>
             );
           })}

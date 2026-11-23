@@ -17,8 +17,8 @@ export function ThemeToggle() {
   // 마운트 전에는 아이콘 없이 빈 버튼만 렌더링 (서버/클라이언트 일치)
   if (!mounted) {
     return (
-      <Button variant="ghost" size="icon" className="w-10 h-10">
-        <span className="h-5 w-5" />
+      <Button variant="ghost" size="icon" className="rounded-full">
+        <span className="h-[18px] w-[18px]" />
         <span className="sr-only">테마 전환</span>
       </Button>
     );
@@ -26,15 +26,15 @@ export function ThemeToggle() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="icon"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-      className="w-10 h-10"
+      className="rounded-full text-muted-foreground hover:text-foreground"
     >
       {resolvedTheme === "dark" ? (
-        <Sun className="h-5 w-5" />
+        <Sun className="h-[18px] w-[18px]" />
       ) : (
-        <Moon className="h-5 w-5" />
+        <Moon className="h-[18px] w-[18px]" />
       )}
       <span className="sr-only">테마 전환</span>
     </Button>

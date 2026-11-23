@@ -3,16 +3,15 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Calendar,
-  Image as ImageIcon,
   Download,
   Sparkles,
   MessageCircle,
   Trash2,
   ArrowLeft,
-  User,
   Languages,
   Tag,
+  Cpu,
+  Maximize2,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -26,8 +25,8 @@ import { useUserStore } from "@/stores/userStore";
 import { toast } from "sonner";
 import { useModal } from "@/providers/ModalProvider";
 import { useRouter } from "next/navigation";
-import { downloadImage, getRatio } from "@/lib/utils";
-import { Image as ImageType } from "@/types/image.interfaces";
+import { cn, downloadImage, getRatio } from "@/lib/utils";
+import { ImageRatio, Image as ImageType } from "@/types/image.interfaces";
 import { Layout } from "../layout/Layout";
 import Link from "next/link";
 import { ProfileAvatar } from "../auth/ProfileAvatar";
@@ -36,6 +35,13 @@ import { ImageCard } from "./ImageCard";
 import { Separator } from "@/components/ui/separator";
 import { useMarkAsReadByImageIdMutation } from "@/queries/notification/mutations";
 import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer";
+
+/** 세로가 긴 이미지가 화면을 넘지 않도록 비율별 최대 너비를 정한다 */
+const IMAGE_MAX_WIDTH: Record<ImageRatio, string> = {
+  [ImageRatio.RATIO_1_1]: "min(100%, 76dvh)",
+  [ImageRatio.RATIO_9_16]: "min(100%, calc(76dvh * 9 / 16))",
+  [ImageRatio.RATIO_16_9]: "100%",
+};
 
 interface ImageDetailProps {
   image: ImageType;
@@ -113,39 +119,40 @@ export function ImageDetail({
 
   if (!imageData) return null;
 
+  const title = imageData.prompt
+    ? imageData.prompt.length > 60
+      ? imageData.prompt.substring(0, 60) + "..."
+      : imageData.prompt
+    : "AI 생성 이미지";
+
   return (
-    <Layout.Content className="py-8 px-4 md:px-8 lg:px-12">
-      <div className="max-w-7xl mx-auto w-full">
+    <Layout.Content className="px-4 py-6 md:px-8 md:py-8">
+      <div className="mx-auto w-full max-w-6xl">
         {/* 뒤로가기 버튼 */}
         <Button
-          variant="outline"
+          variant="ghost"
+          size="sm"
           onClick={() => router.back()}
-          className="mb-6"
+          className="-ml-2 mb-4 text-muted-foreground"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" />
           뒤로가기
         </Button>
 
-        {/* 헤더 - 페이지별 고유 h1 */}
-        <div className="mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent flex items-center gap-2">
-            <ImageIcon className="h-8 w-8 text-purple-600" />
-            <span>
-              {imageData.prompt
-                ? imageData.prompt.length > 60
-                  ? imageData.prompt.substring(0, 60) + "..."
-                  : imageData.prompt
-                : "AI 생성 이미지"}
-            </span>
-          </h1>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-          <div className="flex flex-col gap-4">
-            <div className="space-y-6">
-              {/* 이미지 */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-10">
+          {/* 이미지 */}
+          <div className="lg:sticky lg:top-0 lg:self-start">
+            <div className="flex justify-center rounded-2xl bg-muted/60 p-2 ring-1 ring-border md:p-3">
               <div
-                className={`relative mx-auto flex w-auto cursor-zoom-in justify-center ${getRatio(imageData.ratio)} md:max-h-[70dvh]`}
+                className={cn(
+                  "relative w-full cursor-zoom-in overflow-hidden rounded-xl",
+                  getRatio(imageData.ratio),
+                )}
+                style={{
+                  maxWidth:
+                    IMAGE_MAX_WIDTH[imageData.ratio] ??
+                    IMAGE_MAX_WIDTH[ImageRatio.RATIO_1_1],
+                }}
                 onClick={() => setIsFullscreenOpen(true)}
               >
                 <Image
@@ -153,176 +160,184 @@ export function ImageDetail({
                   alt={imageData.prompt || "AI 생성 이미지"}
                   title={imageData.prompt || "AI 생성 이미지"}
                   fill
-                  className="max-w-full object-contain rounded-xl shadow-lg transition-transform duration-300"
+                  className="object-contain"
                   unoptimized
                   priority
                   itemProp="image"
                 />
               </div>
-              <ImageFullscreenViewer
-                open={isFullscreenOpen}
-                onOpenChange={setIsFullscreenOpen}
-                src={imageData.imageUrl}
-                alt={imageData.prompt || "AI 생성 이미지"}
-                ratio={imageData.ratio}
-              />
+            </div>
+            <ImageFullscreenViewer
+              open={isFullscreenOpen}
+              onOpenChange={setIsFullscreenOpen}
+              src={imageData.imageUrl}
+              alt={imageData.prompt || "AI 생성 이미지"}
+              ratio={imageData.ratio}
+            />
+          </div>
 
-              {/* 프롬프트 */}
-              <div className="space-y-3">
-                <div className="font-semibold text-lg text-foreground flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-purple-600" />
-                  프롬프트
-                  <div className="flex items-center gap-2 ml-auto">
-                    <Button
-                      onClick={() =>
-                        downloadImage(imageData.imageUrl, imageData.prompt)
-                      }
-                      variant="outline"
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      다운로드
-                    </Button>
-                    {canDelete && (
-                      <Button
-                        variant="destructive"
-                        onClick={showDeleteModal}
-                        className="rounded-full h-full px-1 ml-auto"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        삭제
-                      </Button>
-                    )}
-                  </div>
+          {/* 정보 · 댓글 */}
+          <div className="flex min-w-0 flex-col gap-6">
+            <div className="space-y-4">
+              {/* 헤더 - 페이지별 고유 h1 */}
+              <h1 className="break-keep text-2xl font-bold leading-snug tracking-tight text-foreground md:text-3xl">
+                {title}
+              </h1>
+
+              {/* 생성자 */}
+              <Link
+                href={`/profile/${imageData.user.id}`}
+                className="flex w-fit items-center gap-2.5 rounded-lg transition-opacity hover:opacity-80"
+              >
+                <ProfileAvatar
+                  profileImageUrl={imageData.user.profileImageUrl || ""}
+                  nickname={imageData.user.nickname || ""}
+                  size="small"
+                />
+                <span className="flex flex-col">
+                  <span className="text-sm font-semibold text-foreground">
+                    {imageData.user.nickname}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {format(new Date(imageData.createdAt), "yy.MM.dd HH:mm", {
+                      locale: ko,
+                    })}
+                  </span>
+                </span>
+              </Link>
+
+              {/* 액션 */}
+              <div className="flex flex-wrap items-center gap-2">
+                <LikeButton imageId={imageData.id} />
+                <div className="flex h-10 items-center gap-2 px-2 text-sm text-muted-foreground">
+                  <MessageCircle className="h-5 w-5" />
+                  <span>{comments.length}</span>
                 </div>
-                <div className="bg-background-plus border border-border p-4 rounded-xl">
-                  <p className="text-foreground leading-relaxed">
-                    {imageData.prompt}
-                  </p>
+                <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    onClick={() =>
+                      downloadImage(imageData.imageUrl, imageData.prompt)
+                    }
+                    variant="outline"
+                  >
+                    <Download className="h-4 w-4" />
+                    다운로드
+                  </Button>
+                  {canDelete && (
+                    <Button
+                      variant="ghost"
+                      onClick={showDeleteModal}
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      삭제
+                    </Button>
+                  )}
                 </div>
               </div>
+            </div>
 
-              {/* 번역된 프롬프트 */}
-              {imageData.translatedPrompt && (
-                <div className="space-y-3">
-                  <div className="font-semibold text-lg text-foreground flex items-center gap-2">
-                    <Languages className="h-5 w-5 text-blue-600" />
-                    번역된 프롬프트
-                  </div>
-                  <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 p-4 rounded-xl">
-                    <p className="text-foreground leading-relaxed text-sm">
-                      {imageData.translatedPrompt}
-                    </p>
-                  </div>
-                </div>
-              )}
+            <Separator />
 
-              {/* 카테고리 */}
+            {/* 프롬프트 */}
+            <section className="space-y-2">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                <Sparkles className="h-4 w-4" />
+                프롬프트
+              </h2>
+              <p className="rounded-xl border border-border bg-card p-4 leading-relaxed text-foreground">
+                {imageData.prompt}
+              </p>
+            </section>
+
+            {/* 번역된 프롬프트 */}
+            {imageData.translatedPrompt && (
+              <section className="space-y-2">
+                <h2 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+                  <Languages className="h-4 w-4" />
+                  번역된 프롬프트
+                </h2>
+                <p className="rounded-xl border border-border bg-muted/50 p-4 text-sm leading-relaxed text-subtitle">
+                  {imageData.translatedPrompt}
+                </p>
+              </section>
+            )}
+
+            {/* 이미지 정보 */}
+            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-border bg-card p-4 text-sm">
+              <div className="space-y-1.5">
+                <dt className="flex items-center gap-1.5 text-muted-foreground">
+                  <Cpu className="h-3.5 w-3.5" />
+                  모델
+                </dt>
+                <dd>
+                  <Badge
+                    variant="secondary"
+                    className="border-transparent bg-primary-soft text-primary-soft-foreground"
+                  >
+                    {imageData.model}
+                  </Badge>
+                </dd>
+              </div>
+              <div className="space-y-1.5">
+                <dt className="flex items-center gap-1.5 text-muted-foreground">
+                  <Maximize2 className="h-3.5 w-3.5" />
+                  크기
+                </dt>
+                <dd className="font-medium text-foreground">
+                  {imageData.size}
+                </dd>
+              </div>
               {imageData.categories && imageData.categories.length > 0 && (
-                <div className="space-y-3">
-                  <div className="font-semibold text-lg text-foreground flex items-center gap-2">
-                    <Tag className="h-5 w-5 text-green-600" />
+                <div className="col-span-2 space-y-1.5">
+                  <dt className="flex items-center gap-1.5 text-muted-foreground">
+                    <Tag className="h-3.5 w-3.5" />
                     카테고리
-                  </div>
-                  <div className="flex flex-wrap gap-2">
+                  </dt>
+                  <dd className="flex flex-wrap gap-1.5">
                     {imageData.categories.map((category) => (
                       <Badge
                         key={category.id}
                         variant="outline"
-                        className="bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors cursor-pointer"
+                        className="bg-background text-subtitle"
                       >
                         {category.name}
                       </Badge>
                     ))}
-                  </div>
+                  </dd>
                 </div>
               )}
-              {/* 이미지 정보 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-4">
-                  <div className="flex gap-2 h-16 items-center bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
-                    <h3 className="font-semibold text-foreground flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-purple-600" />
-                      모델
-                    </h3>
-                    <Badge
-                      variant="secondary"
-                      className="gradient-purple-bg text-white"
-                    >
-                      {imageData.model}
-                    </Badge>
-                  </div>
-                  <div className="flex gap-2 h-16 items-center bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
-                    <h3 className="font-semibold text-foreground flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4 text-purple-600" />
-                      크기
-                    </h3>
-                    <p className="text-foreground">{imageData.size}</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex gap-2 h-16 items-center bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
-                    <h3 className="font-semibold text-foreground flex items-center gap-2">
-                      <User className="h-4 w-4 text-purple-600" />
-                      생성자
-                    </h3>
-                    <p className="text-foreground whitespace-nowrap flex items-center gap-1.5 ml-0.5">
-                      <Link href={`/profile/${imageData.user.id}`}>
-                        <ProfileAvatar
-                          profileImageUrl={imageData.user.profileImageUrl || ""}
-                          nickname={imageData.user.nickname || ""}
-                          size="small"
-                        />{" "}
-                      </Link>
-                      {imageData.user.nickname}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 h-16 items-center bg-background-plus backdrop-blur-sm p-4 rounded-xl border border-border shadow-lg">
-                    <h3 className="font-semibold text-foreground flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-purple-600" />
-                      생성일
-                    </h3>
-                    <p className="text-foreground">
-                      {format(new Date(imageData.createdAt), "yy.MM.dd HH:mm", {
-                        locale: ko,
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            {/* 좋아요 및 댓글 섹션 */}
-            <div className="space-y-4">
-              {/* 좋아요 버튼 */}
-              <div className="flex items-center gap-4 h-10">
-                <LikeButton imageId={imageData.id} />
-                <div className="flex items-center gap-2 text-foreground">
-                  <MessageCircle className="h-5 w-5" />
-                  <span>{comments.length}</span>
-                </div>
-              </div>
-              {/* 댓글 섹션 */}
+            </dl>
+
+            <Separator />
+
+            {/* 댓글 섹션 */}
+            <section className="space-y-4">
+              <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+                댓글
+                <span className="font-medium text-muted-foreground">
+                  {comments.length}
+                </span>
+              </h2>
               <CommentSection imageId={imageData.id} />
-            </div>
+            </section>
           </div>
         </div>
 
-        <Separator className="my-6" />
         {/* 이전/다음 이미지 섹션 */}
         {(prevImages.length > 0 || nextImages.length > 0) && (
-          <div className="mt-12 space-y-8">
+          <div className="mt-14 space-y-10 border-t border-border pt-10">
             {/* 이전글 */}
             {prevImages.length > 0 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                  <ChevronLeft className="h-6 w-6 text-purple-600" />
+                <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">
+                  <ChevronLeft className="h-5 w-5 text-muted-foreground" />
                   이전글
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 min-h-[400px]">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {prevImages.map((prevImage) => (
-                    <div className="min-h-[400px]" key={prevImage.id}>
-                      <ImageCard key={prevImage.id} image={prevImage} />
+                    <div className="aspect-square" key={prevImage.id}>
+                      <ImageCard image={prevImage} />
                     </div>
                   ))}
                 </div>
@@ -332,14 +347,14 @@ export function ImageDetail({
             {/* 다음글 */}
             {nextImages.length > 0 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                  <ChevronRight className="h-6 w-6 text-purple-600" />
+                <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">
                   다음글
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 min-h-[400px]">
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {nextImages.map((nextImage) => (
-                    <div className="min-h-[400px]" key={nextImage.id}>
-                      <ImageCard key={nextImage.id} image={nextImage} />
+                    <div className="aspect-square" key={nextImage.id}>
+                      <ImageCard image={nextImage} />
                     </div>
                   ))}
                 </div>

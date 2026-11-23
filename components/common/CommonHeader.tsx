@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
 import { useUserStore } from "@/stores/userStore";
 import { Skeleton } from "../ui/skeleton";
@@ -17,10 +18,22 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { User, LogOut, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { ProfileAvatar } from "../auth/ProfileAvatar";
 
 export const Header = () => {
   const { isAuthenticated, isLoading, logout, user } = useUserStore();
+  const pathname = usePathname();
+
+  // 비로그인 상태에서 /generate 로 가면 프록시가 랜딩으로 돌려보내므로 로그인으로 바로 보낸다.
+  const navItems = [
+    { href: "/explore", label: "갤러리", active: pathname === "/explore" || pathname.startsWith("/image/") },
+    {
+      href: isAuthenticated ? "/generate" : "/auth/login",
+      label: "이미지 생성",
+      active: pathname === "/generate",
+    },
+  ];
 
   const logoutMutation = useLogoutMutation(
     () => {
@@ -39,57 +52,60 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky h-15 top-0 z-50 w-full flex items-center justify-between pl-3.5 pr-2">
-      <Link
-        className="flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80"
-        href="/"
-        aria-label="ImageGen 홈"
-      >
-        <Logo />
-      </Link>
+    <header className="sticky top-0 z-50 flex h-15 w-full items-center justify-between border-b border-border/70 bg-background/80 pl-4 pr-3 backdrop-blur-md sm:pl-5 sm:pr-4">
+      <div className="flex items-center gap-6">
+        <Link
+          className="flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80"
+          href="/"
+          aria-label="ImageGen 홈"
+        >
+          <Logo />
+        </Link>
 
-      <div className="flex items-center gap-2 sm:gap-4 mr-2">
+        <nav aria-label="주요 메뉴" className="hidden items-center gap-1 md:flex">
+          {navItems.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              aria-current={item.active ? "page" : undefined}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                item.active
+                  ? "bg-secondary text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
+      <div className="flex items-center gap-2">
         {isLoading ? (
           <Skeleton className="w-10 h-10 rounded-full" />
         ) : !isAuthenticated ? (
           <div className="flex items-center gap-2">
             {/* 테마 토글 */}
             <ThemeToggle />
-            <Link href="/auth/login">
-              <Button variant="outline" className="hidden sm:flex">
-                로그인
-              </Button>
-              <Button variant="outline" size="sm" className="flex sm:hidden">
-                로그인
-              </Button>
-            </Link>
-            <Link href="/auth/register">
-              <Button variant="gradient" className="hidden sm:flex">
-                회원가입
-              </Button>
-              <Button variant="gradient" size="sm" className="flex sm:hidden">
-                가입
-              </Button>
-            </Link>
+            <Button asChild variant="ghost" size="sm">
+              <Link href="/auth/login">로그인</Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/auth/register">
+                <span className="hidden sm:inline">시작하기</span>
+                <span className="sm:hidden">가입</span>
+              </Link>
+            </Button>
           </div>
         ) : (
-          <div className="flex items-center gap-3">
-            <Link href="/generate">
-              <Button
-                variant="gradient"
-                className="hidden sm:flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>이미지 생성</span>
-              </Button>
-              <Button
-                variant="gradient"
-                size="icon"
-                className="flex sm:hidden h-9 w-9"
-              >
-                <Sparkles className="w-4 h-4" />
-              </Button>
-            </Link>
+          <div className="flex items-center gap-2">
+            {/* 데스크톱은 상단 메뉴로, 모바일은 아이콘 버튼으로 생성 페이지에 들어간다 */}
+            <Button asChild size="icon" className="md:hidden" aria-label="이미지 생성">
+              <Link href="/generate">
+                <Sparkles className="h-4 w-4" />
+              </Link>
+            </Button>
 
             {/* 알림 */}
             <NotificationPopover />

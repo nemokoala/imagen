@@ -17,7 +17,6 @@ import { ProfileHeader } from "./ProfileHeader";
 import { UserGeneratedImages } from "./UserGeneratedImages";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { MessageSquare } from "lucide-react";
-import { DecorativeBackground } from "../ui/decorative-background";
 
 interface ProfileContentProps {
   targetUserId?: number | null;
@@ -113,7 +112,6 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
       ref={scrollContainerRef}
       className="h-[calc(100dvh-60px)] items-center px-2"
     >
-      <DecorativeBackground />
       <div className="w-full max-w-6xl mx-auto flex flex-col items-center pt-8 z-10">
         {/* 프로필 헤더 */}
         <ProfileHeader
@@ -157,7 +155,7 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
           <TabsContent value="comments" className="w-full max-w-6xl pb-8">
             <div className="mb-6 self-start w-full">
               <div className="mb-1 flex items-center gap-2.5">
-                <span className="flex size-9 items-center justify-center rounded-xl border border-border/60 bg-gradient-to-br from-purple-500/15 to-blue-500/10 text-purple-600 dark:text-purple-400">
+                <span className="flex size-9 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground">
                   <MessageSquare className="size-4" />
                 </span>
                 <h2 className="text-2xl font-bold tracking-tight text-foreground">

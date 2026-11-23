@@ -29,7 +29,6 @@ export function CommentForm({
         <Button
           onClick={onSubmit}
           disabled={loading || !commentContent.trim()}
-          variant="gradient"
         >
           <Send className="mr-2 h-4 w-4" />
           댓글 작성

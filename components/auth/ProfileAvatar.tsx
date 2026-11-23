@@ -23,7 +23,7 @@ export const ProfileAvatar = ({
         src={profileImageUrl || undefined}
         alt={nickname || "User"}
       />
-      <AvatarFallback className="bg-gradient-to-br from-purple-400 to-pink-400 text-white">
+      <AvatarFallback className="bg-primary-soft font-semibold text-primary-soft-foreground">
         {nickname?.charAt(0).toUpperCase() || "U"}
       </AvatarFallback>
     </Avatar>

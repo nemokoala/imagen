@@ -35,7 +35,6 @@ import {
 } from "@/schemas/auth";
 import { FetchUtil } from "@/lib/Fetch.util";
 import type { RegisterResponse } from "@/types/auth.interfaces";
-import { DecorativeBackground } from "@/components/ui/decorative-background";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -88,9 +87,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <Layout.Content className="relative flex items-center justify-center py-10 min-h-fit">
-      <DecorativeBackground />
-      <Card className="relative w-[350px] z-10">
+    <Layout.Content className="relative flex items-center justify-center px-4 py-10 min-h-fit">
+      <Card className="w-full max-w-[380px]">
         <CardHeader>
           <CardTitle>회원가입</CardTitle>
           <CardDescription>
@@ -184,7 +182,6 @@ export default function RegisterPage() {
                 type="submit"
                 className="w-full"
                 disabled={loading}
-                variant="gradient"
               >
                 {loading ? "처리 중..." : "회원가입"}
               </Button>
@@ -194,7 +191,7 @@ export default function RegisterPage() {
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-card px-2 text-muted-foreground">
                     또는
                   </span>
                 </div>

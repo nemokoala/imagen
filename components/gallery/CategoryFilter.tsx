@@ -58,8 +58,10 @@ export function CategoryFilter({
   };
 
   // 공통 버튼 스타일
-  const iconButtonClass = "rounded-full h-9 w-9 flex-shrink-0";
-  const categoryButtonClass = "rounded-full h-9 whitespace-nowrap px-4";
+  const iconButtonClass = "rounded-lg h-8 w-8 flex-shrink-0";
+  const categoryButtonClass = "rounded-lg h-8 whitespace-nowrap px-3.5";
+  // 선택된 칩은 연한 포인트색, 나머지는 배경 없이 둔다.
+  const chipVariant = (selected: boolean) => (selected ? "soft" : "ghost");
 
   if (isCollapsed === null) return null; // avoid TS error if any
 
@@ -80,7 +82,7 @@ export function CategoryFilter({
           onClick={() => setIsCollapsed(false)}
           className={cn(
             iconButtonClass,
-            "!bg-background backdrop-blur-md shadow-lg border border-border text-subtitle hover:text-primary",
+            "rounded-full h-9 w-9 !bg-card shadow-md text-muted-foreground hover:text-foreground",
           )}
         >
           <ChevronDown size={18} />
@@ -99,12 +101,11 @@ export function CategoryFilter({
         <div className="overflow-hidden">
           <div
             className={cn(
-              "backdrop-blur-md bg-card/80 py-1.5 px-1.5 w-max max-w-full mx-auto border border-border font-medium text-foreground",
-              onToggleRatio ? "rounded-2xl" : "rounded-full",
+              "backdrop-blur-md bg-card/85 py-1.5 px-1.5 w-max max-w-full mx-auto border border-border shadow-sm font-medium text-foreground rounded-2xl",
             )}
           >
             {/* 1행: 카테고리 + 검색 */}
-            <div className="flex items-center gap-1.5 min-h-9 px-1">
+            <div className="flex items-center gap-1 min-h-9 px-0.5">
               {isSearchOpen ? (
                 <form
                   onSubmit={handleSearchSubmit}
@@ -114,44 +115,36 @@ export function CategoryFilter({
                     value={localSearch}
                     onChange={(e) => setLocalSearch(e.target.value)}
                     placeholder="검색어 입력..."
-                    className="h-9 rounded-full border-none bg-muted/80 focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px] text-foreground"
+                    className="h-8 rounded-lg border-none bg-muted focus-visible:ring-1 focus-visible:ring-primary flex-1 min-w-[180px] sm:w-[320px] text-foreground"
                     autoFocus
                   />
                   <Button
                     type="submit"
-                    variant="outline"
+                    variant="soft"
                     size="icon"
-                    className={cn(
-                      iconButtonClass,
-                      "text-primary border-primary/20 hover:bg-primary/10",
-                    )}
+                    className={iconButtonClass}
                   >
                     <Search size={18} />
                   </Button>
                 </form>
               ) : (
-                <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide rounded-full min-w-0 py-0.5">
+                <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide min-w-0 py-0.5">
                   {search && (
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <Button
                         onClick={clearSearch}
-                        variant="gradient"
-                        className={cn(
-                          categoryButtonClass,
-                          "gap-2 pr-2 shadow-md",
-                        )}
+                        variant="soft"
+                        className={cn(categoryButtonClass, "gap-2 pr-2")}
                       >
                         <span className="max-w-[100px] truncate">{search}</span>
-                        <X size={16} className="opacity-90" />
+                        <X size={15} className="opacity-80" />
                       </Button>
-                      <div className="w-px h-8 bg-foreground/30 mx-1 flex-shrink-0" />
+                      <div className="w-px h-5 bg-border mx-1 flex-shrink-0" />
                     </div>
                   )}
                   <Button
                     onClick={handleSelectAll}
-                    variant={
-                      selectedCategories.length === 0 ? "gradient" : "outline"
-                    }
+                    variant={chipVariant(selectedCategories.length === 0)}
                     className={categoryButtonClass}
                   >
                     전체
@@ -159,7 +152,7 @@ export function CategoryFilter({
                   {isLoading ? (
                     <>
                       {Array.from({ length: 6 }).map((_, i) => (
-                        <Skeleton key={i} className="h-9 w-20 rounded-full" />
+                        <Skeleton key={i} className="h-8 w-16 rounded-lg" />
                       ))}
                     </>
                   ) : (
@@ -167,11 +160,9 @@ export function CategoryFilter({
                       <Button
                         key={cat.id}
                         onClick={() => handleToggleCategory(cat.slug)}
-                        variant={
-                          selectedCategories.includes(cat.slug)
-                            ? "gradient"
-                            : "outline"
-                        }
+                        variant={chipVariant(
+                          selectedCategories.includes(cat.slug),
+                        )}
                         className={categoryButtonClass}
                       >
                         {cat.name}
@@ -181,16 +172,16 @@ export function CategoryFilter({
                 </div>
               )}
 
-              <div className="flex-shrink-0 flex items-center justify-center border-l border-foreground/30 pl-1.5 ml-0.5">
+              <div className="flex-shrink-0 flex items-center justify-center border-l border-border pl-1 ml-0.5">
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={toggleSearch}
                   className={cn(
                     iconButtonClass,
                     isSearchOpen
-                      ? "text-gray-400 hover:text-red-500 hover:bg-red-50 border-gray-200"
-                      : "text-gray-500 hover:text-primary border-transparent shadow-none",
+                      ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {isSearchOpen ? <X size={18} /> : <Search size={18} />}
@@ -200,24 +191,24 @@ export function CategoryFilter({
 
             {/* 2행: 비율 필터 + 축소 버튼 */}
             {onToggleRatio && (
-              <div className="flex justify-center items-center gap-1.5 px-1 pt-2 py-0.5">
+              <div className="flex justify-center items-center gap-1 px-0.5 pt-1.5 py-0.5 mt-1 border-t border-border">
                 {RATIO_OPTIONS.map((r) => (
                   <Button
                     key={r}
                     onClick={() => onToggleRatio(r)}
-                    variant={selectedRatio === r ? "gradient" : "outline"}
+                    variant={chipVariant(selectedRatio === r)}
                     className={categoryButtonClass}
                   >
                     {r}
                   </Button>
                 ))}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onClick={() => setIsCollapsed(true)}
                   className={cn(
                     iconButtonClass,
-                    "ml-auto text-gray-500 hover:text-primary border-transparent shadow-none",
+                    "ml-auto text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <ChevronUp size={18} />

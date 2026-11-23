@@ -63,7 +63,6 @@ export function WelcomeTitle() {
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-40 group-hover/btn:opacity-60 transition-opacity duration-300" />
           <Link href="/auth/register" className="relative">
             <Button
-              variant="gradient"
               size="lg"
               className="text-white h-14 px-8 text-lg font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-none shadow-xl hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-300 rounded-xl"
             >

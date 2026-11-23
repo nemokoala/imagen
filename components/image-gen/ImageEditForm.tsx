@@ -187,9 +187,9 @@ export function ImageEditForm({
   );
 
   return (
-    <Card className="border-0 bg-card/80 shadow-xl ring-1 ring-black/5 backdrop-blur-sm dark:ring-white/10">
+    <Card className="border border-border bg-card shadow-sm">
       <CardHeader className="pb-1">
-        <CardTitle className="text-xl font-semibold">이미지 편집 설정</CardTitle>
+        <CardTitle className="sr-only">이미지 편집 설정</CardTitle>
         <p className="text-sm text-muted-foreground">
           Qwen Image 2.1 로컬 모델로 이미지를 편집합니다.
           {creditCost !== undefined && ` · ${creditCost} 크레딧`}
@@ -237,7 +237,7 @@ export function ImageEditForm({
               type="button"
               disabled={isPending}
               onClick={() => openPicker(SOURCE_INPUT_ID)}
-              className="flex min-h-32 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-purple-400 hover:bg-purple-500/5"
+              className="flex min-h-32 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-primary-soft/40"
             >
               {sourcePreview ? (
                 <Image
@@ -372,7 +372,7 @@ export function ImageEditForm({
                   ? "칠한 자리에 무엇이 있어야 하는지 적어주세요. 예: 흰색 자수 별무늬를 넣어줘 / 사람을 없애고 눈 덮인 슬로프로 채워줘"
                   : "예: 인물은 유지하고 배경을 햇빛이 드는 온실로 바꿔줘. 참고 이미지를 쓸 때는 <image2>라고 적어주세요."
             }
-            className="min-h-24 resize-none border-2 focus:border-purple-500"
+            className="min-h-24 resize-none bg-background"
             disabled={isPending}
           />
           {recommendEnglish && (
@@ -384,7 +384,7 @@ export function ImageEditForm({
         </section>
 
         {/* 제출 - 캔버스가 길어도 버튼이 화면에 남도록 고정한다. */}
-        <div className="sticky bottom-0 -mx-6 border-t border-border/60 bg-card/95 px-6 pt-3 pb-1 backdrop-blur-sm">
+        <div className="sticky bottom-0 -mx-6 border-t border-border bg-card/95 px-6 pt-3 pb-1 backdrop-blur-sm">
           <Button
             type="button"
             onClick={handleSubmit}
@@ -395,7 +395,7 @@ export function ImageEditForm({
               !prompt.trim() ||
               (maskEnabled && !hasMask)
             }
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700"
+            className="h-11 w-full text-base font-semibold"
           >
             {isPending ? (
               <><Loader2 className="mr-2 h-4 w-4 animate-spin" />편집 중...</>

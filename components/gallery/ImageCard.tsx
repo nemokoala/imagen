@@ -99,7 +99,7 @@ export function ImageCard({ image, index, priority }: ImageCardProps) {
         className="block h-full"
       >
         <Card
-          className="overflow-hidden cursor-pointer group bg-background-plus border-0 gap-1 p-0 transform-gpu h-full"
+          className="overflow-hidden cursor-pointer group bg-background-plus border-0 gap-1 p-0 rounded-xl shadow-none transform-gpu h-full"
           style={{
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
@@ -111,7 +111,7 @@ export function ImageCard({ image, index, priority }: ImageCardProps) {
               src={image.imageUrl}
               alt={image.prompt}
               fill
-              className="object-cover transition-transform duration-300"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               priority={isPriority}
               sizes="(max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
               onLoad={() => setIsLoaded(true)}
@@ -127,41 +127,43 @@ export function ImageCard({ image, index, priority }: ImageCardProps) {
               </Badge>
             </div> */}
 
-            {/* 하단 그라데이션 오버레이 */}
-            <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-black/60 to-transparent z-10 pointer-events-none" />
-
-            {/* 좋아요, 댓글, 공유 */}
-            <div className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-2.5 pb-2">
-              <div className="flex items-center gap-3">
+            {/* 하단 정보 오버레이: 마우스가 있는 기기에서는 호버·포커스 때만, 터치 기기에서는 항상 보인다 */}
+            <div className="absolute inset-x-0 bottom-0 z-20 flex items-end justify-between gap-3 bg-gradient-to-t from-black/70 via-black/35 to-transparent px-3 pb-2.5 pt-10 text-white transition-opacity duration-200 [@media(hover:hover)]:opacity-0 group-hover:opacity-100 group-focus-within:opacity-100">
+              <p className="hidden min-w-0 flex-1 truncate text-xs font-medium [@media(hover:hover)]:block">
+                {image.prompt}
+              </p>
+              <div className="flex shrink-0 items-center gap-3">
                 <button
                   onClick={handleLike}
-                  className="flex items-center gap-1 text-white/90 hover:text-white transition-colors hover:cursor-pointer"
+                  aria-label={liked ? "좋아요 취소" : "좋아요"}
+                  className="flex items-center gap-1 text-white/90 transition-colors hover:cursor-pointer hover:text-white"
                 >
                   <Heart
-                    className={`h-3.5 w-3.5 ${liked ? "fill-red-500 text-red-500" : ""}`}
+                    className={`h-3.5 w-3.5 ${liked ? "fill-rose-500 text-rose-500" : ""}`}
                   />
                   <span className="text-xs font-medium">{likeCount}</span>
                 </button>
-                <div className="flex items-center gap-1 text-white/90 hover:cursor-pointer">
+                <div className="flex items-center gap-1 text-white/90">
                   <MessageCircle className="h-3.5 w-3.5" />
                   <span className="text-xs font-medium">
                     {image.commentCount}
                   </span>
                 </div>
+                <button
+                  aria-label="링크 복사"
+                  className="text-white/70 transition-colors hover:cursor-pointer hover:text-white"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    navigator.clipboard.writeText(
+                      `${window.location.origin}/image/${image.id}`,
+                    );
+                    toast.success("링크가 복사되었습니다.");
+                  }}
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                </button>
               </div>
-              <button
-                className="text-white/70 hover:text-white transition-colors hover:cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  navigator.clipboard.writeText(
-                    `${window.location.origin}/image/${image.id}`,
-                  );
-                  toast.success("링크가 복사되었습니다.");
-                }}
-              >
-                <Share2 className="h-3.5 w-3.5" />
-              </button>
             </div>
           </div>
         </Card>

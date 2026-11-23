@@ -41,10 +41,12 @@ export const LikeButton = ({ imageId }: { imageId: number }) => {
       disabled={likeMutation.isPending || !isAuthenticated}
       variant="outline"
       className={`flex items-center gap-2 ${
-        liked ? "bg-red-50 border-red-300 text-red-600 hover:bg-red-100" : ""
+        liked
+          ? "bg-rose-500/10 text-rose-600 ring-rose-500/30 hover:bg-rose-500/15 hover:text-rose-600 dark:bg-rose-500/15 dark:text-rose-400 dark:ring-rose-500/30"
+          : ""
       }`}
     >
-      <Heart className={`h-5 w-5 ${liked ? "fill-red-600" : ""}`} />
+      <Heart className={`h-5 w-5 ${liked ? "fill-current" : ""}`} />
       <span>{likeCount}</span>
     </Button>
   );

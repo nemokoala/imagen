@@ -7,16 +7,10 @@ export const Logo = ({ className }: { className?: string }) => {
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="h-8 w-8 flex-shrink-0"
+        className="h-7 w-7 flex-shrink-0 text-primary"
         aria-hidden
       >
-        <defs>
-          <linearGradient id="logo-mark" x1="0" y1="0" x2="32" y2="32">
-            <stop offset="0%" stopColor="#a855f7" />
-            <stop offset="100%" stopColor="#3b82f6" />
-          </linearGradient>
-        </defs>
-        <rect width="32" height="32" rx="9" fill="url(#logo-mark)" />
+        <rect width="32" height="32" rx="9" fill="currentColor" />
         <path
           d="M7 22.5 13 15l4 5 3-3.5 5 6z"
           fill="white"
@@ -27,11 +21,8 @@ export const Logo = ({ className }: { className?: string }) => {
           fill="white"
         />
       </svg>
-      <span className="text-xl font-semibold tracking-tight text-foreground">
-        Image
-        <span className="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
-          Gen
-        </span>
+      <span className="text-lg font-bold tracking-tight text-foreground">
+        ImageGen
       </span>
     </span>
   );

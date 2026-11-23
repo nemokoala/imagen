@@ -23,11 +23,11 @@ export function ProfileHeader({
   setIsEditOpen,
 }: ProfileHeaderProps) {
   return (
-    <Card className="relative w-full overflow-hidden mb-12 border border-white/20 dark:border-white/10 shadow-md bg-gradient-to-br from-purple-600/20 via-blue-600/10 to-transparent dark:from-purple-600/40 dark:via-blue-600/20 dark:to-transparent backdrop-blur-2xl py-0">
+    <Card className="relative w-full overflow-hidden mb-10 border border-border bg-card shadow-none py-0">
       <div className="relative flex flex-col md:flex-row items-center md:items-end gap-6 px-8 py-8">
         {/* Avatar Section */}
         <div className="relative group my-auto">
-          <div className="relative p-1 rounded-full bg-card shadow-xl transition-transform duration-500 group-hover:scale-105">
+          <div className="relative rounded-full ring-1 ring-border ring-offset-4 ring-offset-card">
             <ProfileAvatar
               profileImageUrl={userInfo.profileImageUrl || ""}
               nickname={userInfo.nickname || ""}
@@ -45,7 +45,7 @@ export function ProfileHeader({
               </h1>
               {"role" in userInfo && userInfo.role === "admin" && (
                 <Link href="/admin">
-                  <div className="px-2 py-0.5 text-[10px] font-bold bg-indigo-500 text-white rounded-full uppercase tracking-widest">
+                  <div className="px-2 py-0.5 text-[10px] font-bold bg-primary-soft text-primary-soft-foreground rounded-full uppercase tracking-widest">
                     Admin
                   </div>
                 </Link>
@@ -96,11 +96,11 @@ export function ProfileHeader({
         {isOwnProfile && (
           <div className="pt-4 md:pt-0">
             <Button
-              variant="gradient"
+              variant="outline"
               onClick={() => setIsEditOpen(true)}
-              className="rounded-full px-8 py-6 text-base font-bold shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_8px_30px_rgba(99,102,241,0.3)] hover:-translate-y-1 transition-all duration-300 flex items-center gap-2 group-active:scale-95"
+              className="flex items-center gap-2"
             >
-              <Pencil className="w-5 h-5" />
+              <Pencil className="w-4 h-4" />
               프로필 수정
             </Button>
           </div>

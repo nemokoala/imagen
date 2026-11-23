@@ -94,7 +94,7 @@ export function CommentItem({
   };
 
   return (
-    <div className="bg-background-plus border border-border rounded-xl p-4 space-y-3">
+    <div className="bg-card border border-border rounded-xl p-4 space-y-3">
       <div className="flex items-start gap-3">
         <Link href={`/profile/${comment.user.id}`}>
           <ProfileAvatar
@@ -131,7 +131,7 @@ export function CommentItem({
                   size="sm"
                   onClick={handleDeleteClick}
                   disabled={loading}
-                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -154,7 +154,6 @@ export function CommentItem({
                   size="sm"
                   onClick={handleEditSubmit}
                   disabled={loading || !editContent.trim()}
-                  className="gradient-purple-bg text-white"
                 >
                   수정
                 </Button>
@@ -179,7 +178,7 @@ export function CommentItem({
 
           {/* 답글 작성 폼 */}
           {isReplying && (
-            <div className="mt-2 space-y-2 pl-4 border-l-2 border-purple-200">
+            <div className="mt-2 space-y-2 pl-4 border-l-2 border-border">
               <Textarea
                 placeholder="답글을 입력하세요..."
                 value={replyContent}
@@ -194,7 +193,6 @@ export function CommentItem({
                   size="sm"
                   onClick={handleReplySubmit}
                   disabled={loading || !replyContent.trim()}
-                  className="gradient-purple-bg text-white"
                 >
                   작성
                 </Button>
@@ -204,7 +202,7 @@ export function CommentItem({
 
           {/* 대댓글 목록 */}
           {comment.replies.length > 0 && (
-            <div className="mt-3 space-y-3 pl-4 border-l-2 border-purple-200">
+            <div className="mt-3 space-y-3 pl-4 border-l-2 border-border">
               {comment.replies.map((reply) => (
                 <div key={reply.id} className="flex items-start gap-3">
                   <ProfileAvatar
@@ -234,7 +232,7 @@ export function CommentItem({
                           size="sm"
                           onClick={() => handleReplyDelete(reply.id)}
                           disabled={loading}
-                          className="h-7 w-7 p-0 text-red-600 hover:text-red-700"
+                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>

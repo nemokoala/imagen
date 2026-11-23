@@ -166,7 +166,7 @@ export const ModelSelect = ({
         !hasAvailableModel
       }
     >
-      <SelectTrigger className="border-2 focus:border-purple-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full">
+      <SelectTrigger className="h-10 w-full bg-background transition-colors disabled:cursor-not-allowed disabled:opacity-50">
         <SelectValue placeholder="모델 선택">
           <div className="flex items-center gap-2">
             {isStableHealthCheckLoading ||
@@ -174,8 +174,8 @@ export const ModelSelect = ({
             isQwenHealthCheckLoading ||
             isCreditSettingsLoading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-                <span className="text-gray-500">모델 설정 확인 중...</span>
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                <span className="text-muted-foreground">모델 설정 확인 중...</span>
               </>
             ) : (
               <>

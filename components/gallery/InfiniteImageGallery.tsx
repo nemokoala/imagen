@@ -264,19 +264,16 @@ export function InfiniteImageGallery({
         </div>
       ) : images.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="relative mb-6">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full blur opacity-25"></div>
-            <div className="relative p-6 rounded-full bg-card shadow-xl">
-              <Search className="w-12 h-12 text-purple-600" />
-            </div>
+          <div className="mb-6 flex size-20 items-center justify-center rounded-2xl border border-border bg-card">
+            <Search className="size-8 text-muted-foreground" />
           </div>
-          <h3 className="text-2xl font-bold text-foreground mb-3">
+          <h3 className="text-xl font-bold text-foreground mb-2">
             이미지를 찾지 못했어요
           </h3>
           <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
             {search ? (
               <>
-                <span className="font-semibold text-purple-600">
+                <span className="font-semibold text-foreground">
                   &ldquo;{search}&rdquo;
                 </span>
                 에 대한 검색 결과가 없습니다.

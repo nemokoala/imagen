@@ -97,7 +97,7 @@ export function CoverflowShowcase() {
     <section className="w-vw py-8 mx-[-8px]">
       <div className="relative w-full">
         {/* Swiper wrapper with specific styling for Coverflow */}
-        <div className="w-full [--swiper-pagination-bullet-horizontal-gap:6px] [--swiper-pagination-bullet-size:10px] [&_.swiper-pagination-bullet-active]:bg-primary">
+        <div className="w-full [--swiper-pagination-bullet-horizontal-gap:6px] [--swiper-pagination-bullet-size:10px] [--swiper-theme-color:var(--primary)] [&_.swiper-pagination-bullet-active]:bg-primary">
           <Swiper
             effect={"coverflow"}
             grabCursor={false}

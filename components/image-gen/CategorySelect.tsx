@@ -53,7 +53,7 @@ export function CategorySelect({
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-subtitle">카테고리</p>
         {isSuggesting ? (
-          <div className="flex items-center gap-1 text-xs text-purple-600">
+          <div className="flex items-center gap-1 text-xs text-primary">
             <Loader2 className="h-3 w-3 animate-spin" />
             <span>AI 분석 중...</span>
           </div>
@@ -74,10 +74,10 @@ export function CategorySelect({
             <Button
               key={category.id}
               type="button"
-              variant={isSelected ? "gradient" : "outline"}
+              variant={isSelected ? "soft" : "outline"}
               size="sm"
               className={cn(
-                "rounded-full h-8 px-3 text-xs transition-all duration-200",
+                "h-8 rounded-lg px-3 text-xs transition-all duration-200",
 
                 disabled && "opacity-50 cursor-not-allowed",
               )}

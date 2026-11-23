@@ -89,13 +89,9 @@ export function UserCommentList({
       : `${nickname ?? "이 사용자"}님이 작성한 댓글이 없습니다.`;
 
     return (
-      <Card className="relative overflow-hidden border border-white/20 p-10 text-center shadow-md backdrop-blur-sm dark:border-white/10 sm:p-12">
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 dark:from-purple-600/20 dark:to-blue-600/15"
-          aria-hidden
-        />
+      <Card className="relative overflow-hidden border border-border p-10 text-center shadow-none sm:p-12">
         <div className="relative">
-          <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl border border-border/50 bg-background/60 shadow-inner">
+          <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-2xl border border-border bg-muted/50">
             <MessageSquare className="size-7 text-muted-foreground" />
           </div>
           <p className="text-foreground/90 text-[15px] font-medium leading-relaxed">
@@ -126,14 +122,13 @@ export function UserCommentList({
             >
               <div
                 className={cn(
-                  "relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-card/90 to-card/50 shadow-sm",
-                  "transition-all duration-200",
-                  "hover:border-purple-500/35 hover:shadow-md",
-                  "dark:from-card/50 dark:to-card/30",
+                  "relative overflow-hidden rounded-2xl border border-border bg-card",
+                  "transition-colors duration-200",
+                  "hover:border-primary/40",
                 )}
               >
                 <div
-                  className="absolute top-0 left-0 h-full w-1 origin-top scale-y-0 bg-gradient-to-b from-purple-500 to-blue-500 opacity-0 transition-transform duration-200 group-hover:scale-y-100 group-hover:opacity-100"
+                  className="absolute top-0 left-0 h-full w-1 origin-top scale-y-0 bg-primary opacity-0 transition-transform duration-200 group-hover:scale-y-100 group-hover:opacity-100"
                   aria-hidden
                 />
                 <div className="flex gap-4 p-4 sm:gap-5 sm:p-5 pl-4 sm:pl-5">
@@ -159,7 +154,7 @@ export function UserCommentList({
                   <div className="min-w-0 flex-1 self-center pr-1">
                     <div className="mb-2 flex flex-wrap items-center gap-2 sm:mb-1.5">
                       <span className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
-                        <Sparkles className="size-3.5 shrink-0 text-purple-500/80" />
+                        <Sparkles className="size-3.5 shrink-0" />
                         {formatDistanceToNow(new Date(comment.createdAt), {
                           addSuffix: true,
                           locale: ko,
@@ -180,8 +175,7 @@ export function UserCommentList({
                       className={cn(
                         "flex size-9 items-center justify-center rounded-full border border-border/60",
                         "bg-background/80 text-muted-foreground transition-all",
-                        "group-hover:border-purple-500/40 group-hover:text-purple-600",
-                        "dark:group-hover:text-purple-400",
+                        "group-hover:border-primary/40 group-hover:text-primary",
                       )}
                     >
                       <ArrowUpRight className="size-4" />

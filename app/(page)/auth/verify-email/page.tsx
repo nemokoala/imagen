@@ -131,8 +131,8 @@ export default function VerifyEmailContent() {
   }
 
   return (
-    <Layout.Content className="flex items-center justify-center">
-      <Card className="w-[380px]">
+    <Layout.Content className="flex items-center justify-center px-4">
+      <Card className="w-full max-w-[380px]">
         <CardHeader>
           <CardTitle>
             {status === "verified" ? "이메일 인증 완료" : "이메일 인증"}
@@ -159,7 +159,6 @@ export default function VerifyEmailContent() {
             <Button
               type="button"
               className="w-full"
-              variant="gradient"
               disabled={isResending || status === "verifying"}
               onClick={handleResend}
             >
@@ -168,7 +167,7 @@ export default function VerifyEmailContent() {
           )}
 
           {status === "verified" ? (
-            <Button asChild className="w-full" variant="gradient">
+            <Button asChild className="w-full">
               <Link href="/auth/login">로그인하러 가기</Link>
             </Button>
           ) : (

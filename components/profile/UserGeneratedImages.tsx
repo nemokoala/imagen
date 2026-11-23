@@ -48,7 +48,7 @@ export function UserGeneratedImages({
             </p>
             {isOwnProfile && (
               <Link href="/generate">
-                <Button variant="gradient">이미지 생성하기</Button>
+                <Button>이미지 생성하기</Button>
               </Link>
             )}
           </Card>

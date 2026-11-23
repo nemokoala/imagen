@@ -141,7 +141,7 @@ export function ProfileEditDialog({
             >
               취소
             </Button>
-            <Button type="submit" variant="gradient" disabled={isPending}>
+            <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               저장
             </Button>

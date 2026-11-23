@@ -43,6 +43,8 @@ body {
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-soft-foreground: var(--primary-soft-foreground);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -54,78 +56,84 @@ body {
 }
 
 :root {
+  /* 라이트 팔레트: 징크 뉴트럴 + 단색 바이올렛 포인트 한 색.
+     포인트(primary)는 주요 버튼·선택 상태·링크에만 쓰고, 아이콘·라벨은 뉴트럴로 둔다. */
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --background-plus: oklch(0.95 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.985 0 0);
+  --background-plus: oklch(0.955 0.003 286);
+  --foreground: oklch(0.21 0.006 285.885);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.21 0.006 285.885);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.21 0.006 285.885);
+  --primary: oklch(0.541 0.247 293.009);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --subtitle: oklch(0.4 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --primary-soft: oklch(0.943 0.029 294.588);
+  --primary-soft-foreground: oklch(0.432 0.232 292.759);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --subtitle: oklch(0.442 0.017 285.786);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.702 0.183 293.541);
+  --chart-1: oklch(0.541 0.247 293.009);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-primary: oklch(0.541 0.247 293.009);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.702 0.183 293.541);
 }
 
 .dark {
-  /* 다크 팔레트: 브랜드(보라)에 맞춘 은은한 바이올렛 틴트의 단일 그레이 램프.
+  /* 다크 팔레트: 바이올렛 틴트가 아주 살짝 들어간 그레이 램프 + 바이올렛 포인트.
      명암 순서: background < card ≈ sidebar < popover < background-plus < secondary/muted/accent */
-  --background: oklch(0.19 0.01 285);
-  --background-plus: oklch(0.27 0.013 285);
-  --foreground: oklch(0.97 0.004 285);
-  --card: oklch(0.235 0.012 285);
-  --card-foreground: oklch(0.97 0.004 285);
-  --popover: oklch(0.25 0.013 285);
-  --popover-foreground: oklch(0.97 0.004 285);
-  --primary: oklch(0.93 0.008 285);
-  --primary-foreground: oklch(0.2 0.01 285);
-  --secondary: oklch(0.3 0.014 285);
-  --secondary-foreground: oklch(0.97 0.004 285);
-  --muted: oklch(0.3 0.014 285);
-  --muted-foreground: oklch(0.72 0.015 285);
-  --subtitle: oklch(0.78 0.012 285);
-  --accent: oklch(0.3 0.014 285);
-  --accent-foreground: oklch(0.97 0.004 285);
+  --background: oklch(0.163 0.008 290);
+  --background-plus: oklch(0.235 0.013 290);
+  --foreground: oklch(0.967 0.001 286.375);
+  --card: oklch(0.2 0.011 290);
+  --card-foreground: oklch(0.967 0.001 286.375);
+  --popover: oklch(0.222 0.012 290);
+  --popover-foreground: oklch(0.967 0.001 286.375);
+  --primary: oklch(0.606 0.25 292.717);
+  --primary-foreground: oklch(0.985 0 0);
+  --primary-soft: oklch(0.606 0.25 292.717 / 20%);
+  --primary-soft-foreground: oklch(0.811 0.111 293.571);
+  --secondary: oklch(0.255 0.014 290);
+  --secondary-foreground: oklch(0.967 0.001 286.375);
+  --muted: oklch(0.255 0.014 290);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --subtitle: oklch(0.8 0.01 286);
+  --accent: oklch(0.255 0.014 290);
+  --accent-foreground: oklch(0.967 0.001 286.375);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.56 0.03 285);
-  --chart-1: oklch(0.55 0.22 285);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 14%);
+  --ring: oklch(0.606 0.25 292.717);
+  --chart-1: oklch(0.606 0.25 292.717);
   --chart-2: oklch(0.62 0.19 260);
   --chart-3: oklch(0.7 0.15 195);
   --chart-4: oklch(0.68 0.2 330);
   --chart-5: oklch(0.75 0.16 70);
-  --sidebar: oklch(0.235 0.012 285);
-  --sidebar-foreground: oklch(0.97 0.004 285);
-  --sidebar-primary: oklch(0.55 0.22 285);
+  --sidebar: oklch(0.2 0.011 290);
+  --sidebar-foreground: oklch(0.967 0.001 286.375);
+  --sidebar-primary: oklch(0.606 0.25 292.717);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.27 0.012 285);
-  --sidebar-accent-foreground: oklch(0.97 0.004 285);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.56 0.03 285);
+  --sidebar-accent: oklch(0.255 0.014 290);
+  --sidebar-accent-foreground: oklch(0.967 0.001 286.375);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: oklch(0.606 0.25 292.717);
 }
 
 @layer base {
@@ -143,34 +151,6 @@ body {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-  }
-
-  /* 보라색 그라디언트 유틸리티 클래스들 */
-  .gradient-purple-text {
-    @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
-  }
-
-  .gradient-purple-bg {
-    @apply bg-gradient-to-r from-purple-600 to-blue-600;
-  }
-
-  /* 페이지 공용 배경 그라디언트 (Layout.Content 기본 배경) */
-  .bg-page-gradient {
-    background-image: linear-gradient(
-      to bottom right,
-      var(--color-blue-50),
-      var(--color-white),
-      var(--color-purple-50)
-    );
-  }
-
-  .dark .bg-page-gradient {
-    background-image: linear-gradient(
-      to bottom right,
-      var(--background) 0%,
-      var(--background) 50%,
-      color-mix(in oklab, var(--color-purple-950) 40%, var(--background)) 100%
-    );
   }
 
   /* Marquee 애니메이션 */
@@ -227,34 +207,29 @@ body {
     }
   }
 
+  /* 생성 중 플레이스홀더: 단색 바이올렛 계열만 천천히 흐르게 한다 */
   .aurora-bg {
     background: linear-gradient(
       -45deg,
-      #818cf8,
-      #a78bfa,
-      #60a5fa,
-      #38bdf8,
-      #c084fc,
-      #f9a8d4,
-      #a5b4fc
+      var(--color-violet-200),
+      var(--color-violet-400),
+      var(--color-zinc-200),
+      var(--color-violet-300)
     );
     background-size: 400% 400%;
-    animation: aurora-shift 5s ease infinite;
+    animation: aurora-shift 6s ease infinite;
   }
 
   .dark .aurora-bg {
     background: linear-gradient(
       -45deg,
-      #4f46e5,
-      #7c3aed,
-      #2563eb,
-      #0891b2,
-      #9333ea,
-      #ec4899,
-      #6366f1
+      var(--color-violet-950),
+      var(--color-violet-700),
+      var(--color-zinc-900),
+      var(--color-violet-900)
     );
     background-size: 400% 400%;
-    animation: aurora-shift 5s ease infinite;
+    animation: aurora-shift 6s ease infinite;
   }
 
   /* 스크롤바 숨기기 유틸리티 */
@@ -277,7 +252,7 @@ html [data-sonner-toaster] {
 
 [data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
   /* 상태색은 아이콘과 액션에만 사용한다. */
-  --toast-accent: var(--color-violet-500);
+  --toast-accent: var(--primary);
 
   align-items: center;
   gap: 0.75rem;

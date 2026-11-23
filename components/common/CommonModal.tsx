@@ -58,7 +58,7 @@ export const CommonModal = () => {
           {modalContent.cancelable && (
             <Button
               variant="outline"
-              className="min-w-[100px] w-fit h-8 px-5 rounded-3xl text-sm text-[#3c3938] border border-[#3c3938] font-bold !bg-white"
+              className="min-w-[100px] w-fit h-9 px-5 text-sm font-semibold"
               onClick={() => {
                 closeActionRef.current?.();
                 setIsOpen(false);
@@ -69,8 +69,7 @@ export const CommonModal = () => {
           )}
 
           <Button
-            variant="gradient"
-            className="min-w-[100px] w-fit h-8 px-5 rounded-3xl text-sm text-white font-bold"
+            className="min-w-[100px] w-fit h-9 px-5 text-sm font-semibold"
             onClick={() => {
               confirmActionRef.current?.();
               setIsOpen(false);

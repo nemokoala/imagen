@@ -23,7 +23,7 @@ export function KakaoLoginButton({
       type="button"
       onClick={handleKakaoLogin}
       className={cn(
-        "w-full rounded-full bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90",
+        "w-full rounded-lg bg-[#FEE500] text-[#000000] hover:bg-[#FEE500]/90",
         className,
       )}
       disabled={disabled}

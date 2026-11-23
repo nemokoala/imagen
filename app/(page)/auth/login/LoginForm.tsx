@@ -33,7 +33,6 @@ import { Layout } from "@/components/layout/Layout";
 import { useLoginMutation } from "@/queries/auth/mutations";
 import { FetchUtil } from "@/lib/Fetch.util";
 import type { ErrorResponse } from "@/types/common.interfaces";
-import { DecorativeBackground } from "@/components/ui/decorative-background";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -125,10 +124,8 @@ export default function LoginForm() {
   }, [socialLoginError]);
 
   return (
-    <Layout.Content className="relative flex items-center justify-center">
-      <DecorativeBackground />
-
-      <Card className="relative w-[350px] z-10">
+    <Layout.Content className="relative flex items-center justify-center px-4">
+      <Card className="w-full max-w-[380px]">
         <CardHeader>
           <CardTitle>로그인</CardTitle>
           <CardDescription>
@@ -186,7 +183,6 @@ export default function LoginForm() {
                 type="submit"
                 className="w-full"
                 disabled={isPending || isResending}
-                variant="gradient"
               >
                 {isPending ? "로그인 중..." : "로그인"}
               </Button>
@@ -208,7 +204,7 @@ export default function LoginForm() {
                   <span className="w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-card px-2 text-muted-foreground">
                     또는
                   </span>
                 </div>

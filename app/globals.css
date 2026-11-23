@@ -194,42 +194,97 @@ body {
     background-size: 200% 100%;
   }
 
-  /* Aurora 이미지 생성 로딩 애니메이션 */
-  @keyframes aurora-shift {
-    0% {
-      background-position: 0% 50%;
+  /* ─── 이미지 생성 로딩 (GenerationLoader) ───
+     포인트색 빛이 천천히 숨 쉬고 떠돌며, 옅은 빛줄기가 지나가고, 필름 그레인을 얹는다. */
+  @keyframes gen-breathe {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
     }
     50% {
-      background-position: 100% 50%;
+      opacity: 1;
+      transform: scale(1.12);
     }
+  }
+
+  @keyframes gen-drift {
+    0%,
     100% {
-      background-position: 0% 50%;
+      transform: translate(-14%, -8%) scale(1);
+    }
+    50% {
+      transform: translate(14%, 10%) scale(1.2);
     }
   }
 
-  /* 생성 중 플레이스홀더: 단색 바이올렛 계열만 천천히 흐르게 한다 */
-  .aurora-bg {
-    background: linear-gradient(
-      -45deg,
-      var(--color-violet-200),
-      var(--color-violet-400),
-      var(--color-zinc-200),
-      var(--color-violet-300)
-    );
-    background-size: 400% 400%;
-    animation: aurora-shift 6s ease infinite;
+  @keyframes gen-sweep {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(100%);
+    }
   }
 
-  .dark .aurora-bg {
-    background: linear-gradient(
-      -45deg,
-      var(--color-violet-950),
-      var(--color-violet-700),
-      var(--color-zinc-900),
-      var(--color-violet-900)
+  @keyframes gen-indeterminate {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(200%);
+    }
+  }
+
+  .gen-glow {
+    background: radial-gradient(
+      55% 45% at 50% 40%,
+      color-mix(in oklab, var(--primary) 40%, transparent),
+      transparent 72%
     );
-    background-size: 400% 400%;
-    animation: aurora-shift 6s ease infinite;
+    animation: gen-breathe 3.2s ease-in-out infinite;
+  }
+
+  .gen-glow-2 {
+    background: radial-gradient(
+      38% 32% at 50% 50%,
+      color-mix(in oklab, var(--primary) 26%, transparent),
+      transparent 70%
+    );
+    animation: gen-drift 7s ease-in-out infinite;
+  }
+
+  .gen-sweep {
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      color-mix(in oklab, var(--foreground) 7%, transparent) 50%,
+      transparent 70%
+    );
+    animation: gen-sweep 2.8s ease-in-out infinite;
+  }
+
+  .gen-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    opacity: 0.07;
+  }
+
+  .dark .gen-grain {
+    opacity: 0.1;
+  }
+
+  .gen-indeterminate {
+    animation: gen-indeterminate 1.4s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gen-glow,
+    .gen-glow-2,
+    .gen-sweep,
+    .gen-indeterminate {
+      animation: none;
+    }
   }
 
   /* 스크롤바 숨기기 유틸리티 */

@@ -12,7 +12,6 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { MaskCanvas, type MaskCanvasHandle } from "@/components/image-gen/MaskCanvas";
@@ -187,16 +186,13 @@ export function ImageEditForm({
   );
 
   return (
-    <Card className="border border-border bg-card shadow-sm">
-      <CardHeader className="pb-1">
-        <CardTitle className="sr-only">이미지 편집 설정</CardTitle>
+    <>
+      {/* 생성 패널 안에서 쓰인다: 데스크톱에서는 이 영역만 스크롤되고 제출 버튼은 아래에 고정된다 */}
+      <div className="space-y-4 px-5 py-5 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
         <p className="text-sm text-muted-foreground">
           Qwen Image 2.1 로컬 모델로 이미지를 편집합니다.
-          {creditCost !== undefined && ` · ${creditCost} 크레딧`}
         </p>
-      </CardHeader>
 
-      <CardContent className="space-y-4">
         {/* 원본 이미지 */}
         <section className="space-y-2">
           <div className="flex items-center justify-between gap-2">
@@ -382,36 +378,44 @@ export function ImageEditForm({
             </p>
           )}
         </section>
+      </div>
 
-        {/* 제출 - 캔버스가 길어도 버튼이 화면에 남도록 고정한다. */}
-        <div className="sticky bottom-0 -mx-6 border-t border-border bg-card/95 px-6 pt-3 pb-1 backdrop-blur-sm">
-          <Button
-            type="button"
-            onClick={handleSubmit}
-            disabled={
-              isPending ||
-              !isAvailable ||
-              !source ||
-              !prompt.trim() ||
-              (maskEnabled && !hasMask)
-            }
-            className="h-11 w-full text-base font-semibold"
-          >
-            {isPending ? (
-              <><Loader2 className="mr-2 h-4 w-4 animate-spin" />편집 중...</>
-            ) : (
-              <><Sparkles className="mr-2 h-4 w-4" />이미지 편집</>
-            )}
-          </Button>
-          <p className="mt-2 min-h-4 text-center text-xs text-muted-foreground">
+      {/* 제출 - 마스크 캔버스가 길어도 버튼이 화면에 남도록 고정한다. */}
+      <div className="sticky bottom-0 border-t border-border bg-card/95 px-5 py-4 backdrop-blur-sm lg:static">
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={
+            isPending ||
+            !isAvailable ||
+            !source ||
+            !prompt.trim() ||
+            (maskEnabled && !hasMask)
+          }
+          className="h-11 w-full text-base font-semibold"
+        >
+          {isPending ? (
+            <><Loader2 className="h-4 w-4 animate-spin" />편집 중...</>
+          ) : (
+            <>
+              <Sparkles className="h-4 w-4" />
+              이미지 편집
+              {creditCost !== undefined && (
+                <span className="text-sm font-normal opacity-80">
+                  · {creditCost} 크레딧
+                </span>
+              )}
+            </>
+          )}
+        </Button>
+        {(!isAvailable || (maskEnabled && !hasMask)) && (
+          <p className="mt-2 text-center text-xs text-muted-foreground">
             {!isAvailable
               ? "Qwen Image 2.1 모델 설정 또는 ComfyUI 연결을 확인해주세요."
-              : maskEnabled && !hasMask
-                ? "브러시로 편집할 영역을 칠해주세요."
-                : ""}
+              : "브러시로 편집할 영역을 칠해주세요."}
           </p>
-        </div>
-      </CardContent>
-    </Card>
+        )}
+      </div>
+    </>
   );
 }

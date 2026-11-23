@@ -1,11 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Sparkles, Download, Eye } from "lucide-react";
+import { Loader2, Sparkles, Download, Eye, Maximize2 } from "lucide-react";
 import Image from "next/image";
 import { Layout } from "@/components/layout/Layout";
 import { useGenerateImageMutation } from "@/queries/image/mutations";
@@ -24,7 +30,7 @@ import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { MODEL_RATIO_CONFIG } from "@/constants/model.constants";
 import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
-import { cn, downloadImage, getRatio } from "@/lib/utils";
+import { cn, downloadImage } from "@/lib/utils";
 import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
 import Link from "next/link";
@@ -32,6 +38,14 @@ import { useScrollStore } from "@/stores/scrollStore";
 import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer";
 import { ImageEditForm } from "@/components/image-gen/ImageEditForm";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { GenerationLoader } from "@/components/image-gen/GenerationLoader";
+
+/** 캔버스 틀 크기를 계산할 때 쓰는 가로/세로 비 */
+const RATIO_VALUE: Record<ImageRatio, number> = {
+  [ImageRatio.RATIO_1_1]: 1,
+  [ImageRatio.RATIO_16_9]: 16 / 9,
+  [ImageRatio.RATIO_9_16]: 9 / 16,
+};
 
 export default function ImageGenPage() {
   const [activeTab, setActiveTab] = useState<"generate" | "edit">("generate");
@@ -364,66 +378,88 @@ export default function ImageGenPage() {
     !creditSettings ||
     !isSelectedModelAvailable;
 
-  const getPreviewStyle = (targetRatio: ImageRatio) => ({
-    aspectRatio:
-      targetRatio === ImageRatio.RATIO_9_16
-        ? "9/16"
-        : targetRatio === ImageRatio.RATIO_16_9
-          ? "16/9"
-          : "1/1",
-    maxHeight: "min(70dvh, 620px)",
-    maxWidth:
-      targetRatio === ImageRatio.RATIO_9_16
-        ? "min(calc(70dvh * 9 / 16), 349px)"
-        : targetRatio === ImageRatio.RATIO_1_1
-          ? "min(70dvh, 620px)"
-          : "100%",
-    width: "100%",
-  });
+  const isModelStatusLoading =
+    isStableHealthCheckLoading ||
+    isZimageHealthCheckLoading ||
+    isQwenHealthCheckLoading ||
+    isCreditSettingsLoading;
+  const selectedCreditCost =
+    creditSettings && MODEL_CREDIT_SETTINGS[model]
+      ? creditSettings[MODEL_CREDIT_SETTINGS[model].creditKey]
+      : undefined;
+  const generateHint =
+    !isCreditLoading && (credit ?? 0) < 1
+      ? "크레딧이 부족합니다. 다음 충전일까지 기다려주세요."
+      : !isModelStatusLoading && creditSettings && !isSelectedModelAvailable
+        ? "선택한 모델을 지금 쓸 수 없어요. 다른 모델을 골라주세요."
+        : null;
+
+  // 캔버스 틀은 결과가 있으면 결과 비율, 없으면 지금 고른 비율로 그린다.
+  // 편집은 결과 비율을 미리 알 수 없으므로 1:1 틀을 쓴다.
+  const canvasMode = isPending ? resultMode : activeTab;
+  const frameRatio = imageUrl
+    ? displayRatio
+    : canvasMode === "edit"
+      ? ImageRatio.RATIO_1_1
+      : ratio;
+  const frameStyle = { "--r": RATIO_VALUE[frameRatio] } as CSSProperties;
+  // 틀이 캔버스 안에 가로·세로 모두 들어가도록 컨테이너 단위로 너비를 정한다.
+  const frameClass =
+    "aspect-[var(--r)] w-[min(100cqw,calc(68svh*var(--r)))] lg:w-[min(100cqw,calc(100cqh*var(--r)))]";
+  const canvasTitle = isPending
+    ? resultMode === "edit"
+      ? "편집 중"
+      : "생성 중"
+    : imageUrl
+      ? resultMode === "edit"
+        ? "편집된 이미지"
+        : "생성된 이미지"
+      : "미리보기";
 
   return (
-    <Layout.Content className="p-4 gap-4 md:gap-8 md:p-8">
-      <div className="container flex flex-col gap-5 md:gap-6 max-w-7xl mx-auto">
-        {/* 페이지 제목 + 보유 크레딧 */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">
-              이미지 생성
-            </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              프롬프트를 쓰고 모델과 비율을 골라 이미지를 만들어 보세요.
-            </p>
+    <Layout.Content className="p-4 md:p-6 lg:overflow-hidden">
+      <div className="mx-auto grid w-full max-w-[1600px] gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6">
+        {/* 설정 패널: 데스크톱에서는 안쪽만 스크롤되고 생성 버튼은 아래에 고정된다 */}
+        <aside className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card lg:min-h-0">
+          <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
+            <div className="min-w-0">
+              <h1 className="text-lg font-semibold tracking-tight text-foreground">
+                이미지 생성
+              </h1>
+              <p className="truncate text-xs text-muted-foreground">
+                프롬프트를 쓰고 모델과 비율을 골라주세요
+              </p>
+            </div>
+            <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />
           </div>
-          <CreditDisplay credit={credit ?? 0} isLoading={isCreditLoading} />
-        </div>
 
-        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as "generate" | "edit")}
-            className="min-w-0 gap-2"
+            className="flex min-h-0 flex-1 flex-col gap-0"
           >
-            <TabsList
-              aria-label="이미지 작업 선택"
-              className="h-11 w-full rounded-xl p-1"
-            >
-              <TabsTrigger value="generate" disabled={isPending}>
-                이미지 생성
-              </TabsTrigger>
-              <TabsTrigger value="edit" disabled={isPending}>
-                이미지 편집
-              </TabsTrigger>
-            </TabsList>
-          <TabsContent value="generate" className="mt-0">
-          {/* 입력 섹션 */}
-          <Card className="border border-border bg-card shadow-sm">
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
+            <div className="px-5 pt-4">
+              <TabsList aria-label="이미지 작업 선택" className="h-10 w-full">
+                <TabsTrigger value="generate" disabled={isPending}>
+                  이미지 생성
+                </TabsTrigger>
+                <TabsTrigger value="edit" disabled={isPending}>
+                  이미지 편집
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="generate" className="mt-0 flex min-h-0 flex-col">
+              <div className="space-y-6 px-5 py-5 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
                 <div className="space-y-3">
-                  <p className="text-sm font-medium text-subtitle mb-2">
+                  <label
+                    htmlFor="generate-prompt"
+                    className="block text-sm font-medium text-subtitle"
+                  >
                     프롬프트
-                  </p>
+                  </label>
                   <Textarea
+                    id="generate-prompt"
                     placeholder="원하는 이미지를 자세히 설명해주세요... 예: 귀여운 고양이가 라면을 먹는 모습, 카툰 스타일, 밝은 색상"
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
@@ -473,12 +509,24 @@ export default function ImageGenPage() {
                           onClick={() => setRatio(r)}
                           disabled={isPending || !supported}
                           className={cn(
-                            "h-8 cursor-pointer rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                            "flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40",
                             isActive
                               ? "bg-card text-foreground shadow-sm"
                               : "text-muted-foreground hover:text-foreground",
                           )}
                         >
+                          {/* 비율 모양 아이콘 */}
+                          <span
+                            aria-hidden
+                            className={cn(
+                              "rounded-[3px] border-[1.5px] border-current",
+                              r === ImageRatio.RATIO_16_9
+                                ? "h-2.5 w-4"
+                                : r === ImageRatio.RATIO_9_16
+                                  ? "h-4 w-2.5"
+                                  : "size-3.5",
+                            )}
+                          />
                           {r}
                         </button>
                       );
@@ -496,166 +544,158 @@ export default function ImageGenPage() {
                 />
               </div>
 
-              <div className="flex gap-3">
+              <div className="sticky bottom-0 border-t border-border bg-card/95 px-5 py-4 backdrop-blur-sm lg:static">
                 <Button
                   onClick={handleGenerate}
                   disabled={isGenerateDisabled}
-                  className="h-11 flex-1 text-base font-semibold"
+                  className="h-11 w-full text-base font-semibold"
                 >
                   {isPending ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin" />
                       생성 중...
                     </>
                   ) : (
                     <>
-                      <Sparkles className="mr-2 h-4 w-4" />
+                      <Sparkles className="h-4 w-4" />
                       이미지 생성
+                      {selectedCreditCost !== undefined && (
+                        <span className="text-sm font-normal opacity-80">
+                          · {selectedCreditCost} 크레딧
+                        </span>
+                      )}
                     </>
                   )}
                 </Button>
+                {generateHint && (
+                  <p className="mt-2 text-center text-xs text-muted-foreground">
+                    {generateHint}
+                  </p>
+                )}
               </div>
-            </CardContent>
-          </Card>
-          </TabsContent>
-          <TabsContent value="edit" className="mt-0">
-            <ImageEditForm
-              isPending={isPending}
-              isAvailable={
-                qwenHealthCheck?.healthy === true &&
-                isCreditModelEnabled(Model.QWEN_IMAGE_21)
-              }
-              creditCost={creditSettings?.qwenImage21}
-              onSubmit={handleImageEdit}
-            />
-          </TabsContent>
+            </TabsContent>
+
+            <TabsContent value="edit" className="mt-0 flex min-h-0 flex-col">
+              <ImageEditForm
+                isPending={isPending}
+                isAvailable={
+                  qwenHealthCheck?.healthy === true &&
+                  isCreditModelEnabled(Model.QWEN_IMAGE_21)
+                }
+                creditCost={creditSettings?.qwenImage21}
+                onSubmit={handleImageEdit}
+              />
+            </TabsContent>
           </Tabs>
+        </aside>
 
-          {/* 결과 섹션 */}
-          <Card
-            ref={resultImageRef}
-            className="overflow-hidden border border-border bg-card py-0 shadow-sm"
-          >
-            <CardHeader className="border-b border-border px-5 py-4 md:px-6">
-              <div className="flex items-center justify-between gap-3">
-                <CardTitle className="text-base font-semibold text-foreground">
-                  {resultMode === "edit" ? "편집된 이미지" : "생성된 이미지"}
-                </CardTitle>
-                <span className="rounded-full border border-border px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                  {imageUrl ? displayRatio : ratio}
+        {/* 결과 캔버스 */}
+        <section
+          ref={resultImageRef}
+          aria-label="결과"
+          className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card lg:min-h-0"
+        >
+          <div className="flex min-h-14 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b border-border px-5 py-2.5">
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-foreground">
+                {canvasTitle}
+              </h2>
+              {(imageUrl || canvasMode === "generate") && (
+                <span className="rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                  {frameRatio}
                 </span>
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col p-0">
-              {imageUrl ? (
-                <div className="flex flex-1 flex-col">
-                  <div className="flex min-h-[360px] flex-1 items-center justify-center bg-muted/60 p-3 md:p-5">
-                    <div
-                      className={cn(
-                        "relative mx-auto cursor-zoom-in overflow-hidden rounded-2xl bg-background shadow-2xl shadow-slate-950/15 ring-1 ring-black/10 dark:ring-white/10",
-                        getRatio(displayRatio),
-                      )}
-                      style={getPreviewStyle(displayRatio)}
-                      onClick={() => setIsFullscreenOpen(true)}
-                    >
-                      <Image
-                        src={imageUrl}
-                        alt="생성된 이미지"
-                        fill
-                        className={resultMode === "edit" ? "object-contain" : "object-cover"}
-                        unoptimized
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2 border-t border-border p-3 md:p-4">
-                    <Button
-                      onClick={() => downloadImage(imageUrl)}
-                      variant="outline"
-                      className="h-11"
-                    >
-                      <Download className="mr-1 h-4 w-4" />
-                      다운로드
-                    </Button>
-                    {imageId && (
-                      <Button
-                        asChild
-                        variant="outline"
-                        className="h-11"
-                      >
-                        <Link href={`/image/${imageId}`}>
-                          <Eye className="mr-1 h-4 w-4" />
-                          게시물 보기
-                        </Link>
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ) : isPending ? (
-                <div className="flex flex-1 flex-col">
-                  <div className="flex min-h-[360px] flex-1 items-center justify-center bg-muted/60 p-3 md:p-5">
-                    <div
-                      className="aurora-bg relative mx-auto overflow-hidden rounded-2xl shadow-2xl shadow-slate-950/10 ring-1 ring-black/10 dark:ring-white/10"
-                      style={getPreviewStyle(ratio)}
-                    >
-                      {/* 부드러운 노이즈 오버레이 */}
-                      <div className="absolute inset-0 bg-black/10" />
-                      {/* 중앙 글로우 */}
-                      <div
-                        className="absolute inset-0"
-                        style={{
-                          background:
-                            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(255,255,255,0.12) 0%, transparent 70%)",
-                        }}
-                      />
-                      {/* 텍스트 */}
-                      <div className="absolute inset-x-6 bottom-6 rounded-xl border border-white/20 bg-black/20 px-4 py-3 text-center text-sm font-medium text-white/90 shadow-lg backdrop-blur-md">
-                        {generationProgress ?? "이미지를 생성하는 중입니다"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    aria-hidden="true"
-                    className="invisible grid grid-cols-2 gap-2 border-t border-border p-3 md:p-4"
-                  >
-                    <div className="h-11" />
-                    <div className="h-11" />
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-1 flex-col">
-                  <div className="flex min-h-[360px] flex-1 items-center justify-center bg-muted/60 p-6">
-                    <div className="flex max-w-sm flex-col items-center text-center text-muted-foreground">
-                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft">
-                        <Sparkles className="h-7 w-7 text-primary" />
-                      </div>
-                      <p className="mb-2 text-base font-semibold text-foreground">
-                        {activeTab === "edit"
-                          ? "이미지를 편집하면 여기에 표시됩니다"
-                          : "이미지가 생성되면 여기에 표시됩니다"}
-                      </p>
-                      <p className="text-sm">
-                        {activeTab === "edit"
-                          ? "원본 이미지를 올리고 편집 지시문을 입력해주세요."
-                          : "프롬프트와 비율을 선택한 뒤 생성 버튼을 눌러주세요."}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div
-                    aria-hidden="true"
-                    className="invisible grid grid-cols-2 gap-2 border-t border-border p-3 md:p-4"
-                  >
-                    <div className="h-11" />
-                    <div className="h-11" />
-                  </div>
-                </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+
+            {imageUrl && !isPending && (
+              <div className="flex items-center gap-1.5">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => setIsFullscreenOpen(true)}
+                  aria-label="크게 보기"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => downloadImage(imageUrl)}
+                >
+                  <Download className="h-4 w-4" />
+                  다운로드
+                </Button>
+                {imageId && (
+                  <Button size="sm" asChild>
+                    <Link href={`/image/${imageId}`}>
+                      <Eye className="h-4 w-4" />
+                      게시물 보기
+                    </Link>
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center justify-center bg-muted/40 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] bg-[length:20px_20px] p-4 [container-type:inline-size] md:p-6 lg:min-h-0 lg:flex-1 lg:p-8 lg:[container-type:size]">
+            {isPending ? (
+              <GenerationLoader
+                message={generationProgress}
+                mode={resultMode}
+                className={frameClass}
+                style={frameStyle}
+              />
+            ) : imageUrl ? (
+              <button
+                type="button"
+                onClick={() => setIsFullscreenOpen(true)}
+                aria-label="크게 보기"
+                className={cn(
+                  "relative cursor-zoom-in overflow-hidden rounded-2xl bg-background shadow-xl shadow-black/10 ring-1 ring-border animate-in fade-in zoom-in-95 duration-500",
+                  frameClass,
+                )}
+                style={frameStyle}
+              >
+                <Image
+                  src={imageUrl}
+                  alt={resultMode === "edit" ? "편집된 이미지" : "생성된 이미지"}
+                  fill
+                  className={
+                    resultMode === "edit" ? "object-contain" : "object-cover"
+                  }
+                  unoptimized
+                />
+              </button>
+            ) : (
+              <div
+                className={cn(
+                  "flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-border bg-background/60 p-6 text-center",
+                  frameClass,
+                )}
+                style={frameStyle}
+              >
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft">
+                  <Sparkles className="size-6 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground">
+                    {activeTab === "edit"
+                      ? "편집한 이미지가 여기에 표시됩니다"
+                      : "생성한 이미지가 여기에 표시됩니다"}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {activeTab === "edit"
+                      ? "원본 이미지를 올리고 편집 지시문을 입력해주세요."
+                      : `${ratio} 비율로 만들어져요.`}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
       </div>
+
       {imageUrl && (
         <ImageFullscreenViewer
           open={isFullscreenOpen}

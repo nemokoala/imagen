@@ -12,6 +12,7 @@ import {
 import { useGetCreditSettingsQuery } from "@/queries/admin/creditSettings";
 import { HealthCheckResponse } from "@/types/common.interfaces";
 import { Model } from "@/types/model.interfaces";
+import { isLocalModel } from "@/constants/model.constants";
 import {
   CREDIT_MODEL_SETTING_OPTIONS,
   MODEL_CREDIT_SETTINGS,
@@ -58,7 +59,8 @@ export const ModelSelect = ({
         ...option,
         isEnabled,
         isHealthy,
-        isAvailable: isEnabled && isHealthy,
+        // 로컬 모델은 서버가 꺼져 있어도 대기열 예약으로 고를 수 있다.
+        isAvailable: isEnabled && (isHealthy || isLocalModel(option.model)),
       };
     });
   }, [creditSettings, stableHealthCheck?.healthy, zimageHealthCheck?.healthy, qwenHealthCheck?.healthy]);
@@ -137,8 +139,8 @@ export const ModelSelect = ({
     if (!option.isHealthy) {
       return (
         <Badge variant="outline" className="text-xs">
-          <MiniDot color="red" />
-          오프라인
+          <MiniDot color={isLocalModel(option.model) ? "orange" : "red"} />
+          {isLocalModel(option.model) ? "오프라인 · 예약" : "오프라인"}
         </Badge>
       );
     }

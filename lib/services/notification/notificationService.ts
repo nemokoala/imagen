@@ -47,6 +47,26 @@ export const notificationService = {
   },
 
   /**
+   * 행위자가 없는 시스템 알림(예약 생성 완료·실패)
+   */
+  async createSystemNotification(data: {
+    userId: number;
+    type: NotificationType;
+    message: string;
+    imageId?: number;
+  }) {
+    const { userId, type, message, imageId } = data;
+
+    await prisma.notification.create({
+      data: { userId, type, message, imageId },
+    });
+
+    fcmService
+      .sendFCM(userId, type, message, imageId ? `/image/${imageId}` : "/generate")
+      .catch((err) => console.error("FCM 전송 실패:", err));
+  },
+
+  /**
    * 내 알림 목록 조회
    */
   async getNotifications(userId: number) {

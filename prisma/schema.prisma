@@ -25,27 +25,28 @@ enum AuthProvider {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String?
-  nickname  String   @unique
-  credits   Int      @default(100)  // 기본 100 크레딧
-  role      UserRole @default(user)
-  provider  AuthProvider @default(local)
-  emailVerified Boolean @default(true)
-  emailVerifiedAt DateTime?
-  kakaoId   String?  @unique // 카카오 고유 ID
-  fcmToken  String?  // FCM 토큰
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  profileImageUrl String?
-  loginAttempts LoginAttempt[]
+  id                      Int                      @id @default(autoincrement())
+  email                   String                   @unique
+  password                String?
+  nickname                String                   @unique
+  credits                 Int                      @default(100) // 기본 100 크레딧
+  role                    UserRole                 @default(user)
+  provider                AuthProvider             @default(local)
+  emailVerified           Boolean                  @default(true)
+  emailVerifiedAt         DateTime?
+  kakaoId                 String?                  @unique // 카카오 고유 ID
+  fcmToken                String? // FCM 토큰
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  profileImageUrl         String?
+  loginAttempts           LoginAttempt[]
   emailVerificationTokens EmailVerificationToken[]
-  generatedImages GeneratedImage[]
-  imageLikes ImageLike[]
-  imageComments ImageComment[]
-  notifications Notification[] @relation("UserNotifications")
-  triggeredNotifications Notification[] @relation("NotificationActor")
+  generatedImages         GeneratedImage[]
+  imageLikes              ImageLike[]
+  imageComments           ImageComment[]
+  imageJobs               ImageJob[]
+  notifications           Notification[]           @relation("UserNotifications")
+  triggeredNotifications  Notification[]           @relation("NotificationActor")
 }
 
 model EmailVerificationToken {
@@ -74,40 +75,77 @@ model LoginAttempt {
 }
 
 model GeneratedImage {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  prompt    String   @db.Text
-  translatedPrompt String? @db.Text  // 번역된 프롬프트 (번역이 된 경우에만 저장)
-  imageUrl  String
-  model     String
-  size      String   @default("1024x1024")
-  ratio     String   @default("1:1")
-  editData  String?   @db.Text
-  editedImageUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // 좋아요, 댓글, 카테고리 관계
-  likes     ImageLike[]
-  comments  ImageComment[]
-  categories Category[]
-  notifications Notification[]
+  id               Int      @id @default(autoincrement())
+  userId           Int
+  user             User     @relation(fields: [userId], references: [id])
+  prompt           String   @db.Text
+  translatedPrompt String?  @db.Text // 번역된 프롬프트 (번역이 된 경우에만 저장)
+  imageUrl         String
+  model            String
+  size             String   @default("1024x1024")
+  ratio            String   @default("1:1")
+  editData         String?  @db.Text
+  editedImageUrl   String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
+  // 좋아요, 댓글, 카테고리 관계
+  likes         ImageLike[]
+  comments      ImageComment[]
+  categories    Category[]
+  notifications Notification[]
+  imageJob      ImageJob?
 
   @@index([userId])
   @@index([createdAt])
   @@index([model])
 }
 
+enum ImageJobStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELED
+  EXPIRED
+}
+
+// 로컬 모델(ComfyUI·A1111) 생성 대기열. AI 서버가 꺼져 있어도 접수해 두고 켜지면 순서대로 처리한다.
+model ImageJob {
+  id             Int             @id @default(autoincrement()) // 처리 순서(FIFO) 기준
+  userId         Int
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  model          String
+  prompt         String          @db.Text
+  ratio          String
+  categorySlugs  Json?
+  creditCost     Int // 접수할 때 선차감한 금액. 실패·취소·만료 시 이 금액을 돌려준다.
+  status         ImageJobStatus  @default(PENDING)
+  attempts       Int             @default(0) // 가져갈 때마다 1 증가. 완료 처리 시 펜싱 토큰으로 쓴다.
+  externalId     String? // ComfyUI prompt_id. 재시작 뒤 다시 제출하지 않고 이어서 폴링한다.
+  progress       String?         @db.VarChar(255)
+  error          String?         @db.VarChar(255)
+  notifyOnFinish Boolean         @default(false) // 서버를 기다린 작업만 끝났을 때 알림을 보낸다.
+  imageId        Int?            @unique
+  image          GeneratedImage? @relation(fields: [imageId], references: [id], onDelete: SetNull)
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  expiresAt      DateTime
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([status, id])
+  @@index([userId, status])
+}
+
 // 이미지 좋아요 모델
 model ImageLike {
-  id        Int      @id @default(autoincrement())
+  id        Int            @id @default(autoincrement())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   imageId   Int
   image     GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  createdAt DateTime       @default(now())
 
   // 한 사용자가 한 이미지에 한 번만 좋아요 가능
   @@unique([userId, imageId])
@@ -117,15 +155,15 @@ model ImageLike {
 
 // 이미지 댓글 모델
 model ImageComment {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  imageId   Int
-  image     GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
-  content   String   @db.Text
-  parentId  Int?     // 대댓글을 위한 부모 댓글 ID
-  parent    ImageComment? @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   ImageComment[] @relation("CommentReplies")
+  id            Int            @id @default(autoincrement())
+  userId        Int
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageId       Int
+  image         GeneratedImage @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  content       String         @db.Text
+  parentId      Int? // 대댓글을 위한 부모 댓글 ID
+  parent        ImageComment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       ImageComment[] @relation("CommentReplies")
   notifications Notification[]
 
   createdAt DateTime @default(now())
@@ -138,34 +176,34 @@ model ImageComment {
 
 // 크레딧 설정 모델 (단일 레코드로 관리)
 model CreditSettings {
-  id        Int      @id @default(1) // 항상 1번만 사용
-  dallE3    Int      @default(20)
-  stableDiffusionXl Int @default(5)
-  googleImagen Int   @default(20)
-  nanoBanana Int     @default(20)
-  zImage     Int     @default(10)
-  qwenImage21 Int    @default(10)
-  dallE3Enabled Boolean @default(true)
-  stableDiffusionXlEnabled Boolean @default(true)
-  googleImagenEnabled Boolean @default(true)
-  nanoBananaEnabled Boolean @default(true)
-  zImageEnabled Boolean @default(true)
-  qwenImage21Enabled Boolean @default(true)
-  updatedAt DateTime @updatedAt
+  id                       Int      @id @default(1) // 항상 1번만 사용
+  dallE3                   Int      @default(20)
+  stableDiffusionXl        Int      @default(5)
+  googleImagen             Int      @default(20)
+  nanoBanana               Int      @default(20)
+  zImage                   Int      @default(10)
+  qwenImage21              Int      @default(10)
+  dallE3Enabled            Boolean  @default(true)
+  stableDiffusionXlEnabled Boolean  @default(true)
+  googleImagenEnabled      Boolean  @default(true)
+  nanoBananaEnabled        Boolean  @default(true)
+  zImageEnabled            Boolean  @default(true)
+  qwenImage21Enabled       Boolean  @default(true)
+  updatedAt                DateTime @updatedAt
 
   @@map("credit_settings")
 }
 
 // LLM 텍스트 모델 설정 (단일 레코드로 관리)
 model LlmSettings {
-  id                Int      @id @default(1) // 항상 1번만 사용
-  provider          String   @default("ollama") // "ollama" | "gemini"
-  geminiModel       String   @default("gemini-2.5-flash-lite")
-  ollamaModel       String   @default("gemma3:4b")
-  translateEnabled  Boolean  @default(true)  // 프롬프트 번역 on/off
-  categoryEnabled   Boolean  @default(true)  // 카테고리 추천 on/off
-  sexualContentFilterEnabled Boolean @default(false) // 선정성 프롬프트 필터 on/off
-  updatedAt         DateTime @updatedAt
+  id                         Int      @id @default(1) // 항상 1번만 사용
+  provider                   String   @default("ollama") // "ollama" | "gemini"
+  geminiModel                String   @default("gemini-2.5-flash-lite")
+  ollamaModel                String   @default("gemma3:4b")
+  translateEnabled           Boolean  @default(true) // 프롬프트 번역 on/off
+  categoryEnabled            Boolean  @default(true) // 카테고리 추천 on/off
+  sexualContentFilterEnabled Boolean  @default(false) // 선정성 프롬프트 필터 on/off
+  updatedAt                  DateTime @updatedAt
 
   @@map("llm_settings")
 }
@@ -173,34 +211,36 @@ model LlmSettings {
 // 카테고리 모델
 model Category {
   id        Int      @id @default(autoincrement())
-  name      String   @unique  // 카테고리 이름 (예: "풍경", "인물", "추상화")
-  slug      String   @unique  // URL-friendly 이름 (예: "landscape", "portrait")
+  name      String   @unique // 카테고리 이름 (예: "풍경", "인물", "추상화")
+  slug      String   @unique // URL-friendly 이름 (예: "landscape", "portrait")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   // 이미지와의 관계 (암묵적 다대다)
-  images    GeneratedImage[]
+  images GeneratedImage[]
 }
 
 enum NotificationType {
   LIKE
   COMMENT
+  GENERATION_DONE
+  GENERATION_FAILED
 }
 
 model Notification {
-  id        Int      @id @default(autoincrement())
+  id        Int              @id @default(autoincrement())
   userId    Int
-  user      User     @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
-  actorId   Int
-  actor     User     @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
+  user      User             @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  actorId   Int? // 시스템 알림(생성 완료·실패)은 행위자가 없다
+  actor     User?            @relation("NotificationActor", fields: [actorId], references: [id], onDelete: Cascade)
   type      NotificationType
   message   String?
-  isRead    Boolean  @default(false)
+  isRead    Boolean          @default(false)
   imageId   Int?
-  image     GeneratedImage? @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  image     GeneratedImage?  @relation(fields: [imageId], references: [id], onDelete: Cascade)
   commentId Int?
-  comment   ImageComment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  comment   ImageComment?    @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
 
   @@index([userId])
   @@index([isRead])

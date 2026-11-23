@@ -3,15 +3,10 @@ import { join } from "path";
 import { randomUUID } from "crypto";
 import { authService } from "@/lib/services/auth/authService";
 import { creditSettingsService } from "@/lib/services/admin/creditSettingsService";
-import { getResolution } from "@/constants/model.constants";
 import { ImageRatio } from "@/types/image.interfaces";
-import { Model } from "@/types/model.interfaces";
 import { llmService } from "../llmService";
 import { imageGenerationService } from "./imageGenerationService";
-import type {
-  GenerateImageRequest,
-  GenerateImageResponse,
-} from "./imageGenerationService";
+import type { GenerateImageResponse } from "./imageGenerationService";
 
 type ComfyHistory = Record<string, {
   status?: { status_str?: string; messages?: [string, unknown][] };
@@ -19,14 +14,6 @@ type ComfyHistory = Record<string, {
     images?: { filename: string; subfolder: string; type: string }[];
   }>;
 }>;
-
-const workflowPath = join(
-  process.cwd(),
-  "lib",
-  "services",
-  "image",
-  "qwen-image-21-workflow.json",
-);
 
 const editWorkflowPath = join(
   process.cwd(),
@@ -269,114 +256,6 @@ export const qwenImageService = {
     } catch (error) {
       console.error("Qwen Image 2.1 edit error:", error);
       yield { success: false, error: "Qwen Image 2.1 편집에 실패했습니다." };
-    }
-  },
-
-  async *generateImageByQwenImage21Stream(
-    request: GenerateImageRequest,
-  ): AsyncGenerator<string | GenerateImageResponse, void, unknown> {
-    const {
-      prompt,
-      userId,
-      ratio = ImageRatio.RATIO_1_1,
-      categorySlugs,
-    } = request;
-
-    if (!prompt?.trim()) {
-      yield { success: false, error: "프롬프트가 필요합니다." };
-      return;
-    }
-
-    const comfyUrl = process.env.COMFYUI_URL?.replace(/\/$/, "");
-    if (!comfyUrl) {
-      yield {
-        success: false,
-        error: "ComfyUI 서버 URL이 설정되지 않았습니다. COMFYUI_URL을 확인해주세요.",
-      };
-      return;
-    }
-
-    try {
-      const creditSettings = await creditSettingsService.getCreditSettings();
-      const creditCost = creditSettings.qwenImage21;
-      const credit = await authService.getCreditById(userId);
-      if (credit.credits < creditCost) {
-        yield { success: false, error: "크레딧이 부족합니다." };
-        return;
-      }
-
-      const resolution = getResolution(Model.QWEN_IMAGE_21, ratio);
-      const workflow = JSON.parse(await readFile(workflowPath, "utf-8"));
-      workflow["4"].inputs.prompt = prompt.trim();
-      workflow["5"].inputs.width = resolution.width;
-      workflow["5"].inputs.height = resolution.height;
-      workflow["6"].inputs.seed = Math.floor(Math.random() * 2 ** 48);
-
-      yield "Qwen Image 2.1 작업을 등록하는 중입니다...";
-      const promptResponse = await fetch(`${comfyUrl}/api/prompt`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ client_id: "imagegen-qwen-21", prompt: workflow }),
-      });
-      const promptData = await promptResponse.json();
-      if (!promptResponse.ok || !promptData.prompt_id) {
-        console.error("Qwen Image ComfyUI prompt error:", promptData);
-        throw new Error("ComfyUI가 Qwen Image 2.1 작업을 받지 못했습니다.");
-      }
-
-      const promptId = promptData.prompt_id as string;
-      yield "Qwen Image 2.1로 이미지를 생성하는 중입니다...";
-      let image: { filename: string; subfolder: string; type: string } | undefined;
-
-      for (let attempt = 0; attempt < 300; attempt++) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const historyResponse = await fetch(`${comfyUrl}/api/history/${promptId}`);
-        if (!historyResponse.ok) continue;
-
-        const history = (await historyResponse.json()) as ComfyHistory;
-        const result = history[promptId];
-        if (result?.status?.status_str === "error") {
-          console.error("Qwen Image ComfyUI execution error:", result.status);
-          throw new Error("ComfyUI에서 Qwen Image 2.1 실행이 실패했습니다.");
-        }
-        image = result?.outputs?.["8"]?.images?.[0];
-        if (image) break;
-        if (attempt > 0 && attempt % 15 === 0) {
-          yield `이미지 생성 중... (${attempt}초 경과)`;
-        }
-      }
-
-      if (!image) throw new Error("Qwen Image 2.1 이미지 생성 시간이 초과됐습니다.");
-
-      yield "생성된 이미지를 저장하는 중입니다...";
-      const imageUrl = new URL("/view", comfyUrl);
-      imageUrl.searchParams.set("filename", image.filename);
-      imageUrl.searchParams.set("subfolder", image.subfolder);
-      imageUrl.searchParams.set("type", image.type);
-      const savedImagePath = await imageGenerationService.saveImageToFileSystem(
-        imageUrl.toString(),
-        userId,
-      );
-      await authService.updateUserCredit(userId, -creditCost);
-      const savedImage = await imageGenerationService.saveImageToDatabase({
-        userId,
-        prompt,
-        imageUrl: savedImagePath,
-        model: Model.QWEN_IMAGE_21,
-        size: resolution.size,
-        ratio,
-        categorySlugs,
-      });
-
-      yield {
-        success: true,
-        imageUrl: savedImagePath,
-        id: savedImage.id,
-        ratio: savedImage.ratio as ImageRatio,
-      };
-    } catch (error) {
-      console.error("Qwen Image 2.1 generation error:", error);
-      yield { success: false, error: "Qwen Image 2.1 이미지 생성에 실패했습니다." };
     }
   },
 

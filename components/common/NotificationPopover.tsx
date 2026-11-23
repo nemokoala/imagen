@@ -11,7 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Bell, BellPlus } from "lucide-react";
+import { Bell, BellPlus, CheckCircle2, XCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import Image from "next/image";
@@ -143,7 +143,11 @@ export function NotificationPopover() {
                   }`}
                 >
                   <Link
-                    href={`/image/${notification.image?.id}`}
+                    href={
+                      notification.image
+                        ? `/image/${notification.image.id}`
+                        : "/generate"
+                    }
                     className="flex-1 flex items-start gap-3 p-3 transition-colors min-w-0"
                     onClick={() => {
                       if (!notification.isRead) {
@@ -153,21 +157,37 @@ export function NotificationPopover() {
                     }}
                   >
                     <div className="relative h-8 w-8 flex-shrink-0 mr-1">
-                      <ProfileAvatar
-                        nickname={notification.actor.nickname}
-                        profileImageUrl={notification.actor.profileImageUrl}
-                        size="small"
-                      />
+                      {notification.actor ? (
+                        <ProfileAvatar
+                          nickname={notification.actor.nickname}
+                          profileImageUrl={notification.actor.profileImageUrl}
+                          size="small"
+                        />
+                      ) : (
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                          {notification.type === "GENERATION_FAILED" ? (
+                            <XCircle className="h-4 w-4 text-destructive" />
+                          ) : (
+                            <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          )}
+                        </div>
+                      )}
                     </div>
                     <div className="flex-1 space-y-1 min-w-0">
                       <p className="text-sm line-clamp-2 leading-snug">
-                        <span className="text-foreground">
-                          <span className="font-semibold">
-                            {notification.message.split("님")[0]}
+                        {notification.actor ? (
+                          <span className="text-foreground">
+                            <span className="font-semibold">
+                              {notification.message.split("님")[0]}
+                            </span>
+                            님이{" "}
+                            {notification.message.split("님").slice(1).join("님")}
                           </span>
-                          님이{" "}
-                          {notification.message.split("님").slice(1).join("님")}
-                        </span>
+                        ) : (
+                          <span className="text-foreground">
+                            {notification.message}
+                          </span>
+                        )}
                       </p>
                       <span className="text-xs text-muted-foreground block">
                         {formatDistanceToNow(new Date(notification.createdAt), {

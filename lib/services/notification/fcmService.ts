@@ -25,6 +25,8 @@ export const fcmService = {
     let title = "새로운 알림";
     if (type === NotificationType.LIKE) title = "좋아요 알림";
     if (type === NotificationType.COMMENT) title = "댓글 알림";
+    if (type === NotificationType.GENERATION_DONE) title = "이미지 생성 완료";
+    if (type === NotificationType.GENERATION_FAILED) title = "이미지 생성 실패";
 
     try {
       // Lazy init to ensure "The default Firebase app does not exist" error is avoided

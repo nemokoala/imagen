@@ -1,10 +1,6 @@
 // app/api/generate-image/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import {
-  imageService,
-  GenerateImageRequest,
-  GenerateImageResponse,
-} from "@/lib/services/image/imageService";
+import { imageService } from "@/lib/services/image/imageService";
 import { authService } from "@/lib/services/auth/authService";
 import { cookies } from "next/headers";
 import { errorHandler } from "@/lib/errors/errorHandler";
@@ -12,7 +8,9 @@ import { ApiError } from "@/lib/errors/AppError";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import { discordService } from "@/lib/services/logs/logService";
-import { localImageQueue } from "@/lib/services/image/localImageQueue";
+import { imageJobService } from "@/lib/services/image/jobs/imageJobService";
+import { imageJobWorker } from "@/lib/services/image/jobs/imageJobWorker";
+import { isLocalModel } from "@/constants/model.constants";
 import { creditSettingsService } from "@/lib/services/admin/creditSettingsService";
 import { promptSafetyService } from "@/lib/services/image/promptSafetyService";
 
@@ -24,70 +22,6 @@ export const maxDuration = 60;
 // 계정 생성 검증 전까지 서버 전체 요청 횟수 제한 (Stable Diffusion 제외)
 let totalRequestCount = 0;
 const MAX_TOTAL_REQUESTS = 5;
-
-// 스트림 응답 헬퍼 함수
-function streamResponse(
-  generator: AsyncGenerator<string | GenerateImageResponse, void, unknown>,
-) {
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream({
-    async start(controller) {
-      try {
-        for await (const chunk of generator) {
-          if (typeof chunk === "string") {
-            // 진행 상태 전송
-            const payload = JSON.stringify({
-              status: "progress",
-              message: chunk,
-            });
-            controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-          } else {
-            // 최종 결과 전송
-            if (chunk.success) {
-              const payload = JSON.stringify({
-                status: "complete",
-                ...chunk,
-              });
-              controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-
-              // Discord 로그 전송
-              const resetCount = MAX_TOTAL_REQUESTS - totalRequestCount;
-              discordService.sendLog(
-                `이미지 생성 성공 (남은 요청 횟수 ${resetCount}): ${process.env.NEXT_PUBLIC_BASE_URL}${chunk.imageUrl}`,
-              );
-            } else {
-              const payload = JSON.stringify({
-                status: "error",
-                message: chunk.error,
-              });
-              controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-            }
-          }
-        }
-      } catch (error: unknown) {
-        console.error("Stream generation error:", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown stream error";
-        const payload = JSON.stringify({
-          status: "error",
-          message: errorMessage,
-        });
-        controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-      } finally {
-        controller.close();
-      }
-    },
-  });
-
-  return new NextResponse(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-      "X-Accel-Buffering": "no",
-    },
-  });
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -102,17 +36,10 @@ export async function POST(req: NextRequest) {
 
     await creditSettingsService.assertModelEnabled(model);
 
-    // 🆕 Stable Diffusion과 Z-Image 제외하고 전체 요청 횟수 체크
-    const isZImage = model === Model.Z_IMAGE;
-    const isQwenImage = model === Model.QWEN_IMAGE_21;
-    const isStableDiffusion = model === Model.STABLE_DIFFUSION_XL;
+    // 로컬 모델은 전체 요청 횟수 제한에서 제외한다.
+    const isLocal = isLocalModel(model);
 
-    if (
-      !isStableDiffusion &&
-      !isZImage &&
-      !isQwenImage &&
-      totalRequestCount >= MAX_TOTAL_REQUESTS
-    ) {
+    if (!isLocal && totalRequestCount >= MAX_TOTAL_REQUESTS) {
       throw new ApiError(
         `테스트 요청 한도에 도달했습니다. (전체 ${MAX_TOTAL_REQUESTS}회)`,
         429,
@@ -125,29 +52,18 @@ export async function POST(req: NextRequest) {
 
     await promptSafetyService.assertAllowed(prompt, model);
 
-    // 스트림 응답 처리 (Z_IMAGE, STABLE_DIFFUSION_XL)
-    if (isZImage || isQwenImage || isStableDiffusion) {
-      const request: GenerateImageRequest = {
-        prompt,
-        model,
+    // 로컬 모델은 대기열에 접수하고 바로 응답한다. 생성은 워커가 하고 클라이언트는 작업 상태를 조회한다.
+    if (isLocal) {
+      const job = await imageJobService.enqueue({
         userId,
+        model,
+        prompt,
         ratio: imageRatio,
         categorySlugs: categories,
-      };
-
-      const generator = localImageQueue.enqueue({
-        userId,
-        model,
-        signal: req.signal,
-        generator: () =>
-          isZImage
-            ? imageService.generateImageByZImageStream(request)
-            : isQwenImage
-              ? imageService.generateImageByQwenImage21Stream(request)
-            : imageService.generateImageByStableDiffusionStream(request),
       });
+      imageJobWorker.wake();
 
-      return streamResponse(generator);
+      return NextResponse.json({ success: true, job }, { status: 202 });
     }
 
     // 기존 로직 (다른 모델들)
@@ -190,8 +106,7 @@ export async function POST(req: NextRequest) {
       throw new ApiError(errorMessage, 400, "IMAGE_GENERATION_FAILED");
     }
 
-    // 🆕 성공 시 Stable Diffusion과 Z-Image 제외하고 카운트 증가
-    // (위에서 이미 isStableDiffusion/isZImage 체크 후 리턴하므로 여기 도달하는 코드는 나머지 모델들임)
+    // 로컬 모델은 위에서 대기열로 응답했으므로 여기에는 외부 API 모델만 온다.
     totalRequestCount++;
     console.log(`[Request Count] ${totalRequestCount}/${MAX_TOTAL_REQUESTS}`);
 

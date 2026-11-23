@@ -73,6 +73,26 @@ class LocalImageQueue {
     return this.createQueuedStream(job, options.signal);
   }
 
+  /**
+   * 대기열 워커가 GPU 차례를 받을 때 쓴다. 편집 요청과 같은 줄에 서므로 둘이 동시에 GPU를 쓰지 않는다.
+   */
+  async runExclusive<T>(task: () => Promise<T>): Promise<T> {
+    const job = this.createJob({
+      userId: 0,
+      model: "image-job-worker",
+      generator: async function* () {},
+    });
+    this.waiting.push(job);
+    this.runNext();
+    await job.startPromise;
+
+    try {
+      return await task();
+    } finally {
+      this.finishJob(job);
+    }
+  }
+
   private createJob(options: EnqueueLocalImageOptions): LocalImageQueueJob {
     let resolveStart!: () => void;
     const startPromise = new Promise<void>((resolve) => {

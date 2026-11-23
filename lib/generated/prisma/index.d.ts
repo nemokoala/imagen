@@ -34,6 +34,11 @@ export type LoginAttempt = $Result.DefaultSelection<Prisma.$LoginAttemptPayload>
  */
 export type GeneratedImage = $Result.DefaultSelection<Prisma.$GeneratedImagePayload>
 /**
+ * Model ImageJob
+ * 
+ */
+export type ImageJob = $Result.DefaultSelection<Prisma.$ImageJobPayload>
+/**
  * Model ImageLike
  * 
  */
@@ -84,9 +89,23 @@ export const AuthProvider: {
 export type AuthProvider = (typeof AuthProvider)[keyof typeof AuthProvider]
 
 
+export const ImageJobStatus: {
+  PENDING: 'PENDING',
+  RUNNING: 'RUNNING',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  CANCELED: 'CANCELED',
+  EXPIRED: 'EXPIRED'
+};
+
+export type ImageJobStatus = (typeof ImageJobStatus)[keyof typeof ImageJobStatus]
+
+
 export const NotificationType: {
   LIKE: 'LIKE',
-  COMMENT: 'COMMENT'
+  COMMENT: 'COMMENT',
+  GENERATION_DONE: 'GENERATION_DONE',
+  GENERATION_FAILED: 'GENERATION_FAILED'
 };
 
 export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType]
@@ -100,6 +119,10 @@ export const UserRole: typeof $Enums.UserRole
 export type AuthProvider = $Enums.AuthProvider
 
 export const AuthProvider: typeof $Enums.AuthProvider
+
+export type ImageJobStatus = $Enums.ImageJobStatus
+
+export const ImageJobStatus: typeof $Enums.ImageJobStatus
 
 export type NotificationType = $Enums.NotificationType
 
@@ -269,6 +292,16 @@ export class PrismaClient<
     * ```
     */
   get generatedImage(): Prisma.GeneratedImageDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.imageJob`: Exposes CRUD operations for the **ImageJob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ImageJobs
+    * const imageJobs = await prisma.imageJob.findMany()
+    * ```
+    */
+  get imageJob(): Prisma.ImageJobDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.imageLike`: Exposes CRUD operations for the **ImageLike** model.
@@ -773,6 +806,7 @@ export namespace Prisma {
     EmailVerificationToken: 'EmailVerificationToken',
     LoginAttempt: 'LoginAttempt',
     GeneratedImage: 'GeneratedImage',
+    ImageJob: 'ImageJob',
     ImageLike: 'ImageLike',
     ImageComment: 'ImageComment',
     CreditSettings: 'CreditSettings',
@@ -797,7 +831,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "emailVerificationToken" | "loginAttempt" | "generatedImage" | "imageLike" | "imageComment" | "creditSettings" | "llmSettings" | "category" | "notification"
+      modelProps: "user" | "emailVerificationToken" | "loginAttempt" | "generatedImage" | "imageJob" | "imageLike" | "imageComment" | "creditSettings" | "llmSettings" | "category" | "notification"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1062,6 +1096,72 @@ export namespace Prisma {
           count: {
             args: Prisma.GeneratedImageCountArgs<ExtArgs>
             result: $Utils.Optional<GeneratedImageCountAggregateOutputType> | number
+          }
+        }
+      }
+      ImageJob: {
+        payload: Prisma.$ImageJobPayload<ExtArgs>
+        fields: Prisma.ImageJobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ImageJobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ImageJobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>
+          }
+          findFirst: {
+            args: Prisma.ImageJobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ImageJobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>
+          }
+          findMany: {
+            args: Prisma.ImageJobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>[]
+          }
+          create: {
+            args: Prisma.ImageJobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>
+          }
+          createMany: {
+            args: Prisma.ImageJobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.ImageJobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>
+          }
+          update: {
+            args: Prisma.ImageJobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>
+          }
+          deleteMany: {
+            args: Prisma.ImageJobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ImageJobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.ImageJobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ImageJobPayload>
+          }
+          aggregate: {
+            args: Prisma.ImageJobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateImageJob>
+          }
+          groupBy: {
+            args: Prisma.ImageJobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ImageJobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ImageJobCountArgs<ExtArgs>
+            result: $Utils.Optional<ImageJobCountAggregateOutputType> | number
           }
         }
       }
@@ -1549,6 +1649,7 @@ export namespace Prisma {
     emailVerificationToken?: EmailVerificationTokenOmit
     loginAttempt?: LoginAttemptOmit
     generatedImage?: GeneratedImageOmit
+    imageJob?: ImageJobOmit
     imageLike?: ImageLikeOmit
     imageComment?: ImageCommentOmit
     creditSettings?: CreditSettingsOmit
@@ -1654,6 +1755,7 @@ export namespace Prisma {
     generatedImages: number
     imageLikes: number
     imageComments: number
+    imageJobs: number
     notifications: number
     triggeredNotifications: number
   }
@@ -1664,6 +1766,7 @@ export namespace Prisma {
     generatedImages?: boolean | UserCountOutputTypeCountGeneratedImagesArgs
     imageLikes?: boolean | UserCountOutputTypeCountImageLikesArgs
     imageComments?: boolean | UserCountOutputTypeCountImageCommentsArgs
+    imageJobs?: boolean | UserCountOutputTypeCountImageJobsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
     triggeredNotifications?: boolean | UserCountOutputTypeCountTriggeredNotificationsArgs
   }
@@ -1712,6 +1815,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountImageCommentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ImageCommentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountImageJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageJobWhereInput
   }
 
   /**
@@ -2141,6 +2251,7 @@ export namespace Prisma {
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
     imageLikes?: boolean | User$imageLikesArgs<ExtArgs>
     imageComments?: boolean | User$imageCommentsArgs<ExtArgs>
+    imageJobs?: boolean | User$imageJobsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     triggeredNotifications?: boolean | User$triggeredNotificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -2172,6 +2283,7 @@ export namespace Prisma {
     generatedImages?: boolean | User$generatedImagesArgs<ExtArgs>
     imageLikes?: boolean | User$imageLikesArgs<ExtArgs>
     imageComments?: boolean | User$imageCommentsArgs<ExtArgs>
+    imageJobs?: boolean | User$imageJobsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
     triggeredNotifications?: boolean | User$triggeredNotificationsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -2185,6 +2297,7 @@ export namespace Prisma {
       generatedImages: Prisma.$GeneratedImagePayload<ExtArgs>[]
       imageLikes: Prisma.$ImageLikePayload<ExtArgs>[]
       imageComments: Prisma.$ImageCommentPayload<ExtArgs>[]
+      imageJobs: Prisma.$ImageJobPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
       triggeredNotifications: Prisma.$NotificationPayload<ExtArgs>[]
     }
@@ -2548,6 +2661,7 @@ export namespace Prisma {
     generatedImages<T extends User$generatedImagesArgs<ExtArgs> = {}>(args?: Subset<T, User$generatedImagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GeneratedImagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     imageLikes<T extends User$imageLikesArgs<ExtArgs> = {}>(args?: Subset<T, User$imageLikesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageLikePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     imageComments<T extends User$imageCommentsArgs<ExtArgs> = {}>(args?: Subset<T, User$imageCommentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    imageJobs<T extends User$imageJobsArgs<ExtArgs> = {}>(args?: Subset<T, User$imageJobsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     triggeredNotifications<T extends User$triggeredNotificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$triggeredNotificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -3053,6 +3167,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ImageCommentScalarFieldEnum | ImageCommentScalarFieldEnum[]
+  }
+
+  /**
+   * User.imageJobs
+   */
+  export type User$imageJobsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    where?: ImageJobWhereInput
+    orderBy?: ImageJobOrderByWithRelationInput | ImageJobOrderByWithRelationInput[]
+    cursor?: ImageJobWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ImageJobScalarFieldEnum | ImageJobScalarFieldEnum[]
   }
 
   /**
@@ -5341,6 +5479,7 @@ export namespace Prisma {
     comments?: boolean | GeneratedImage$commentsArgs<ExtArgs>
     categories?: boolean | GeneratedImage$categoriesArgs<ExtArgs>
     notifications?: boolean | GeneratedImage$notificationsArgs<ExtArgs>
+    imageJob?: boolean | GeneratedImage$imageJobArgs<ExtArgs>
     _count?: boolean | GeneratedImageCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["generatedImage"]>
 
@@ -5368,6 +5507,7 @@ export namespace Prisma {
     comments?: boolean | GeneratedImage$commentsArgs<ExtArgs>
     categories?: boolean | GeneratedImage$categoriesArgs<ExtArgs>
     notifications?: boolean | GeneratedImage$notificationsArgs<ExtArgs>
+    imageJob?: boolean | GeneratedImage$imageJobArgs<ExtArgs>
     _count?: boolean | GeneratedImageCountOutputTypeDefaultArgs<ExtArgs>
   }
 
@@ -5379,6 +5519,7 @@ export namespace Prisma {
       comments: Prisma.$ImageCommentPayload<ExtArgs>[]
       categories: Prisma.$CategoryPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
+      imageJob: Prisma.$ImageJobPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -5738,6 +5879,7 @@ export namespace Prisma {
     comments<T extends GeneratedImage$commentsArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImage$commentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     categories<T extends GeneratedImage$categoriesArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImage$categoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends GeneratedImage$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImage$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    imageJob<T extends GeneratedImage$imageJobArgs<ExtArgs> = {}>(args?: Subset<T, GeneratedImage$imageJobArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6218,6 +6360,25 @@ export namespace Prisma {
   }
 
   /**
+   * GeneratedImage.imageJob
+   */
+  export type GeneratedImage$imageJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    where?: ImageJobWhereInput
+  }
+
+  /**
    * GeneratedImage without action
    */
   export type GeneratedImageDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6233,6 +6394,1158 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: GeneratedImageInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ImageJob
+   */
+
+  export type AggregateImageJob = {
+    _count: ImageJobCountAggregateOutputType | null
+    _avg: ImageJobAvgAggregateOutputType | null
+    _sum: ImageJobSumAggregateOutputType | null
+    _min: ImageJobMinAggregateOutputType | null
+    _max: ImageJobMaxAggregateOutputType | null
+  }
+
+  export type ImageJobAvgAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    creditCost: number | null
+    attempts: number | null
+    imageId: number | null
+  }
+
+  export type ImageJobSumAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    creditCost: number | null
+    attempts: number | null
+    imageId: number | null
+  }
+
+  export type ImageJobMinAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    model: string | null
+    prompt: string | null
+    ratio: string | null
+    creditCost: number | null
+    status: $Enums.ImageJobStatus | null
+    attempts: number | null
+    externalId: string | null
+    progress: string | null
+    error: string | null
+    notifyOnFinish: boolean | null
+    imageId: number | null
+    startedAt: Date | null
+    finishedAt: Date | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ImageJobMaxAggregateOutputType = {
+    id: number | null
+    userId: number | null
+    model: string | null
+    prompt: string | null
+    ratio: string | null
+    creditCost: number | null
+    status: $Enums.ImageJobStatus | null
+    attempts: number | null
+    externalId: string | null
+    progress: string | null
+    error: string | null
+    notifyOnFinish: boolean | null
+    imageId: number | null
+    startedAt: Date | null
+    finishedAt: Date | null
+    expiresAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ImageJobCountAggregateOutputType = {
+    id: number
+    userId: number
+    model: number
+    prompt: number
+    ratio: number
+    categorySlugs: number
+    creditCost: number
+    status: number
+    attempts: number
+    externalId: number
+    progress: number
+    error: number
+    notifyOnFinish: number
+    imageId: number
+    startedAt: number
+    finishedAt: number
+    expiresAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ImageJobAvgAggregateInputType = {
+    id?: true
+    userId?: true
+    creditCost?: true
+    attempts?: true
+    imageId?: true
+  }
+
+  export type ImageJobSumAggregateInputType = {
+    id?: true
+    userId?: true
+    creditCost?: true
+    attempts?: true
+    imageId?: true
+  }
+
+  export type ImageJobMinAggregateInputType = {
+    id?: true
+    userId?: true
+    model?: true
+    prompt?: true
+    ratio?: true
+    creditCost?: true
+    status?: true
+    attempts?: true
+    externalId?: true
+    progress?: true
+    error?: true
+    notifyOnFinish?: true
+    imageId?: true
+    startedAt?: true
+    finishedAt?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ImageJobMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    model?: true
+    prompt?: true
+    ratio?: true
+    creditCost?: true
+    status?: true
+    attempts?: true
+    externalId?: true
+    progress?: true
+    error?: true
+    notifyOnFinish?: true
+    imageId?: true
+    startedAt?: true
+    finishedAt?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ImageJobCountAggregateInputType = {
+    id?: true
+    userId?: true
+    model?: true
+    prompt?: true
+    ratio?: true
+    categorySlugs?: true
+    creditCost?: true
+    status?: true
+    attempts?: true
+    externalId?: true
+    progress?: true
+    error?: true
+    notifyOnFinish?: true
+    imageId?: true
+    startedAt?: true
+    finishedAt?: true
+    expiresAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ImageJobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ImageJob to aggregate.
+     */
+    where?: ImageJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageJobs to fetch.
+     */
+    orderBy?: ImageJobOrderByWithRelationInput | ImageJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ImageJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ImageJobs
+    **/
+    _count?: true | ImageJobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ImageJobAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ImageJobSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ImageJobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ImageJobMaxAggregateInputType
+  }
+
+  export type GetImageJobAggregateType<T extends ImageJobAggregateArgs> = {
+        [P in keyof T & keyof AggregateImageJob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateImageJob[P]>
+      : GetScalarType<T[P], AggregateImageJob[P]>
+  }
+
+
+
+
+  export type ImageJobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ImageJobWhereInput
+    orderBy?: ImageJobOrderByWithAggregationInput | ImageJobOrderByWithAggregationInput[]
+    by: ImageJobScalarFieldEnum[] | ImageJobScalarFieldEnum
+    having?: ImageJobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ImageJobCountAggregateInputType | true
+    _avg?: ImageJobAvgAggregateInputType
+    _sum?: ImageJobSumAggregateInputType
+    _min?: ImageJobMinAggregateInputType
+    _max?: ImageJobMaxAggregateInputType
+  }
+
+  export type ImageJobGroupByOutputType = {
+    id: number
+    userId: number
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs: JsonValue | null
+    creditCost: number
+    status: $Enums.ImageJobStatus
+    attempts: number
+    externalId: string | null
+    progress: string | null
+    error: string | null
+    notifyOnFinish: boolean
+    imageId: number | null
+    startedAt: Date | null
+    finishedAt: Date | null
+    expiresAt: Date
+    createdAt: Date
+    updatedAt: Date
+    _count: ImageJobCountAggregateOutputType | null
+    _avg: ImageJobAvgAggregateOutputType | null
+    _sum: ImageJobSumAggregateOutputType | null
+    _min: ImageJobMinAggregateOutputType | null
+    _max: ImageJobMaxAggregateOutputType | null
+  }
+
+  type GetImageJobGroupByPayload<T extends ImageJobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ImageJobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ImageJobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ImageJobGroupByOutputType[P]>
+            : GetScalarType<T[P], ImageJobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ImageJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    model?: boolean
+    prompt?: boolean
+    ratio?: boolean
+    categorySlugs?: boolean
+    creditCost?: boolean
+    status?: boolean
+    attempts?: boolean
+    externalId?: boolean
+    progress?: boolean
+    error?: boolean
+    notifyOnFinish?: boolean
+    imageId?: boolean
+    startedAt?: boolean
+    finishedAt?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    image?: boolean | ImageJob$imageArgs<ExtArgs>
+  }, ExtArgs["result"]["imageJob"]>
+
+
+
+  export type ImageJobSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    model?: boolean
+    prompt?: boolean
+    ratio?: boolean
+    categorySlugs?: boolean
+    creditCost?: boolean
+    status?: boolean
+    attempts?: boolean
+    externalId?: boolean
+    progress?: boolean
+    error?: boolean
+    notifyOnFinish?: boolean
+    imageId?: boolean
+    startedAt?: boolean
+    finishedAt?: boolean
+    expiresAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ImageJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "model" | "prompt" | "ratio" | "categorySlugs" | "creditCost" | "status" | "attempts" | "externalId" | "progress" | "error" | "notifyOnFinish" | "imageId" | "startedAt" | "finishedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["imageJob"]>
+  export type ImageJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    image?: boolean | ImageJob$imageArgs<ExtArgs>
+  }
+
+  export type $ImageJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ImageJob"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      image: Prisma.$GeneratedImagePayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      userId: number
+      model: string
+      prompt: string
+      ratio: string
+      categorySlugs: Prisma.JsonValue | null
+      creditCost: number
+      status: $Enums.ImageJobStatus
+      attempts: number
+      externalId: string | null
+      progress: string | null
+      error: string | null
+      notifyOnFinish: boolean
+      imageId: number | null
+      startedAt: Date | null
+      finishedAt: Date | null
+      expiresAt: Date
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["imageJob"]>
+    composites: {}
+  }
+
+  type ImageJobGetPayload<S extends boolean | null | undefined | ImageJobDefaultArgs> = $Result.GetResult<Prisma.$ImageJobPayload, S>
+
+  type ImageJobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ImageJobFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ImageJobCountAggregateInputType | true
+    }
+
+  export interface ImageJobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ImageJob'], meta: { name: 'ImageJob' } }
+    /**
+     * Find zero or one ImageJob that matches the filter.
+     * @param {ImageJobFindUniqueArgs} args - Arguments to find a ImageJob
+     * @example
+     * // Get one ImageJob
+     * const imageJob = await prisma.imageJob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ImageJobFindUniqueArgs>(args: SelectSubset<T, ImageJobFindUniqueArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ImageJob that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ImageJobFindUniqueOrThrowArgs} args - Arguments to find a ImageJob
+     * @example
+     * // Get one ImageJob
+     * const imageJob = await prisma.imageJob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ImageJobFindUniqueOrThrowArgs>(args: SelectSubset<T, ImageJobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ImageJob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobFindFirstArgs} args - Arguments to find a ImageJob
+     * @example
+     * // Get one ImageJob
+     * const imageJob = await prisma.imageJob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ImageJobFindFirstArgs>(args?: SelectSubset<T, ImageJobFindFirstArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ImageJob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobFindFirstOrThrowArgs} args - Arguments to find a ImageJob
+     * @example
+     * // Get one ImageJob
+     * const imageJob = await prisma.imageJob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ImageJobFindFirstOrThrowArgs>(args?: SelectSubset<T, ImageJobFindFirstOrThrowArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ImageJobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ImageJobs
+     * const imageJobs = await prisma.imageJob.findMany()
+     * 
+     * // Get first 10 ImageJobs
+     * const imageJobs = await prisma.imageJob.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const imageJobWithIdOnly = await prisma.imageJob.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ImageJobFindManyArgs>(args?: SelectSubset<T, ImageJobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ImageJob.
+     * @param {ImageJobCreateArgs} args - Arguments to create a ImageJob.
+     * @example
+     * // Create one ImageJob
+     * const ImageJob = await prisma.imageJob.create({
+     *   data: {
+     *     // ... data to create a ImageJob
+     *   }
+     * })
+     * 
+     */
+    create<T extends ImageJobCreateArgs>(args: SelectSubset<T, ImageJobCreateArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ImageJobs.
+     * @param {ImageJobCreateManyArgs} args - Arguments to create many ImageJobs.
+     * @example
+     * // Create many ImageJobs
+     * const imageJob = await prisma.imageJob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ImageJobCreateManyArgs>(args?: SelectSubset<T, ImageJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a ImageJob.
+     * @param {ImageJobDeleteArgs} args - Arguments to delete one ImageJob.
+     * @example
+     * // Delete one ImageJob
+     * const ImageJob = await prisma.imageJob.delete({
+     *   where: {
+     *     // ... filter to delete one ImageJob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ImageJobDeleteArgs>(args: SelectSubset<T, ImageJobDeleteArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ImageJob.
+     * @param {ImageJobUpdateArgs} args - Arguments to update one ImageJob.
+     * @example
+     * // Update one ImageJob
+     * const imageJob = await prisma.imageJob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ImageJobUpdateArgs>(args: SelectSubset<T, ImageJobUpdateArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ImageJobs.
+     * @param {ImageJobDeleteManyArgs} args - Arguments to filter ImageJobs to delete.
+     * @example
+     * // Delete a few ImageJobs
+     * const { count } = await prisma.imageJob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ImageJobDeleteManyArgs>(args?: SelectSubset<T, ImageJobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ImageJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ImageJobs
+     * const imageJob = await prisma.imageJob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ImageJobUpdateManyArgs>(args: SelectSubset<T, ImageJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one ImageJob.
+     * @param {ImageJobUpsertArgs} args - Arguments to update or create a ImageJob.
+     * @example
+     * // Update or create a ImageJob
+     * const imageJob = await prisma.imageJob.upsert({
+     *   create: {
+     *     // ... data to create a ImageJob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ImageJob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ImageJobUpsertArgs>(args: SelectSubset<T, ImageJobUpsertArgs<ExtArgs>>): Prisma__ImageJobClient<$Result.GetResult<Prisma.$ImageJobPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ImageJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobCountArgs} args - Arguments to filter ImageJobs to count.
+     * @example
+     * // Count the number of ImageJobs
+     * const count = await prisma.imageJob.count({
+     *   where: {
+     *     // ... the filter for the ImageJobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ImageJobCountArgs>(
+      args?: Subset<T, ImageJobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ImageJobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ImageJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ImageJobAggregateArgs>(args: Subset<T, ImageJobAggregateArgs>): Prisma.PrismaPromise<GetImageJobAggregateType<T>>
+
+    /**
+     * Group by ImageJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ImageJobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ImageJobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ImageJobGroupByArgs['orderBy'] }
+        : { orderBy?: ImageJobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ImageJobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetImageJobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ImageJob model
+   */
+  readonly fields: ImageJobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ImageJob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ImageJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    image<T extends ImageJob$imageArgs<ExtArgs> = {}>(args?: Subset<T, ImageJob$imageArgs<ExtArgs>>): Prisma__GeneratedImageClient<$Result.GetResult<Prisma.$GeneratedImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ImageJob model
+   */
+  interface ImageJobFieldRefs {
+    readonly id: FieldRef<"ImageJob", 'Int'>
+    readonly userId: FieldRef<"ImageJob", 'Int'>
+    readonly model: FieldRef<"ImageJob", 'String'>
+    readonly prompt: FieldRef<"ImageJob", 'String'>
+    readonly ratio: FieldRef<"ImageJob", 'String'>
+    readonly categorySlugs: FieldRef<"ImageJob", 'Json'>
+    readonly creditCost: FieldRef<"ImageJob", 'Int'>
+    readonly status: FieldRef<"ImageJob", 'ImageJobStatus'>
+    readonly attempts: FieldRef<"ImageJob", 'Int'>
+    readonly externalId: FieldRef<"ImageJob", 'String'>
+    readonly progress: FieldRef<"ImageJob", 'String'>
+    readonly error: FieldRef<"ImageJob", 'String'>
+    readonly notifyOnFinish: FieldRef<"ImageJob", 'Boolean'>
+    readonly imageId: FieldRef<"ImageJob", 'Int'>
+    readonly startedAt: FieldRef<"ImageJob", 'DateTime'>
+    readonly finishedAt: FieldRef<"ImageJob", 'DateTime'>
+    readonly expiresAt: FieldRef<"ImageJob", 'DateTime'>
+    readonly createdAt: FieldRef<"ImageJob", 'DateTime'>
+    readonly updatedAt: FieldRef<"ImageJob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ImageJob findUnique
+   */
+  export type ImageJobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageJob to fetch.
+     */
+    where: ImageJobWhereUniqueInput
+  }
+
+  /**
+   * ImageJob findUniqueOrThrow
+   */
+  export type ImageJobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageJob to fetch.
+     */
+    where: ImageJobWhereUniqueInput
+  }
+
+  /**
+   * ImageJob findFirst
+   */
+  export type ImageJobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageJob to fetch.
+     */
+    where?: ImageJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageJobs to fetch.
+     */
+    orderBy?: ImageJobOrderByWithRelationInput | ImageJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ImageJobs.
+     */
+    cursor?: ImageJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ImageJobs.
+     */
+    distinct?: ImageJobScalarFieldEnum | ImageJobScalarFieldEnum[]
+  }
+
+  /**
+   * ImageJob findFirstOrThrow
+   */
+  export type ImageJobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageJob to fetch.
+     */
+    where?: ImageJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageJobs to fetch.
+     */
+    orderBy?: ImageJobOrderByWithRelationInput | ImageJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ImageJobs.
+     */
+    cursor?: ImageJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ImageJobs.
+     */
+    distinct?: ImageJobScalarFieldEnum | ImageJobScalarFieldEnum[]
+  }
+
+  /**
+   * ImageJob findMany
+   */
+  export type ImageJobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ImageJobs to fetch.
+     */
+    where?: ImageJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ImageJobs to fetch.
+     */
+    orderBy?: ImageJobOrderByWithRelationInput | ImageJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ImageJobs.
+     */
+    cursor?: ImageJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ImageJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ImageJobs.
+     */
+    skip?: number
+    distinct?: ImageJobScalarFieldEnum | ImageJobScalarFieldEnum[]
+  }
+
+  /**
+   * ImageJob create
+   */
+  export type ImageJobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ImageJob.
+     */
+    data: XOR<ImageJobCreateInput, ImageJobUncheckedCreateInput>
+  }
+
+  /**
+   * ImageJob createMany
+   */
+  export type ImageJobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ImageJobs.
+     */
+    data: ImageJobCreateManyInput | ImageJobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ImageJob update
+   */
+  export type ImageJobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ImageJob.
+     */
+    data: XOR<ImageJobUpdateInput, ImageJobUncheckedUpdateInput>
+    /**
+     * Choose, which ImageJob to update.
+     */
+    where: ImageJobWhereUniqueInput
+  }
+
+  /**
+   * ImageJob updateMany
+   */
+  export type ImageJobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ImageJobs.
+     */
+    data: XOR<ImageJobUpdateManyMutationInput, ImageJobUncheckedUpdateManyInput>
+    /**
+     * Filter which ImageJobs to update
+     */
+    where?: ImageJobWhereInput
+    /**
+     * Limit how many ImageJobs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ImageJob upsert
+   */
+  export type ImageJobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ImageJob to update in case it exists.
+     */
+    where: ImageJobWhereUniqueInput
+    /**
+     * In case the ImageJob found by the `where` argument doesn't exist, create a new ImageJob with this data.
+     */
+    create: XOR<ImageJobCreateInput, ImageJobUncheckedCreateInput>
+    /**
+     * In case the ImageJob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ImageJobUpdateInput, ImageJobUncheckedUpdateInput>
+  }
+
+  /**
+   * ImageJob delete
+   */
+  export type ImageJobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
+    /**
+     * Filter which ImageJob to delete.
+     */
+    where: ImageJobWhereUniqueInput
+  }
+
+  /**
+   * ImageJob deleteMany
+   */
+  export type ImageJobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ImageJobs to delete
+     */
+    where?: ImageJobWhereInput
+    /**
+     * Limit how many ImageJobs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ImageJob.image
+   */
+  export type ImageJob$imageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GeneratedImage
+     */
+    select?: GeneratedImageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GeneratedImage
+     */
+    omit?: GeneratedImageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GeneratedImageInclude<ExtArgs> | null
+    where?: GeneratedImageWhereInput
+  }
+
+  /**
+   * ImageJob without action
+   */
+  export type ImageJobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ImageJob
+     */
+    select?: ImageJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ImageJob
+     */
+    omit?: ImageJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ImageJobInclude<ExtArgs> | null
   }
 
 
@@ -11467,7 +12780,7 @@ export namespace Prisma {
   export type NotificationGroupByOutputType = {
     id: number
     userId: number
-    actorId: number
+    actorId: number | null
     type: $Enums.NotificationType
     message: string | null
     isRead: boolean
@@ -11506,7 +12819,7 @@ export namespace Prisma {
     commentId?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    actor?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | Notification$actorArgs<ExtArgs>
     image?: boolean | Notification$imageArgs<ExtArgs>
     comment?: boolean | Notification$commentArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
@@ -11528,7 +12841,7 @@ export namespace Prisma {
   export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "actorId" | "type" | "message" | "isRead" | "imageId" | "commentId" | "createdAt", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    actor?: boolean | UserDefaultArgs<ExtArgs>
+    actor?: boolean | Notification$actorArgs<ExtArgs>
     image?: boolean | Notification$imageArgs<ExtArgs>
     comment?: boolean | Notification$commentArgs<ExtArgs>
   }
@@ -11537,14 +12850,14 @@ export namespace Prisma {
     name: "Notification"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
-      actor: Prisma.$UserPayload<ExtArgs>
+      actor: Prisma.$UserPayload<ExtArgs> | null
       image: Prisma.$GeneratedImagePayload<ExtArgs> | null
       comment: Prisma.$ImageCommentPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       userId: number
-      actorId: number
+      actorId: number | null
       type: $Enums.NotificationType
       message: string | null
       isRead: boolean
@@ -11892,7 +13205,7 @@ export namespace Prisma {
   export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    actor<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    actor<T extends Notification$actorArgs<ExtArgs> = {}>(args?: Subset<T, Notification$actorArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     image<T extends Notification$imageArgs<ExtArgs> = {}>(args?: Subset<T, Notification$imageArgs<ExtArgs>>): Prisma__GeneratedImageClient<$Result.GetResult<Prisma.$GeneratedImagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     comment<T extends Notification$commentArgs<ExtArgs> = {}>(args?: Subset<T, Notification$commentArgs<ExtArgs>>): Prisma__ImageCommentClient<$Result.GetResult<Prisma.$ImageCommentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
@@ -12276,6 +13589,25 @@ export namespace Prisma {
   }
 
   /**
+   * Notification.actor
+   */
+  export type Notification$actorArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * Notification.image
    */
   export type Notification$imageArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12408,6 +13740,31 @@ export namespace Prisma {
   export type GeneratedImageScalarFieldEnum = (typeof GeneratedImageScalarFieldEnum)[keyof typeof GeneratedImageScalarFieldEnum]
 
 
+  export const ImageJobScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    model: 'model',
+    prompt: 'prompt',
+    ratio: 'ratio',
+    categorySlugs: 'categorySlugs',
+    creditCost: 'creditCost',
+    status: 'status',
+    attempts: 'attempts',
+    externalId: 'externalId',
+    progress: 'progress',
+    error: 'error',
+    notifyOnFinish: 'notifyOnFinish',
+    imageId: 'imageId',
+    startedAt: 'startedAt',
+    finishedAt: 'finishedAt',
+    expiresAt: 'expiresAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ImageJobScalarFieldEnum = (typeof ImageJobScalarFieldEnum)[keyof typeof ImageJobScalarFieldEnum]
+
+
   export const ImageLikeScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
@@ -12499,6 +13856,14 @@ export namespace Prisma {
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
+  export const NullableJsonNullValueInput: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull
+  };
+
+  export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
   export const NullsOrder: {
     first: 'first',
     last: 'last'
@@ -12546,6 +13911,35 @@ export namespace Prisma {
   };
 
   export type GeneratedImageOrderByRelevanceFieldEnum = (typeof GeneratedImageOrderByRelevanceFieldEnum)[keyof typeof GeneratedImageOrderByRelevanceFieldEnum]
+
+
+  export const JsonNullValueFilter: {
+    DbNull: typeof DbNull,
+    JsonNull: typeof JsonNull,
+    AnyNull: typeof AnyNull
+  };
+
+  export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+  export const QueryMode: {
+    default: 'default',
+    insensitive: 'insensitive'
+  };
+
+  export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
+
+
+  export const ImageJobOrderByRelevanceFieldEnum: {
+    model: 'model',
+    prompt: 'prompt',
+    ratio: 'ratio',
+    externalId: 'externalId',
+    progress: 'progress',
+    error: 'error'
+  };
+
+  export type ImageJobOrderByRelevanceFieldEnum = (typeof ImageJobOrderByRelevanceFieldEnum)[keyof typeof ImageJobOrderByRelevanceFieldEnum]
 
 
   export const ImageCommentOrderByRelevanceFieldEnum: {
@@ -12627,6 +14021,27 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Json'
+   */
+  export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+  /**
+   * Reference to a field of type 'QueryMode'
+   */
+  export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'ImageJobStatus'
+   */
+  export type EnumImageJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImageJobStatus'>
+    
+
+
+  /**
    * Reference to a field of type 'NotificationType'
    */
   export type EnumNotificationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationType'>
@@ -12666,6 +14081,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageListRelationFilter
     imageLikes?: ImageLikeListRelationFilter
     imageComments?: ImageCommentListRelationFilter
+    imageJobs?: ImageJobListRelationFilter
     notifications?: NotificationListRelationFilter
     triggeredNotifications?: NotificationListRelationFilter
   }
@@ -12690,6 +14106,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageOrderByRelationAggregateInput
     imageLikes?: ImageLikeOrderByRelationAggregateInput
     imageComments?: ImageCommentOrderByRelationAggregateInput
+    imageJobs?: ImageJobOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
     triggeredNotifications?: NotificationOrderByRelationAggregateInput
     _relevance?: UserOrderByRelevanceInput
@@ -12718,6 +14135,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageListRelationFilter
     imageLikes?: ImageLikeListRelationFilter
     imageComments?: ImageCommentListRelationFilter
+    imageJobs?: ImageJobListRelationFilter
     notifications?: NotificationListRelationFilter
     triggeredNotifications?: NotificationListRelationFilter
   }, "id" | "email" | "nickname" | "kakaoId">
@@ -12911,6 +14329,7 @@ export namespace Prisma {
     comments?: ImageCommentListRelationFilter
     categories?: CategoryListRelationFilter
     notifications?: NotificationListRelationFilter
+    imageJob?: XOR<ImageJobNullableScalarRelationFilter, ImageJobWhereInput> | null
   }
 
   export type GeneratedImageOrderByWithRelationInput = {
@@ -12931,6 +14350,7 @@ export namespace Prisma {
     comments?: ImageCommentOrderByRelationAggregateInput
     categories?: CategoryOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
+    imageJob?: ImageJobOrderByWithRelationInput
     _relevance?: GeneratedImageOrderByRelevanceInput
   }
 
@@ -12955,6 +14375,7 @@ export namespace Prisma {
     comments?: ImageCommentListRelationFilter
     categories?: CategoryListRelationFilter
     notifications?: NotificationListRelationFilter
+    imageJob?: XOR<ImageJobNullableScalarRelationFilter, ImageJobWhereInput> | null
   }, "id">
 
   export type GeneratedImageOrderByWithAggregationInput = {
@@ -12993,6 +14414,137 @@ export namespace Prisma {
     editedImageUrl?: StringNullableWithAggregatesFilter<"GeneratedImage"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"GeneratedImage"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"GeneratedImage"> | Date | string
+  }
+
+  export type ImageJobWhereInput = {
+    AND?: ImageJobWhereInput | ImageJobWhereInput[]
+    OR?: ImageJobWhereInput[]
+    NOT?: ImageJobWhereInput | ImageJobWhereInput[]
+    id?: IntFilter<"ImageJob"> | number
+    userId?: IntFilter<"ImageJob"> | number
+    model?: StringFilter<"ImageJob"> | string
+    prompt?: StringFilter<"ImageJob"> | string
+    ratio?: StringFilter<"ImageJob"> | string
+    categorySlugs?: JsonNullableFilter<"ImageJob">
+    creditCost?: IntFilter<"ImageJob"> | number
+    status?: EnumImageJobStatusFilter<"ImageJob"> | $Enums.ImageJobStatus
+    attempts?: IntFilter<"ImageJob"> | number
+    externalId?: StringNullableFilter<"ImageJob"> | string | null
+    progress?: StringNullableFilter<"ImageJob"> | string | null
+    error?: StringNullableFilter<"ImageJob"> | string | null
+    notifyOnFinish?: BoolFilter<"ImageJob"> | boolean
+    imageId?: IntNullableFilter<"ImageJob"> | number | null
+    startedAt?: DateTimeNullableFilter<"ImageJob"> | Date | string | null
+    finishedAt?: DateTimeNullableFilter<"ImageJob"> | Date | string | null
+    expiresAt?: DateTimeFilter<"ImageJob"> | Date | string
+    createdAt?: DateTimeFilter<"ImageJob"> | Date | string
+    updatedAt?: DateTimeFilter<"ImageJob"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    image?: XOR<GeneratedImageNullableScalarRelationFilter, GeneratedImageWhereInput> | null
+  }
+
+  export type ImageJobOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    model?: SortOrder
+    prompt?: SortOrder
+    ratio?: SortOrder
+    categorySlugs?: SortOrderInput | SortOrder
+    creditCost?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    progress?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    notifyOnFinish?: SortOrder
+    imageId?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    finishedAt?: SortOrderInput | SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    image?: GeneratedImageOrderByWithRelationInput
+    _relevance?: ImageJobOrderByRelevanceInput
+  }
+
+  export type ImageJobWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    imageId?: number
+    AND?: ImageJobWhereInput | ImageJobWhereInput[]
+    OR?: ImageJobWhereInput[]
+    NOT?: ImageJobWhereInput | ImageJobWhereInput[]
+    userId?: IntFilter<"ImageJob"> | number
+    model?: StringFilter<"ImageJob"> | string
+    prompt?: StringFilter<"ImageJob"> | string
+    ratio?: StringFilter<"ImageJob"> | string
+    categorySlugs?: JsonNullableFilter<"ImageJob">
+    creditCost?: IntFilter<"ImageJob"> | number
+    status?: EnumImageJobStatusFilter<"ImageJob"> | $Enums.ImageJobStatus
+    attempts?: IntFilter<"ImageJob"> | number
+    externalId?: StringNullableFilter<"ImageJob"> | string | null
+    progress?: StringNullableFilter<"ImageJob"> | string | null
+    error?: StringNullableFilter<"ImageJob"> | string | null
+    notifyOnFinish?: BoolFilter<"ImageJob"> | boolean
+    startedAt?: DateTimeNullableFilter<"ImageJob"> | Date | string | null
+    finishedAt?: DateTimeNullableFilter<"ImageJob"> | Date | string | null
+    expiresAt?: DateTimeFilter<"ImageJob"> | Date | string
+    createdAt?: DateTimeFilter<"ImageJob"> | Date | string
+    updatedAt?: DateTimeFilter<"ImageJob"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    image?: XOR<GeneratedImageNullableScalarRelationFilter, GeneratedImageWhereInput> | null
+  }, "id" | "imageId">
+
+  export type ImageJobOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    model?: SortOrder
+    prompt?: SortOrder
+    ratio?: SortOrder
+    categorySlugs?: SortOrderInput | SortOrder
+    creditCost?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    externalId?: SortOrderInput | SortOrder
+    progress?: SortOrderInput | SortOrder
+    error?: SortOrderInput | SortOrder
+    notifyOnFinish?: SortOrder
+    imageId?: SortOrderInput | SortOrder
+    startedAt?: SortOrderInput | SortOrder
+    finishedAt?: SortOrderInput | SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ImageJobCountOrderByAggregateInput
+    _avg?: ImageJobAvgOrderByAggregateInput
+    _max?: ImageJobMaxOrderByAggregateInput
+    _min?: ImageJobMinOrderByAggregateInput
+    _sum?: ImageJobSumOrderByAggregateInput
+  }
+
+  export type ImageJobScalarWhereWithAggregatesInput = {
+    AND?: ImageJobScalarWhereWithAggregatesInput | ImageJobScalarWhereWithAggregatesInput[]
+    OR?: ImageJobScalarWhereWithAggregatesInput[]
+    NOT?: ImageJobScalarWhereWithAggregatesInput | ImageJobScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"ImageJob"> | number
+    userId?: IntWithAggregatesFilter<"ImageJob"> | number
+    model?: StringWithAggregatesFilter<"ImageJob"> | string
+    prompt?: StringWithAggregatesFilter<"ImageJob"> | string
+    ratio?: StringWithAggregatesFilter<"ImageJob"> | string
+    categorySlugs?: JsonNullableWithAggregatesFilter<"ImageJob">
+    creditCost?: IntWithAggregatesFilter<"ImageJob"> | number
+    status?: EnumImageJobStatusWithAggregatesFilter<"ImageJob"> | $Enums.ImageJobStatus
+    attempts?: IntWithAggregatesFilter<"ImageJob"> | number
+    externalId?: StringNullableWithAggregatesFilter<"ImageJob"> | string | null
+    progress?: StringNullableWithAggregatesFilter<"ImageJob"> | string | null
+    error?: StringNullableWithAggregatesFilter<"ImageJob"> | string | null
+    notifyOnFinish?: BoolWithAggregatesFilter<"ImageJob"> | boolean
+    imageId?: IntNullableWithAggregatesFilter<"ImageJob"> | number | null
+    startedAt?: DateTimeNullableWithAggregatesFilter<"ImageJob"> | Date | string | null
+    finishedAt?: DateTimeNullableWithAggregatesFilter<"ImageJob"> | Date | string | null
+    expiresAt?: DateTimeWithAggregatesFilter<"ImageJob"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"ImageJob"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ImageJob"> | Date | string
   }
 
   export type ImageLikeWhereInput = {
@@ -13364,7 +14916,7 @@ export namespace Prisma {
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: IntFilter<"Notification"> | number
     userId?: IntFilter<"Notification"> | number
-    actorId?: IntFilter<"Notification"> | number
+    actorId?: IntNullableFilter<"Notification"> | number | null
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     message?: StringNullableFilter<"Notification"> | string | null
     isRead?: BoolFilter<"Notification"> | boolean
@@ -13372,7 +14924,7 @@ export namespace Prisma {
     commentId?: IntNullableFilter<"Notification"> | number | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    actor?: XOR<UserScalarRelationFilter, UserWhereInput>
+    actor?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     image?: XOR<GeneratedImageNullableScalarRelationFilter, GeneratedImageWhereInput> | null
     comment?: XOR<ImageCommentNullableScalarRelationFilter, ImageCommentWhereInput> | null
   }
@@ -13380,7 +14932,7 @@ export namespace Prisma {
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
-    actorId?: SortOrder
+    actorId?: SortOrderInput | SortOrder
     type?: SortOrder
     message?: SortOrderInput | SortOrder
     isRead?: SortOrder
@@ -13400,7 +14952,7 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     userId?: IntFilter<"Notification"> | number
-    actorId?: IntFilter<"Notification"> | number
+    actorId?: IntNullableFilter<"Notification"> | number | null
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     message?: StringNullableFilter<"Notification"> | string | null
     isRead?: BoolFilter<"Notification"> | boolean
@@ -13408,7 +14960,7 @@ export namespace Prisma {
     commentId?: IntNullableFilter<"Notification"> | number | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    actor?: XOR<UserScalarRelationFilter, UserWhereInput>
+    actor?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     image?: XOR<GeneratedImageNullableScalarRelationFilter, GeneratedImageWhereInput> | null
     comment?: XOR<ImageCommentNullableScalarRelationFilter, ImageCommentWhereInput> | null
   }, "id">
@@ -13416,7 +14968,7 @@ export namespace Prisma {
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
-    actorId?: SortOrder
+    actorId?: SortOrderInput | SortOrder
     type?: SortOrder
     message?: SortOrderInput | SortOrder
     isRead?: SortOrder
@@ -13436,7 +14988,7 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Notification"> | number
     userId?: IntWithAggregatesFilter<"Notification"> | number
-    actorId?: IntWithAggregatesFilter<"Notification"> | number
+    actorId?: IntNullableWithAggregatesFilter<"Notification"> | number | null
     type?: EnumNotificationTypeWithAggregatesFilter<"Notification"> | $Enums.NotificationType
     message?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
@@ -13464,6 +15016,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -13488,6 +15041,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -13511,6 +15065,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -13535,6 +15090,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -13723,6 +15279,7 @@ export namespace Prisma {
     comments?: ImageCommentCreateNestedManyWithoutImageInput
     categories?: CategoryCreateNestedManyWithoutImagesInput
     notifications?: NotificationCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateInput = {
@@ -13742,6 +15299,7 @@ export namespace Prisma {
     comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
     categories?: CategoryUncheckedCreateNestedManyWithoutImagesInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobUncheckedCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUpdateInput = {
@@ -13760,6 +15318,7 @@ export namespace Prisma {
     comments?: ImageCommentUpdateManyWithoutImageNestedInput
     categories?: CategoryUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateInput = {
@@ -13779,6 +15338,7 @@ export namespace Prisma {
     comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUncheckedUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageCreateManyInput = {
@@ -13820,6 +15380,155 @@ export namespace Prisma {
     ratio?: StringFieldUpdateOperationsInput | string
     editData?: NullableStringFieldUpdateOperationsInput | string | null
     editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageJobCreateInput = {
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutImageJobsInput
+    image?: GeneratedImageCreateNestedOneWithoutImageJobInput
+  }
+
+  export type ImageJobUncheckedCreateInput = {
+    id?: number
+    userId: number
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    imageId?: number | null
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageJobUpdateInput = {
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageJobsNestedInput
+    image?: GeneratedImageUpdateOneWithoutImageJobNestedInput
+  }
+
+  export type ImageJobUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    imageId?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageJobCreateManyInput = {
+    id?: number
+    userId: number
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    imageId?: number | null
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageJobUpdateManyMutationInput = {
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageJobUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    imageId?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14199,7 +15908,7 @@ export namespace Prisma {
     isRead?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutNotificationsInput
-    actor: UserCreateNestedOneWithoutTriggeredNotificationsInput
+    actor?: UserCreateNestedOneWithoutTriggeredNotificationsInput
     image?: GeneratedImageCreateNestedOneWithoutNotificationsInput
     comment?: ImageCommentCreateNestedOneWithoutNotificationsInput
   }
@@ -14207,7 +15916,7 @@ export namespace Prisma {
   export type NotificationUncheckedCreateInput = {
     id?: number
     userId: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -14222,7 +15931,7 @@ export namespace Prisma {
     isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
-    actor?: UserUpdateOneRequiredWithoutTriggeredNotificationsNestedInput
+    actor?: UserUpdateOneWithoutTriggeredNotificationsNestedInput
     image?: GeneratedImageUpdateOneWithoutNotificationsNestedInput
     comment?: ImageCommentUpdateOneWithoutNotificationsNestedInput
   }
@@ -14230,7 +15939,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -14242,7 +15951,7 @@ export namespace Prisma {
   export type NotificationCreateManyInput = {
     id?: number
     userId: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -14261,7 +15970,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -14382,6 +16091,12 @@ export namespace Prisma {
     none?: ImageCommentWhereInput
   }
 
+  export type ImageJobListRelationFilter = {
+    every?: ImageJobWhereInput
+    some?: ImageJobWhereInput
+    none?: ImageJobWhereInput
+  }
+
   export type NotificationListRelationFilter = {
     every?: NotificationWhereInput
     some?: NotificationWhereInput
@@ -14410,6 +16125,10 @@ export namespace Prisma {
   }
 
   export type ImageCommentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ImageJobOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -14689,6 +16408,11 @@ export namespace Prisma {
     none?: CategoryWhereInput
   }
 
+  export type ImageJobNullableScalarRelationFilter = {
+    is?: ImageJobWhereInput | null
+    isNot?: ImageJobWhereInput | null
+  }
+
   export type CategoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -14753,6 +16477,190 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
   }
+  export type JsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type EnumImageJobStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobStatus | EnumImageJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobStatus[]
+    notIn?: $Enums.ImageJobStatus[]
+    not?: NestedEnumImageJobStatusFilter<$PrismaModel> | $Enums.ImageJobStatus
+  }
+
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type GeneratedImageNullableScalarRelationFilter = {
+    is?: GeneratedImageWhereInput | null
+    isNot?: GeneratedImageWhereInput | null
+  }
+
+  export type ImageJobOrderByRelevanceInput = {
+    fields: ImageJobOrderByRelevanceFieldEnum | ImageJobOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type ImageJobCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    model?: SortOrder
+    prompt?: SortOrder
+    ratio?: SortOrder
+    categorySlugs?: SortOrder
+    creditCost?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    externalId?: SortOrder
+    progress?: SortOrder
+    error?: SortOrder
+    notifyOnFinish?: SortOrder
+    imageId?: SortOrder
+    startedAt?: SortOrder
+    finishedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ImageJobAvgOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    creditCost?: SortOrder
+    attempts?: SortOrder
+    imageId?: SortOrder
+  }
+
+  export type ImageJobMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    model?: SortOrder
+    prompt?: SortOrder
+    ratio?: SortOrder
+    creditCost?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    externalId?: SortOrder
+    progress?: SortOrder
+    error?: SortOrder
+    notifyOnFinish?: SortOrder
+    imageId?: SortOrder
+    startedAt?: SortOrder
+    finishedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ImageJobMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    model?: SortOrder
+    prompt?: SortOrder
+    ratio?: SortOrder
+    creditCost?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    externalId?: SortOrder
+    progress?: SortOrder
+    error?: SortOrder
+    notifyOnFinish?: SortOrder
+    imageId?: SortOrder
+    startedAt?: SortOrder
+    finishedAt?: SortOrder
+    expiresAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ImageJobSumOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    creditCost?: SortOrder
+    attempts?: SortOrder
+    imageId?: SortOrder
+  }
+  export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>,
+        Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<JsonNullableWithAggregatesFilterBase<$PrismaModel>>, 'path'>>
+
+  export type JsonNullableWithAggregatesFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedJsonNullableFilter<$PrismaModel>
+    _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type EnumImageJobStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobStatus | EnumImageJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobStatus[]
+    notIn?: $Enums.ImageJobStatus[]
+    not?: NestedEnumImageJobStatusWithAggregatesFilter<$PrismaModel> | $Enums.ImageJobStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumImageJobStatusFilter<$PrismaModel>
+    _max?: NestedEnumImageJobStatusFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
 
   export type GeneratedImageScalarRelationFilter = {
     is?: GeneratedImageWhereInput
@@ -14795,17 +16703,6 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
     imageId?: SortOrder
-  }
-
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
   export type ImageCommentNullableScalarRelationFilter = {
@@ -14861,22 +16758,6 @@ export namespace Prisma {
     userId?: SortOrder
     imageId?: SortOrder
     parentId?: SortOrder
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | null
-    notIn?: number[] | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
   }
 
   export type CreditSettingsCountOrderByAggregateInput = {
@@ -15042,9 +16923,9 @@ export namespace Prisma {
     not?: NestedEnumNotificationTypeFilter<$PrismaModel> | $Enums.NotificationType
   }
 
-  export type GeneratedImageNullableScalarRelationFilter = {
-    is?: GeneratedImageWhereInput | null
-    isNot?: GeneratedImageWhereInput | null
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
   }
 
   export type NotificationOrderByRelevanceInput = {
@@ -15150,6 +17031,13 @@ export namespace Prisma {
     connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
   }
 
+  export type ImageJobCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageJobCreateWithoutUserInput, ImageJobUncheckedCreateWithoutUserInput> | ImageJobCreateWithoutUserInput[] | ImageJobUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageJobCreateOrConnectWithoutUserInput | ImageJobCreateOrConnectWithoutUserInput[]
+    createMany?: ImageJobCreateManyUserInputEnvelope
+    connect?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+  }
+
   export type NotificationCreateNestedManyWithoutUserInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -15197,6 +17085,13 @@ export namespace Prisma {
     connectOrCreate?: ImageCommentCreateOrConnectWithoutUserInput | ImageCommentCreateOrConnectWithoutUserInput[]
     createMany?: ImageCommentCreateManyUserInputEnvelope
     connect?: ImageCommentWhereUniqueInput | ImageCommentWhereUniqueInput[]
+  }
+
+  export type ImageJobUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ImageJobCreateWithoutUserInput, ImageJobUncheckedCreateWithoutUserInput> | ImageJobCreateWithoutUserInput[] | ImageJobUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageJobCreateOrConnectWithoutUserInput | ImageJobCreateOrConnectWithoutUserInput[]
+    createMany?: ImageJobCreateManyUserInputEnvelope
+    connect?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
   }
 
   export type NotificationUncheckedCreateNestedManyWithoutUserInput = {
@@ -15319,6 +17214,20 @@ export namespace Prisma {
     deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
   }
 
+  export type ImageJobUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageJobCreateWithoutUserInput, ImageJobUncheckedCreateWithoutUserInput> | ImageJobCreateWithoutUserInput[] | ImageJobUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageJobCreateOrConnectWithoutUserInput | ImageJobCreateOrConnectWithoutUserInput[]
+    upsert?: ImageJobUpsertWithWhereUniqueWithoutUserInput | ImageJobUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageJobCreateManyUserInputEnvelope
+    set?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    disconnect?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    delete?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    connect?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    update?: ImageJobUpdateWithWhereUniqueWithoutUserInput | ImageJobUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageJobUpdateManyWithWhereWithoutUserInput | ImageJobUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageJobScalarWhereInput | ImageJobScalarWhereInput[]
+  }
+
   export type NotificationUpdateManyWithoutUserNestedInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -15417,6 +17326,20 @@ export namespace Prisma {
     deleteMany?: ImageCommentScalarWhereInput | ImageCommentScalarWhereInput[]
   }
 
+  export type ImageJobUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ImageJobCreateWithoutUserInput, ImageJobUncheckedCreateWithoutUserInput> | ImageJobCreateWithoutUserInput[] | ImageJobUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ImageJobCreateOrConnectWithoutUserInput | ImageJobCreateOrConnectWithoutUserInput[]
+    upsert?: ImageJobUpsertWithWhereUniqueWithoutUserInput | ImageJobUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ImageJobCreateManyUserInputEnvelope
+    set?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    disconnect?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    delete?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    connect?: ImageJobWhereUniqueInput | ImageJobWhereUniqueInput[]
+    update?: ImageJobUpdateWithWhereUniqueWithoutUserInput | ImageJobUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ImageJobUpdateManyWithWhereWithoutUserInput | ImageJobUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ImageJobScalarWhereInput | ImageJobScalarWhereInput[]
+  }
+
   export type NotificationUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<NotificationCreateWithoutUserInput, NotificationUncheckedCreateWithoutUserInput> | NotificationCreateWithoutUserInput[] | NotificationUncheckedCreateWithoutUserInput[]
     connectOrCreate?: NotificationCreateOrConnectWithoutUserInput | NotificationCreateOrConnectWithoutUserInput[]
@@ -15506,6 +17429,12 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
+  export type ImageJobCreateNestedOneWithoutImageInput = {
+    create?: XOR<ImageJobCreateWithoutImageInput, ImageJobUncheckedCreateWithoutImageInput>
+    connectOrCreate?: ImageJobCreateOrConnectWithoutImageInput
+    connect?: ImageJobWhereUniqueInput
+  }
+
   export type ImageLikeUncheckedCreateNestedManyWithoutImageInput = {
     create?: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput> | ImageLikeCreateWithoutImageInput[] | ImageLikeUncheckedCreateWithoutImageInput[]
     connectOrCreate?: ImageLikeCreateOrConnectWithoutImageInput | ImageLikeCreateOrConnectWithoutImageInput[]
@@ -15531,6 +17460,12 @@ export namespace Prisma {
     connectOrCreate?: NotificationCreateOrConnectWithoutImageInput | NotificationCreateOrConnectWithoutImageInput[]
     createMany?: NotificationCreateManyImageInputEnvelope
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
+  }
+
+  export type ImageJobUncheckedCreateNestedOneWithoutImageInput = {
+    create?: XOR<ImageJobCreateWithoutImageInput, ImageJobUncheckedCreateWithoutImageInput>
+    connectOrCreate?: ImageJobCreateOrConnectWithoutImageInput
+    connect?: ImageJobWhereUniqueInput
   }
 
   export type UserUpdateOneRequiredWithoutGeneratedImagesNestedInput = {
@@ -15596,6 +17531,16 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
+  export type ImageJobUpdateOneWithoutImageNestedInput = {
+    create?: XOR<ImageJobCreateWithoutImageInput, ImageJobUncheckedCreateWithoutImageInput>
+    connectOrCreate?: ImageJobCreateOrConnectWithoutImageInput
+    upsert?: ImageJobUpsertWithoutImageInput
+    disconnect?: ImageJobWhereInput | boolean
+    delete?: ImageJobWhereInput | boolean
+    connect?: ImageJobWhereUniqueInput
+    update?: XOR<XOR<ImageJobUpdateToOneWithWhereWithoutImageInput, ImageJobUpdateWithoutImageInput>, ImageJobUncheckedUpdateWithoutImageInput>
+  }
+
   export type ImageLikeUncheckedUpdateManyWithoutImageNestedInput = {
     create?: XOR<ImageLikeCreateWithoutImageInput, ImageLikeUncheckedCreateWithoutImageInput> | ImageLikeCreateWithoutImageInput[] | ImageLikeUncheckedCreateWithoutImageInput[]
     connectOrCreate?: ImageLikeCreateOrConnectWithoutImageInput | ImageLikeCreateOrConnectWithoutImageInput[]
@@ -15649,6 +17594,58 @@ export namespace Prisma {
     update?: NotificationUpdateWithWhereUniqueWithoutImageInput | NotificationUpdateWithWhereUniqueWithoutImageInput[]
     updateMany?: NotificationUpdateManyWithWhereWithoutImageInput | NotificationUpdateManyWithWhereWithoutImageInput[]
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
+  }
+
+  export type ImageJobUncheckedUpdateOneWithoutImageNestedInput = {
+    create?: XOR<ImageJobCreateWithoutImageInput, ImageJobUncheckedCreateWithoutImageInput>
+    connectOrCreate?: ImageJobCreateOrConnectWithoutImageInput
+    upsert?: ImageJobUpsertWithoutImageInput
+    disconnect?: ImageJobWhereInput | boolean
+    delete?: ImageJobWhereInput | boolean
+    connect?: ImageJobWhereUniqueInput
+    update?: XOR<XOR<ImageJobUpdateToOneWithWhereWithoutImageInput, ImageJobUpdateWithoutImageInput>, ImageJobUncheckedUpdateWithoutImageInput>
+  }
+
+  export type UserCreateNestedOneWithoutImageJobsInput = {
+    create?: XOR<UserCreateWithoutImageJobsInput, UserUncheckedCreateWithoutImageJobsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageJobsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GeneratedImageCreateNestedOneWithoutImageJobInput = {
+    create?: XOR<GeneratedImageCreateWithoutImageJobInput, GeneratedImageUncheckedCreateWithoutImageJobInput>
+    connectOrCreate?: GeneratedImageCreateOrConnectWithoutImageJobInput
+    connect?: GeneratedImageWhereUniqueInput
+  }
+
+  export type EnumImageJobStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ImageJobStatus
+  }
+
+  export type UserUpdateOneRequiredWithoutImageJobsNestedInput = {
+    create?: XOR<UserCreateWithoutImageJobsInput, UserUncheckedCreateWithoutImageJobsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutImageJobsInput
+    upsert?: UserUpsertWithoutImageJobsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutImageJobsInput, UserUpdateWithoutImageJobsInput>, UserUncheckedUpdateWithoutImageJobsInput>
+  }
+
+  export type GeneratedImageUpdateOneWithoutImageJobNestedInput = {
+    create?: XOR<GeneratedImageCreateWithoutImageJobInput, GeneratedImageUncheckedCreateWithoutImageJobInput>
+    connectOrCreate?: GeneratedImageCreateOrConnectWithoutImageJobInput
+    upsert?: GeneratedImageUpsertWithoutImageJobInput
+    disconnect?: GeneratedImageWhereInput | boolean
+    delete?: GeneratedImageWhereInput | boolean
+    connect?: GeneratedImageWhereUniqueInput
+    update?: XOR<XOR<GeneratedImageUpdateToOneWithWhereWithoutImageJobInput, GeneratedImageUpdateWithoutImageJobInput>, GeneratedImageUncheckedUpdateWithoutImageJobInput>
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type UserCreateNestedOneWithoutImageLikesInput = {
@@ -15779,14 +17776,6 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-  }
-
   export type ImageCommentUncheckedUpdateManyWithoutParentNestedInput = {
     create?: XOR<ImageCommentCreateWithoutParentInput, ImageCommentUncheckedCreateWithoutParentInput> | ImageCommentCreateWithoutParentInput[] | ImageCommentUncheckedCreateWithoutParentInput[]
     connectOrCreate?: ImageCommentCreateOrConnectWithoutParentInput | ImageCommentCreateOrConnectWithoutParentInput[]
@@ -15889,10 +17878,12 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationsInput, UserUpdateWithoutNotificationsInput>, UserUncheckedUpdateWithoutNotificationsInput>
   }
 
-  export type UserUpdateOneRequiredWithoutTriggeredNotificationsNestedInput = {
+  export type UserUpdateOneWithoutTriggeredNotificationsNestedInput = {
     create?: XOR<UserCreateWithoutTriggeredNotificationsInput, UserUncheckedCreateWithoutTriggeredNotificationsInput>
     connectOrCreate?: UserCreateOrConnectWithoutTriggeredNotificationsInput
     upsert?: UserUpsertWithoutTriggeredNotificationsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTriggeredNotificationsInput, UserUpdateWithoutTriggeredNotificationsInput>, UserUncheckedUpdateWithoutTriggeredNotificationsInput>
   }
@@ -16129,6 +18120,46 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedEnumImageJobStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobStatus | EnumImageJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobStatus[]
+    notIn?: $Enums.ImageJobStatus[]
+    not?: NestedEnumImageJobStatusFilter<$PrismaModel> | $Enums.ImageJobStatus
+  }
+  export type NestedJsonNullableFilter<$PrismaModel = never> =
+    | PatchUndefined<
+        Either<Required<NestedJsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>,
+        Required<NestedJsonNullableFilterBase<$PrismaModel>>
+      >
+    | OptionalFlat<Omit<Required<NestedJsonNullableFilterBase<$PrismaModel>>, 'path'>>
+
+  export type NestedJsonNullableFilterBase<$PrismaModel = never> = {
+    equals?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+    path?: string
+    mode?: QueryMode | EnumQueryModeFieldRefInput<$PrismaModel>
+    string_contains?: string | StringFieldRefInput<$PrismaModel>
+    string_starts_with?: string | StringFieldRefInput<$PrismaModel>
+    string_ends_with?: string | StringFieldRefInput<$PrismaModel>
+    array_starts_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_ends_with?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    array_contains?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | null
+    lt?: InputJsonValue
+    lte?: InputJsonValue
+    gt?: InputJsonValue
+    gte?: InputJsonValue
+    not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumImageJobStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobStatus | EnumImageJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobStatus[]
+    notIn?: $Enums.ImageJobStatus[]
+    not?: NestedEnumImageJobStatusWithAggregatesFilter<$PrismaModel> | $Enums.ImageJobStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumImageJobStatusFilter<$PrismaModel>
+    _max?: NestedEnumImageJobStatusFilter<$PrismaModel>
+  }
+
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | null
@@ -16238,6 +18269,7 @@ export namespace Prisma {
     comments?: ImageCommentCreateNestedManyWithoutImageInput
     categories?: CategoryCreateNestedManyWithoutImagesInput
     notifications?: NotificationCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateWithoutUserInput = {
@@ -16256,6 +18288,7 @@ export namespace Prisma {
     comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
     categories?: CategoryUncheckedCreateNestedManyWithoutImagesInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobUncheckedCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageCreateOrConnectWithoutUserInput = {
@@ -16320,19 +18353,70 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ImageJobCreateWithoutUserInput = {
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    image?: GeneratedImageCreateNestedOneWithoutImageJobInput
+  }
+
+  export type ImageJobUncheckedCreateWithoutUserInput = {
+    id?: number
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    imageId?: number | null
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageJobCreateOrConnectWithoutUserInput = {
+    where: ImageJobWhereUniqueInput
+    create: XOR<ImageJobCreateWithoutUserInput, ImageJobUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageJobCreateManyUserInputEnvelope = {
+    data: ImageJobCreateManyUserInput | ImageJobCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type NotificationCreateWithoutUserInput = {
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
     createdAt?: Date | string
-    actor: UserCreateNestedOneWithoutTriggeredNotificationsInput
+    actor?: UserCreateNestedOneWithoutTriggeredNotificationsInput
     image?: GeneratedImageCreateNestedOneWithoutNotificationsInput
     comment?: ImageCommentCreateNestedOneWithoutNotificationsInput
   }
 
   export type NotificationUncheckedCreateWithoutUserInput = {
     id?: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -16527,6 +18611,47 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"ImageComment"> | Date | string
   }
 
+  export type ImageJobUpsertWithWhereUniqueWithoutUserInput = {
+    where: ImageJobWhereUniqueInput
+    update: XOR<ImageJobUpdateWithoutUserInput, ImageJobUncheckedUpdateWithoutUserInput>
+    create: XOR<ImageJobCreateWithoutUserInput, ImageJobUncheckedCreateWithoutUserInput>
+  }
+
+  export type ImageJobUpdateWithWhereUniqueWithoutUserInput = {
+    where: ImageJobWhereUniqueInput
+    data: XOR<ImageJobUpdateWithoutUserInput, ImageJobUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ImageJobUpdateManyWithWhereWithoutUserInput = {
+    where: ImageJobScalarWhereInput
+    data: XOR<ImageJobUpdateManyMutationInput, ImageJobUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ImageJobScalarWhereInput = {
+    AND?: ImageJobScalarWhereInput | ImageJobScalarWhereInput[]
+    OR?: ImageJobScalarWhereInput[]
+    NOT?: ImageJobScalarWhereInput | ImageJobScalarWhereInput[]
+    id?: IntFilter<"ImageJob"> | number
+    userId?: IntFilter<"ImageJob"> | number
+    model?: StringFilter<"ImageJob"> | string
+    prompt?: StringFilter<"ImageJob"> | string
+    ratio?: StringFilter<"ImageJob"> | string
+    categorySlugs?: JsonNullableFilter<"ImageJob">
+    creditCost?: IntFilter<"ImageJob"> | number
+    status?: EnumImageJobStatusFilter<"ImageJob"> | $Enums.ImageJobStatus
+    attempts?: IntFilter<"ImageJob"> | number
+    externalId?: StringNullableFilter<"ImageJob"> | string | null
+    progress?: StringNullableFilter<"ImageJob"> | string | null
+    error?: StringNullableFilter<"ImageJob"> | string | null
+    notifyOnFinish?: BoolFilter<"ImageJob"> | boolean
+    imageId?: IntNullableFilter<"ImageJob"> | number | null
+    startedAt?: DateTimeNullableFilter<"ImageJob"> | Date | string | null
+    finishedAt?: DateTimeNullableFilter<"ImageJob"> | Date | string | null
+    expiresAt?: DateTimeFilter<"ImageJob"> | Date | string
+    createdAt?: DateTimeFilter<"ImageJob"> | Date | string
+    updatedAt?: DateTimeFilter<"ImageJob"> | Date | string
+  }
+
   export type NotificationUpsertWithWhereUniqueWithoutUserInput = {
     where: NotificationWhereUniqueInput
     update: XOR<NotificationUpdateWithoutUserInput, NotificationUncheckedUpdateWithoutUserInput>
@@ -16549,7 +18674,7 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
     id?: IntFilter<"Notification"> | number
     userId?: IntFilter<"Notification"> | number
-    actorId?: IntFilter<"Notification"> | number
+    actorId?: IntNullableFilter<"Notification"> | number | null
     type?: EnumNotificationTypeFilter<"Notification"> | $Enums.NotificationType
     message?: StringNullableFilter<"Notification"> | string | null
     isRead?: BoolFilter<"Notification"> | boolean
@@ -16592,6 +18717,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -16615,6 +18741,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -16653,6 +18780,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -16676,6 +18804,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -16698,6 +18827,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -16721,6 +18851,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -16759,6 +18890,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -16782,6 +18914,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -16804,6 +18937,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -16827,6 +18961,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -16914,14 +19049,14 @@ export namespace Prisma {
     isRead?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutNotificationsInput
-    actor: UserCreateNestedOneWithoutTriggeredNotificationsInput
+    actor?: UserCreateNestedOneWithoutTriggeredNotificationsInput
     comment?: ImageCommentCreateNestedOneWithoutNotificationsInput
   }
 
   export type NotificationUncheckedCreateWithoutImageInput = {
     id?: number
     userId: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -16937,6 +19072,52 @@ export namespace Prisma {
   export type NotificationCreateManyImageInputEnvelope = {
     data: NotificationCreateManyImageInput | NotificationCreateManyImageInput[]
     skipDuplicates?: boolean
+  }
+
+  export type ImageJobCreateWithoutImageInput = {
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutImageJobsInput
+  }
+
+  export type ImageJobUncheckedCreateWithoutImageInput = {
+    id?: number
+    userId: number
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ImageJobCreateOrConnectWithoutImageInput = {
+    where: ImageJobWhereUniqueInput
+    create: XOR<ImageJobCreateWithoutImageInput, ImageJobUncheckedCreateWithoutImageInput>
   }
 
   export type UserUpsertWithoutGeneratedImagesInput = {
@@ -16968,6 +19149,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -16991,6 +19173,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -17070,6 +19253,258 @@ export namespace Prisma {
     data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutImageInput>
   }
 
+  export type ImageJobUpsertWithoutImageInput = {
+    update: XOR<ImageJobUpdateWithoutImageInput, ImageJobUncheckedUpdateWithoutImageInput>
+    create: XOR<ImageJobCreateWithoutImageInput, ImageJobUncheckedCreateWithoutImageInput>
+    where?: ImageJobWhereInput
+  }
+
+  export type ImageJobUpdateToOneWithWhereWithoutImageInput = {
+    where?: ImageJobWhereInput
+    data: XOR<ImageJobUpdateWithoutImageInput, ImageJobUncheckedUpdateWithoutImageInput>
+  }
+
+  export type ImageJobUpdateWithoutImageInput = {
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutImageJobsNestedInput
+  }
+
+  export type ImageJobUncheckedUpdateWithoutImageInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutImageJobsInput = {
+    email: string
+    password?: string | null
+    nickname: string
+    credits?: number
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
+    emailVerified?: boolean
+    emailVerifiedAt?: Date | string | null
+    kakaoId?: string | null
+    fcmToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profileImageUrl?: string | null
+    loginAttempts?: LoginAttemptCreateNestedManyWithoutUserInput
+    emailVerificationTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
+    generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutImageJobsInput = {
+    id?: number
+    email: string
+    password?: string | null
+    nickname: string
+    credits?: number
+    role?: $Enums.UserRole
+    provider?: $Enums.AuthProvider
+    emailVerified?: boolean
+    emailVerifiedAt?: Date | string | null
+    kakaoId?: string | null
+    fcmToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    profileImageUrl?: string | null
+    loginAttempts?: LoginAttemptUncheckedCreateNestedManyWithoutUserInput
+    emailVerificationTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
+    generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
+    imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
+    imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutImageJobsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutImageJobsInput, UserUncheckedCreateWithoutImageJobsInput>
+  }
+
+  export type GeneratedImageCreateWithoutImageJobInput = {
+    prompt: string
+    translatedPrompt?: string | null
+    imageUrl: string
+    model: string
+    size?: string
+    ratio?: string
+    editData?: string | null
+    editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutGeneratedImagesInput
+    likes?: ImageLikeCreateNestedManyWithoutImageInput
+    comments?: ImageCommentCreateNestedManyWithoutImageInput
+    categories?: CategoryCreateNestedManyWithoutImagesInput
+    notifications?: NotificationCreateNestedManyWithoutImageInput
+  }
+
+  export type GeneratedImageUncheckedCreateWithoutImageJobInput = {
+    id?: number
+    userId: number
+    prompt: string
+    translatedPrompt?: string | null
+    imageUrl: string
+    model: string
+    size?: string
+    ratio?: string
+    editData?: string | null
+    editedImageUrl?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
+    comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
+    categories?: CategoryUncheckedCreateNestedManyWithoutImagesInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutImageInput
+  }
+
+  export type GeneratedImageCreateOrConnectWithoutImageJobInput = {
+    where: GeneratedImageWhereUniqueInput
+    create: XOR<GeneratedImageCreateWithoutImageJobInput, GeneratedImageUncheckedCreateWithoutImageJobInput>
+  }
+
+  export type UserUpsertWithoutImageJobsInput = {
+    update: XOR<UserUpdateWithoutImageJobsInput, UserUncheckedUpdateWithoutImageJobsInput>
+    create: XOR<UserCreateWithoutImageJobsInput, UserUncheckedCreateWithoutImageJobsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutImageJobsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutImageJobsInput, UserUncheckedUpdateWithoutImageJobsInput>
+  }
+
+  export type UserUpdateWithoutImageJobsInput = {
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    loginAttempts?: LoginAttemptUpdateManyWithoutUserNestedInput
+    emailVerificationTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
+    generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutImageJobsInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    email?: StringFieldUpdateOperationsInput | string
+    password?: NullableStringFieldUpdateOperationsInput | string | null
+    nickname?: StringFieldUpdateOperationsInput | string
+    credits?: IntFieldUpdateOperationsInput | number
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    emailVerifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    kakaoId?: NullableStringFieldUpdateOperationsInput | string | null
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    profileImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    loginAttempts?: LoginAttemptUncheckedUpdateManyWithoutUserNestedInput
+    emailVerificationTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
+    generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
+    imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
+    imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
+  }
+
+  export type GeneratedImageUpsertWithoutImageJobInput = {
+    update: XOR<GeneratedImageUpdateWithoutImageJobInput, GeneratedImageUncheckedUpdateWithoutImageJobInput>
+    create: XOR<GeneratedImageCreateWithoutImageJobInput, GeneratedImageUncheckedCreateWithoutImageJobInput>
+    where?: GeneratedImageWhereInput
+  }
+
+  export type GeneratedImageUpdateToOneWithWhereWithoutImageJobInput = {
+    where?: GeneratedImageWhereInput
+    data: XOR<GeneratedImageUpdateWithoutImageJobInput, GeneratedImageUncheckedUpdateWithoutImageJobInput>
+  }
+
+  export type GeneratedImageUpdateWithoutImageJobInput = {
+    prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutGeneratedImagesNestedInput
+    likes?: ImageLikeUpdateManyWithoutImageNestedInput
+    comments?: ImageCommentUpdateManyWithoutImageNestedInput
+    categories?: CategoryUpdateManyWithoutImagesNestedInput
+    notifications?: NotificationUpdateManyWithoutImageNestedInput
+  }
+
+  export type GeneratedImageUncheckedUpdateWithoutImageJobInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    userId?: IntFieldUpdateOperationsInput | number
+    prompt?: StringFieldUpdateOperationsInput | string
+    translatedPrompt?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: StringFieldUpdateOperationsInput | string
+    model?: StringFieldUpdateOperationsInput | string
+    size?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    editData?: NullableStringFieldUpdateOperationsInput | string | null
+    editedImageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
+    comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
+    categories?: CategoryUncheckedUpdateManyWithoutImagesNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutImageNestedInput
+  }
+
   export type UserCreateWithoutImageLikesInput = {
     email: string
     password?: string | null
@@ -17088,6 +19523,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -17111,6 +19547,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -17135,6 +19572,7 @@ export namespace Prisma {
     comments?: ImageCommentCreateNestedManyWithoutImageInput
     categories?: CategoryCreateNestedManyWithoutImagesInput
     notifications?: NotificationCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateWithoutLikesInput = {
@@ -17153,6 +19591,7 @@ export namespace Prisma {
     comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
     categories?: CategoryUncheckedCreateNestedManyWithoutImagesInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobUncheckedCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageCreateOrConnectWithoutLikesInput = {
@@ -17189,6 +19628,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -17212,6 +19652,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -17242,6 +19683,7 @@ export namespace Prisma {
     comments?: ImageCommentUpdateManyWithoutImageNestedInput
     categories?: CategoryUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateWithoutLikesInput = {
@@ -17260,6 +19702,7 @@ export namespace Prisma {
     comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUncheckedUpdateOneWithoutImageNestedInput
   }
 
   export type UserCreateWithoutImageCommentsInput = {
@@ -17280,6 +19723,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
@@ -17303,6 +19747,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUncheckedCreateNestedManyWithoutUserInput
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
@@ -17327,6 +19772,7 @@ export namespace Prisma {
     likes?: ImageLikeCreateNestedManyWithoutImageInput
     categories?: CategoryCreateNestedManyWithoutImagesInput
     notifications?: NotificationCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateWithoutCommentsInput = {
@@ -17345,6 +19791,7 @@ export namespace Prisma {
     likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
     categories?: CategoryUncheckedCreateNestedManyWithoutImagesInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobUncheckedCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageCreateOrConnectWithoutCommentsInput = {
@@ -17415,14 +19862,14 @@ export namespace Prisma {
     isRead?: boolean
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutNotificationsInput
-    actor: UserCreateNestedOneWithoutTriggeredNotificationsInput
+    actor?: UserCreateNestedOneWithoutTriggeredNotificationsInput
     image?: GeneratedImageCreateNestedOneWithoutNotificationsInput
   }
 
   export type NotificationUncheckedCreateWithoutCommentInput = {
     id?: number
     userId: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -17469,6 +19916,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
@@ -17492,6 +19940,7 @@ export namespace Prisma {
     emailVerificationTokens?: EmailVerificationTokenUncheckedUpdateManyWithoutUserNestedInput
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
@@ -17522,6 +19971,7 @@ export namespace Prisma {
     likes?: ImageLikeUpdateManyWithoutImageNestedInput
     categories?: CategoryUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateWithoutCommentsInput = {
@@ -17540,6 +19990,7 @@ export namespace Prisma {
     likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUncheckedUpdateOneWithoutImageNestedInput
   }
 
   export type ImageCommentUpsertWithoutRepliesInput = {
@@ -17621,6 +20072,7 @@ export namespace Prisma {
     likes?: ImageLikeCreateNestedManyWithoutImageInput
     comments?: ImageCommentCreateNestedManyWithoutImageInput
     notifications?: NotificationCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateWithoutCategoriesInput = {
@@ -17639,6 +20091,7 @@ export namespace Prisma {
     likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
     comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutImageInput
+    imageJob?: ImageJobUncheckedCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageCreateOrConnectWithoutCategoriesInput = {
@@ -17681,6 +20134,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationCreateNestedManyWithoutActorInput
   }
 
@@ -17704,6 +20158,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     triggeredNotifications?: NotificationUncheckedCreateNestedManyWithoutActorInput
   }
 
@@ -17731,6 +20186,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
   }
 
@@ -17754,6 +20210,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedCreateNestedManyWithoutUserInput
     imageLikes?: ImageLikeUncheckedCreateNestedManyWithoutUserInput
     imageComments?: ImageCommentUncheckedCreateNestedManyWithoutUserInput
+    imageJobs?: ImageJobUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
   }
 
@@ -17777,6 +20234,7 @@ export namespace Prisma {
     likes?: ImageLikeCreateNestedManyWithoutImageInput
     comments?: ImageCommentCreateNestedManyWithoutImageInput
     categories?: CategoryCreateNestedManyWithoutImagesInput
+    imageJob?: ImageJobCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageUncheckedCreateWithoutNotificationsInput = {
@@ -17795,6 +20253,7 @@ export namespace Prisma {
     likes?: ImageLikeUncheckedCreateNestedManyWithoutImageInput
     comments?: ImageCommentUncheckedCreateNestedManyWithoutImageInput
     categories?: CategoryUncheckedCreateNestedManyWithoutImagesInput
+    imageJob?: ImageJobUncheckedCreateNestedOneWithoutImageInput
   }
 
   export type GeneratedImageCreateOrConnectWithoutNotificationsInput = {
@@ -17858,6 +20317,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUpdateManyWithoutActorNestedInput
   }
 
@@ -17881,6 +20341,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     triggeredNotifications?: NotificationUncheckedUpdateManyWithoutActorNestedInput
   }
 
@@ -17914,6 +20375,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
   }
 
@@ -17937,6 +20399,7 @@ export namespace Prisma {
     generatedImages?: GeneratedImageUncheckedUpdateManyWithoutUserNestedInput
     imageLikes?: ImageLikeUncheckedUpdateManyWithoutUserNestedInput
     imageComments?: ImageCommentUncheckedUpdateManyWithoutUserNestedInput
+    imageJobs?: ImageJobUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
   }
 
@@ -17966,6 +20429,7 @@ export namespace Prisma {
     likes?: ImageLikeUpdateManyWithoutImageNestedInput
     comments?: ImageCommentUpdateManyWithoutImageNestedInput
     categories?: CategoryUpdateManyWithoutImagesNestedInput
+    imageJob?: ImageJobUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateWithoutNotificationsInput = {
@@ -17984,6 +20448,7 @@ export namespace Prisma {
     likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
     comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutImagesNestedInput
+    imageJob?: ImageJobUncheckedUpdateOneWithoutImageNestedInput
   }
 
   export type ImageCommentUpsertWithoutNotificationsInput = {
@@ -18063,9 +20528,30 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type ImageJobCreateManyUserInput = {
+    id?: number
+    model: string
+    prompt: string
+    ratio: string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost: number
+    status?: $Enums.ImageJobStatus
+    attempts?: number
+    externalId?: string | null
+    progress?: string | null
+    error?: string | null
+    notifyOnFinish?: boolean
+    imageId?: number | null
+    startedAt?: Date | string | null
+    finishedAt?: Date | string | null
+    expiresAt: Date | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type NotificationCreateManyUserInput = {
     id?: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -18146,6 +20632,7 @@ export namespace Prisma {
     comments?: ImageCommentUpdateManyWithoutImageNestedInput
     categories?: CategoryUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateWithoutUserInput = {
@@ -18164,6 +20651,7 @@ export namespace Prisma {
     comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
     categories?: CategoryUncheckedUpdateManyWithoutImagesNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUncheckedUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateManyWithoutUserInput = {
@@ -18227,19 +20715,81 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ImageJobUpdateWithoutUserInput = {
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    image?: GeneratedImageUpdateOneWithoutImageJobNestedInput
+  }
+
+  export type ImageJobUncheckedUpdateWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    imageId?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ImageJobUncheckedUpdateManyWithoutUserInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    model?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    ratio?: StringFieldUpdateOperationsInput | string
+    categorySlugs?: NullableJsonNullValueInput | InputJsonValue
+    creditCost?: IntFieldUpdateOperationsInput | number
+    status?: EnumImageJobStatusFieldUpdateOperationsInput | $Enums.ImageJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    externalId?: NullableStringFieldUpdateOperationsInput | string | null
+    progress?: NullableStringFieldUpdateOperationsInput | string | null
+    error?: NullableStringFieldUpdateOperationsInput | string | null
+    notifyOnFinish?: BoolFieldUpdateOperationsInput | boolean
+    imageId?: NullableIntFieldUpdateOperationsInput | number | null
+    startedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    finishedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type NotificationUpdateWithoutUserInput = {
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    actor?: UserUpdateOneRequiredWithoutTriggeredNotificationsNestedInput
+    actor?: UserUpdateOneWithoutTriggeredNotificationsNestedInput
     image?: GeneratedImageUpdateOneWithoutNotificationsNestedInput
     comment?: ImageCommentUpdateOneWithoutNotificationsNestedInput
   }
 
   export type NotificationUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -18250,7 +20800,7 @@ export namespace Prisma {
 
   export type NotificationUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -18309,7 +20859,7 @@ export namespace Prisma {
   export type NotificationCreateManyImageInput = {
     id?: number
     userId: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -18393,14 +20943,14 @@ export namespace Prisma {
     isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
-    actor?: UserUpdateOneRequiredWithoutTriggeredNotificationsNestedInput
+    actor?: UserUpdateOneWithoutTriggeredNotificationsNestedInput
     comment?: ImageCommentUpdateOneWithoutNotificationsNestedInput
   }
 
   export type NotificationUncheckedUpdateWithoutImageInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -18411,7 +20961,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyWithoutImageInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -18431,7 +20981,7 @@ export namespace Prisma {
   export type NotificationCreateManyCommentInput = {
     id?: number
     userId: number
-    actorId: number
+    actorId?: number | null
     type: $Enums.NotificationType
     message?: string | null
     isRead?: boolean
@@ -18475,14 +21025,14 @@ export namespace Prisma {
     isRead?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
-    actor?: UserUpdateOneRequiredWithoutTriggeredNotificationsNestedInput
+    actor?: UserUpdateOneWithoutTriggeredNotificationsNestedInput
     image?: GeneratedImageUpdateOneWithoutNotificationsNestedInput
   }
 
   export type NotificationUncheckedUpdateWithoutCommentInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -18493,7 +21043,7 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyWithoutCommentInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
-    actorId?: IntFieldUpdateOperationsInput | number
+    actorId?: NullableIntFieldUpdateOperationsInput | number | null
     type?: EnumNotificationTypeFieldUpdateOperationsInput | $Enums.NotificationType
     message?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
@@ -18516,6 +21066,7 @@ export namespace Prisma {
     likes?: ImageLikeUpdateManyWithoutImageNestedInput
     comments?: ImageCommentUpdateManyWithoutImageNestedInput
     notifications?: NotificationUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateWithoutCategoriesInput = {
@@ -18534,6 +21085,7 @@ export namespace Prisma {
     likes?: ImageLikeUncheckedUpdateManyWithoutImageNestedInput
     comments?: ImageCommentUncheckedUpdateManyWithoutImageNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutImageNestedInput
+    imageJob?: ImageJobUncheckedUpdateOneWithoutImageNestedInput
   }
 
   export type GeneratedImageUncheckedUpdateManyWithoutCategoriesInput = {

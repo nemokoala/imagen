@@ -7,6 +7,17 @@ export const NSFW_CAPABLE_MODELS: ReadonlySet<Model> = new Set([
   Model.QWEN_IMAGE_21,
 ]);
 
+// 집 AI 서버에서 도는 모델. 서버가 꺼져 있어도 대기열에 접수한다.
+export const LOCAL_MODELS = [
+  Model.STABLE_DIFFUSION_XL,
+  Model.Z_IMAGE,
+  Model.QWEN_IMAGE_21,
+] as const;
+export type LocalModel = (typeof LOCAL_MODELS)[number];
+
+export const isLocalModel = (model: string): model is LocalModel =>
+  (LOCAL_MODELS as readonly string[]).includes(model);
+
 interface RatioResolution {
   width: number;
   height: number;

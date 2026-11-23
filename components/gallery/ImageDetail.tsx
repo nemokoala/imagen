@@ -1,20 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Download,
-  Sparkles,
-  MessageCircle,
   Trash2,
   ArrowLeft,
   Languages,
-  Tag,
   Cpu,
   Maximize2,
+  Copy,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { CommentSection } from "./comment/CommentSection";
@@ -32,16 +30,20 @@ import Link from "next/link";
 import { ProfileAvatar } from "../auth/ProfileAvatar";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ImageCard } from "./ImageCard";
-import { Separator } from "@/components/ui/separator";
 import { useMarkAsReadByImageIdMutation } from "@/queries/notification/mutations";
 import { ImageFullscreenViewer } from "@/components/common/ImageFullscreenViewer";
+import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
+import { Model } from "@/types/model.interfaces";
 
-/** 세로가 긴 이미지가 화면을 넘지 않도록 비율별 최대 너비를 정한다 */
-const IMAGE_MAX_WIDTH: Record<ImageRatio, string> = {
-  [ImageRatio.RATIO_1_1]: "min(100%, 76dvh)",
-  [ImageRatio.RATIO_9_16]: "min(100%, calc(76dvh * 9 / 16))",
-  [ImageRatio.RATIO_16_9]: "100%",
+/** 비율별 가로/세로 값. 이미지가 화면 높이를 넘지 않도록 최대 너비 계산에 쓴다 */
+const RATIO_VALUE: Record<ImageRatio, number> = {
+  [ImageRatio.RATIO_1_1]: 1,
+  [ImageRatio.RATIO_9_16]: 9 / 16,
+  [ImageRatio.RATIO_16_9]: 16 / 9,
 };
+
+/** 제목으로 보여줄 프롬프트 최대 길이 (넘으면 아래에 전체 프롬프트를 따로 보여준다) */
+const TITLE_MAX_LENGTH = 60;
 
 interface ImageDetailProps {
   image: ImageType;
@@ -60,7 +62,6 @@ export function ImageDetail({
   const { changeModalContent } = useModal();
   const { user } = useUserStore();
 
-  console.log(imageData);
   // image prop이 변경될 때만 업데이트
   useEffect(() => {
     if (initialImage) {
@@ -119,16 +120,28 @@ export function ImageDetail({
 
   if (!imageData) return null;
 
-  const title = imageData.prompt
-    ? imageData.prompt.length > 60
-      ? imageData.prompt.substring(0, 60) + "..."
-      : imageData.prompt
+  const prompt = imageData.prompt || "";
+  const isTitleTruncated = prompt.length > TITLE_MAX_LENGTH;
+  const title = prompt
+    ? isTitleTruncated
+      ? prompt.substring(0, TITLE_MAX_LENGTH) + "..."
+      : prompt
     : "AI 생성 이미지";
+  const modelLabel =
+    MODEL_CREDIT_SETTINGS[imageData.model as Model]?.label ?? imageData.model;
+
+  const copyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      toast.success("프롬프트를 복사했어요.");
+    } catch {
+      toast.error("프롬프트를 복사하지 못했어요.");
+    }
+  };
 
   return (
     <Layout.Content className="px-4 py-6 md:px-8 md:py-8">
       <div className="mx-auto w-full max-w-6xl">
-        {/* 뒤로가기 버튼 */}
         <Button
           variant="ghost"
           size="sm"
@@ -139,55 +152,56 @@ export function ImageDetail({
           뒤로가기
         </Button>
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-10">
-          {/* 이미지 */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:gap-12">
+          {/* 이미지: 틀 없이 화면 높이에 맞춰 보여준다 */}
           <div className="lg:sticky lg:top-0 lg:self-start">
-            <div className="flex justify-center rounded-2xl bg-muted/60 p-2 ring-1 ring-border md:p-3">
-              <div
-                className={cn(
-                  "relative w-full cursor-zoom-in overflow-hidden rounded-xl",
-                  getRatio(imageData.ratio),
-                )}
-                style={{
-                  maxWidth:
-                    IMAGE_MAX_WIDTH[imageData.ratio] ??
-                    IMAGE_MAX_WIDTH[ImageRatio.RATIO_1_1],
-                }}
-                onClick={() => setIsFullscreenOpen(true)}
-              >
-                <Image
-                  src={imageData.imageUrl}
-                  alt={imageData.prompt || "AI 생성 이미지"}
-                  title={imageData.prompt || "AI 생성 이미지"}
-                  fill
-                  className="object-contain"
-                  unoptimized
-                  priority
-                  itemProp="image"
-                />
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={() => setIsFullscreenOpen(true)}
+              aria-label="이미지 크게 보기"
+              className={cn(
+                "group relative mx-auto block w-full max-w-[min(100%,calc(65dvh*var(--r)))] cursor-zoom-in overflow-hidden rounded-2xl bg-muted shadow-xl shadow-black/10 lg:max-w-[min(100%,calc((100dvh-190px)*var(--r)))] dark:shadow-black/40",
+                getRatio(imageData.ratio),
+              )}
+              style={
+                {
+                  "--r": RATIO_VALUE[imageData.ratio] ?? 1,
+                } as CSSProperties
+              }
+            >
+              <Image
+                src={imageData.imageUrl}
+                alt={prompt || "AI 생성 이미지"}
+                title={prompt || "AI 생성 이미지"}
+                fill
+                className="object-contain"
+                unoptimized
+                priority
+                itemProp="image"
+              />
+              <span className="absolute right-3 top-3 flex size-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-md transition-opacity [@media(hover:hover)]:opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100">
+                <Maximize2 className="size-4" />
+              </span>
+            </button>
             <ImageFullscreenViewer
               open={isFullscreenOpen}
               onOpenChange={setIsFullscreenOpen}
               src={imageData.imageUrl}
-              alt={imageData.prompt || "AI 생성 이미지"}
+              alt={prompt || "AI 생성 이미지"}
               ratio={imageData.ratio}
             />
           </div>
 
-          {/* 정보 · 댓글 */}
-          <div className="flex min-w-0 flex-col gap-6">
-            <div className="space-y-4">
-              {/* 헤더 - 페이지별 고유 h1 */}
-              <h1 className="break-keep text-2xl font-bold leading-snug tracking-tight text-foreground md:text-3xl">
-                {title}
-              </h1>
+          {/* 정보 · 댓글: 구분선 없이 간격으로만 나눈다 */}
+          <div className="flex min-w-0 flex-col">
+            <h1 className="break-keep text-2xl font-bold leading-snug tracking-tight text-foreground md:text-[28px]">
+              {title}
+            </h1>
 
-              {/* 생성자 */}
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
               <Link
                 href={`/profile/${imageData.user.id}`}
-                className="flex w-fit items-center gap-2.5 rounded-lg transition-opacity hover:opacity-80"
+                className="flex items-center gap-2.5 rounded-lg transition-opacity hover:opacity-80"
               >
                 <ProfileAvatar
                   profileImageUrl={imageData.user.profileImageUrl || ""}
@@ -206,113 +220,91 @@ export function ImageDetail({
                 </span>
               </Link>
 
-              {/* 액션 */}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <LikeButton imageId={imageData.id} />
-                <div className="flex h-10 items-center gap-2 px-2 text-sm text-muted-foreground">
-                  <MessageCircle className="h-5 w-5" />
-                  <span>{comments.length}</span>
-                </div>
-                <div className="ml-auto flex items-center gap-2">
+                {prompt && (
                   <Button
-                    onClick={() =>
-                      downloadImage(imageData.imageUrl, imageData.prompt)
-                    }
                     variant="outline"
+                    size="icon"
+                    onClick={copyPrompt}
+                    aria-label="프롬프트 복사"
+                    title="프롬프트 복사"
+                    className="size-10"
                   >
-                    <Download className="h-4 w-4" />
-                    다운로드
+                    <Copy className="h-4 w-4" />
                   </Button>
-                  {canDelete && (
-                    <Button
-                      variant="ghost"
-                      onClick={showDeleteModal}
-                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      삭제
-                    </Button>
-                  )}
-                </div>
+                )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => downloadImage(imageData.imageUrl, prompt)}
+                  aria-label="다운로드"
+                  title="다운로드"
+                  className="size-10"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+                {canDelete && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={showDeleteModal}
+                    aria-label="이미지 삭제"
+                    title="삭제"
+                    className="size-10 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
             </div>
 
-            <Separator />
-
-            {/* 프롬프트 */}
-            <section className="space-y-2">
-              <h2 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-                <Sparkles className="h-4 w-4" />
-                프롬프트
-              </h2>
-              <p className="rounded-xl border border-border bg-card p-4 leading-relaxed text-foreground">
-                {imageData.prompt}
-              </p>
-            </section>
-
-            {/* 번역된 프롬프트 */}
-            {imageData.translatedPrompt && (
-              <section className="space-y-2">
-                <h2 className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-                  <Languages className="h-4 w-4" />
-                  번역된 프롬프트
-                </h2>
-                <p className="rounded-xl border border-border bg-muted/50 p-4 text-sm leading-relaxed text-subtitle">
-                  {imageData.translatedPrompt}
-                </p>
-              </section>
+            {/* 프롬프트: 제목에서 잘린 경우에만 전체를 다시 보여준다 */}
+            {(isTitleTruncated || imageData.translatedPrompt) && (
+              <div className="mt-7 space-y-3">
+                {isTitleTruncated && (
+                  <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-subtitle">
+                    {prompt}
+                  </p>
+                )}
+                {imageData.translatedPrompt && (
+                  <details className="group">
+                    <summary className="flex w-fit cursor-pointer list-none items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground [&::-webkit-details-marker]:hidden">
+                      <Languages className="h-4 w-4" />
+                      모델에 전달된 영문 프롬프트
+                      <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+                    </summary>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {imageData.translatedPrompt}
+                    </p>
+                  </details>
+                )}
+              </div>
             )}
 
-            {/* 이미지 정보 */}
-            <dl className="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-border bg-card p-4 text-sm">
-              <div className="space-y-1.5">
-                <dt className="flex items-center gap-1.5 text-muted-foreground">
-                  <Cpu className="h-3.5 w-3.5" />
-                  모델
-                </dt>
-                <dd>
-                  <Badge
-                    variant="secondary"
-                    className="border-transparent bg-primary-soft text-primary-soft-foreground"
-                  >
-                    {imageData.model}
-                  </Badge>
-                </dd>
-              </div>
-              <div className="space-y-1.5">
-                <dt className="flex items-center gap-1.5 text-muted-foreground">
-                  <Maximize2 className="h-3.5 w-3.5" />
-                  크기
-                </dt>
-                <dd className="font-medium text-foreground">
-                  {imageData.size}
-                </dd>
-              </div>
-              {imageData.categories && imageData.categories.length > 0 && (
-                <div className="col-span-2 space-y-1.5">
-                  <dt className="flex items-center gap-1.5 text-muted-foreground">
-                    <Tag className="h-3.5 w-3.5" />
-                    카테고리
-                  </dt>
-                  <dd className="flex flex-wrap gap-1.5">
-                    {imageData.categories.map((category) => (
-                      <Badge
-                        key={category.id}
-                        variant="outline"
-                        className="bg-background text-subtitle"
-                      >
-                        {category.name}
-                      </Badge>
-                    ))}
-                  </dd>
-                </div>
-              )}
-            </dl>
+            {/* 모델 · 크기 · 카테고리 */}
+            <div className="mt-6 flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-2.5 py-1 font-medium text-primary-soft-foreground">
+                <Cpu className="h-3.5 w-3.5" />
+                {modelLabel}
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 tabular-nums text-muted-foreground">
+                <Maximize2 className="h-3.5 w-3.5" />
+                {imageData.size}
+              </span>
+              {imageData.categories?.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/explore?categories=${category.slug}`}
+                  className="rounded-full bg-muted px-2.5 py-1 text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  #{category.name}
+                </Link>
+              ))}
+            </div>
 
-            <Separator />
-
-            {/* 댓글 섹션 */}
-            <section className="space-y-4">
+            {/* 댓글 */}
+            <section className="mt-10 space-y-4">
               <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
                 댓글
                 <span className="font-medium text-muted-foreground">
@@ -324,10 +316,9 @@ export function ImageDetail({
           </div>
         </div>
 
-        {/* 이전/다음 이미지 섹션 */}
+        {/* 이전/다음 이미지 */}
         {(prevImages.length > 0 || nextImages.length > 0) && (
-          <div className="mt-14 space-y-10 border-t border-border pt-10">
-            {/* 이전글 */}
+          <div className="mt-16 space-y-10">
             {prevImages.length > 0 && (
               <div className="space-y-4">
                 <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">
@@ -344,7 +335,6 @@ export function ImageDetail({
               </div>
             )}
 
-            {/* 다음글 */}
             {nextImages.length > 0 && (
               <div className="space-y-4">
                 <h2 className="flex items-center gap-1.5 text-lg font-semibold text-foreground">

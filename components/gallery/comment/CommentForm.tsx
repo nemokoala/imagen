@@ -18,20 +18,33 @@ export function CommentForm({
   loading,
 }: CommentFormProps) {
   return (
-    <div className="space-y-3">
+    <div className="rounded-2xl bg-muted/60 p-2 transition-shadow focus-within:ring-2 focus-within:ring-ring/40">
       <Textarea
-        placeholder="댓글을 입력하세요..."
+        placeholder="댓글을 남겨 보세요"
+        aria-label="댓글 입력"
         value={commentContent}
         onChange={(e) => setCommentContent(e.target.value)}
-        className="min-h-[100px] resize-none"
+        onKeyDown={(e) => {
+          // Ctrl/⌘ + Enter 로 바로 등록
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            if (!loading && commentContent.trim()) onSubmit();
+          }
+        }}
+        className="min-h-[64px] resize-none border-0 bg-transparent px-2 shadow-none focus-visible:ring-0 dark:bg-transparent"
       />
-      <div className="flex justify-end">
+      <div className="flex items-center justify-between gap-2 pl-2">
+        <span className="hidden text-xs text-muted-foreground sm:inline">
+          Ctrl + Enter로 등록
+        </span>
         <Button
+          size="sm"
           onClick={onSubmit}
           disabled={loading || !commentContent.trim()}
+          className="ml-auto"
         >
-          <Send className="mr-2 h-4 w-4" />
-          댓글 작성
+          <Send className="h-3.5 w-3.5" />
+          등록
         </Button>
       </div>
     </div>

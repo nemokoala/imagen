@@ -135,7 +135,7 @@ export function CommentSection({ imageId }: CommentSectionProps) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* 댓글 작성 폼 */}
       {isAuthenticated && (
         <CommentForm
@@ -147,10 +147,10 @@ export function CommentSection({ imageId }: CommentSectionProps) {
       )}
 
       {/* 댓글 목록 */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {comments.length === 0 ? (
-          <p className="text-center text-muted-foreground py-8">
-            아직 댓글이 없습니다.
+          <p className="text-sm text-muted-foreground">
+            아직 댓글이 없어요. 첫 댓글을 남겨 보세요.
           </p>
         ) : (
           comments.map((comment) => (

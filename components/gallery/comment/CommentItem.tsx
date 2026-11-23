@@ -94,7 +94,7 @@ export function CommentItem({
   };
 
   return (
-    <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+    <div className="group/comment">
       <div className="flex items-start gap-3">
         <Link href={`/profile/${comment.user.id}`}>
           <ProfileAvatar
@@ -103,10 +103,10 @@ export function CommentItem({
             size="small"
           />
         </Link>
-        <div className="flex-1 space-y-2">
+        <div className="min-w-0 flex-1 space-y-1.5">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-foreground">
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <p className="text-sm font-semibold text-foreground">
                 {comment.user.nickname}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -117,12 +117,13 @@ export function CommentItem({
               </p>
             </div>
             {isOwner && !isEditing && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 transition-opacity [@media(hover:hover)]:opacity-0 group-hover/comment:opacity-100 focus-within:opacity-100">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleEditClick}
-                  className="h-8 w-8 p-0"
+                  aria-label="댓글 수정"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                 >
                   <Edit2 className="h-4 w-4" />
                 </Button>
@@ -131,7 +132,8 @@ export function CommentItem({
                   size="sm"
                   onClick={handleDeleteClick}
                   disabled={loading}
-                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                  aria-label="댓글 삭제"
+                  className="h-8 w-8 p-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -144,7 +146,7 @@ export function CommentItem({
               <Textarea
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
-                className="min-h-[80px] resize-none"
+                className="min-h-[80px] resize-none border-0 bg-muted/60 shadow-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:bg-muted/60"
               />
               <div className="flex justify-end gap-2">
                 <Button variant="outline" size="sm" onClick={handleEditCancel}>
@@ -160,17 +162,17 @@ export function CommentItem({
               </div>
             </div>
           ) : (
-            <p className="text-foreground whitespace-pre-wrap">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
               {comment.content}
             </p>
           )}
 
           {!isEditing && isAuthenticated && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleReplyToggle}
-              className="h-8 text-xs"
+              className="-ml-2 h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
             >
               {isReplying ? "취소" : "답글"}
             </Button>
@@ -178,12 +180,12 @@ export function CommentItem({
 
           {/* 답글 작성 폼 */}
           {isReplying && (
-            <div className="mt-2 space-y-2 pl-4 border-l-2 border-border">
+            <div className="mt-2 space-y-2">
               <Textarea
                 placeholder="답글을 입력하세요..."
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
-                className="min-h-[80px] resize-none"
+                className="min-h-[72px] resize-none border-0 bg-muted/60 shadow-none focus-visible:ring-2 focus-visible:ring-ring/40 dark:bg-muted/60"
               />
               <div className="flex justify-end gap-2">
                 <Button variant="outline" size="sm" onClick={handleReplyCancel}>
@@ -202,9 +204,9 @@ export function CommentItem({
 
           {/* 대댓글 목록 */}
           {comment.replies.length > 0 && (
-            <div className="mt-3 space-y-3 pl-4 border-l-2 border-border">
+            <div className="mt-3 space-y-4">
               {comment.replies.map((reply) => (
-                <div key={reply.id} className="flex items-start gap-3">
+                <div key={reply.id} className="group/reply flex items-start gap-3">
                   <ProfileAvatar
                     profileImageUrl={reply.user.profileImageUrl || ""}
                     nickname={reply.user.nickname || ""}
@@ -212,7 +214,7 @@ export function CommentItem({
                   />
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center justify-between">
-                      <div>
+                      <div className="flex flex-wrap items-baseline gap-x-2">
                         <p className="font-semibold text-sm text-foreground">
                           {reply.user.nickname}
                         </p>
@@ -232,13 +234,14 @@ export function CommentItem({
                           size="sm"
                           onClick={() => handleReplyDelete(reply.id)}
                           disabled={loading}
-                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                          aria-label="답글 삭제"
+                          className="h-7 w-7 p-0 text-muted-foreground transition-opacity hover:bg-destructive/10 hover:text-destructive [@media(hover:hover)]:opacity-0 group-hover/reply:opacity-100 focus-visible:opacity-100"
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
                       )}
                     </div>
-                    <p className="text-sm text-foreground whitespace-pre-wrap">
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
                       {reply.content}
                     </p>
                   </div>

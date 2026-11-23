@@ -32,6 +32,37 @@ export interface ImageJobsResponse {
   jobs: ImageJob[];
 }
 
+export type ImageJobHistoryFilter =
+  | "all"
+  | "active"
+  | "succeeded"
+  | "failed"
+  | "canceled";
+
+export interface ImageJobHistorySummary {
+  total: number;
+  active: number;
+  succeeded: number;
+  /** FAILED + EXPIRED */
+  failed: number;
+  canceled: number;
+  /** 완성된 요청에 쓴 크레딧 */
+  spentCredits: number;
+  /** 진행 중인 요청에 먼저 잡아 둔 크레딧 */
+  reservedCredits: number;
+  /** 실패·취소·만료로 돌려받은 크레딧 */
+  refundedCredits: number;
+}
+
+export interface ImageJobHistoryResponse {
+  success: boolean;
+  jobs: ImageJob[];
+  totalCount: number;
+  currentPage: number;
+  hasNextPage: boolean;
+  summary: ImageJobHistorySummary;
+}
+
 export interface EnqueueImageJobResponse {
   success: boolean;
   job: ImageJob;

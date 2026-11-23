@@ -15,6 +15,7 @@ import { UserCommentList } from "./UserCommentList";
 import { useGetUserCommentsInfiniteQuery } from "@/queries/user/queries";
 import { ProfileHeader } from "./ProfileHeader";
 import { UserGeneratedImages } from "./UserGeneratedImages";
+import { UserImageJobHistory } from "./UserImageJobHistory";
 import { useUrlParams } from "@/hooks/use-url-params";
 import { MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,14 +33,16 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { user: storeUser, isLoading: storeLoading } = useUserStore();
   const { getParam, setParam } = useUrlParams();
-  const activeTab = getParam("tab") || "images";
-
   const handleTabChange = (value: string) => {
     setParam("tab", value);
   };
 
   // 본인 프로필인지 확인
   const isOwnProfile = !targetUserId || targetUserId === storeUser?.id;
+  // 생성 요청 탭은 본인에게만 있으므로, 남의 프로필에서는 이미지 탭으로 돌린다.
+  const requestedTab = getParam("tab") || "images";
+  const activeTab =
+    requestedTab === "jobs" && !isOwnProfile ? "images" : requestedTab;
 
   // 본인 프로필이면 useGetUserInfo 사용, 다른 사용자면 useGetPublicUserById 사용
   const { data: ownUserInfo, isLoading: ownUserInfoLoading } = useGetUserInfo({
@@ -147,6 +150,14 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
             >
               작성한 댓글
             </TabsTrigger>
+            {isOwnProfile && (
+              <TabsTrigger
+                value="jobs"
+                className="flex-1 py-2 hover:cursor-pointer"
+              >
+                생성 요청
+              </TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="images" className="w-full pb-8">
@@ -183,6 +194,12 @@ export function ProfileContent({ targetUserId }: ProfileContentProps) {
               isOwnProfile={isOwnProfile}
             />
           </TabsContent>
+
+          {isOwnProfile && (
+            <TabsContent value="jobs" className="w-full max-w-6xl pb-8">
+              <UserImageJobHistory />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
       {ownUserInfo && isOwnProfile && (

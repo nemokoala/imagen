@@ -9,7 +9,11 @@ import { ApiError } from "@/lib/errors/AppError";
 import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
 import { isLocalModel, type LocalModel } from "@/constants/model.constants";
 import { ImageRatio } from "@/types/image.interfaces";
-import type { ImageJob as ImageJobDto } from "@/types/imageJob.interfaces";
+import type {
+  ImageJob as ImageJobDto,
+  ImageJobHistoryFilter,
+  ImageJobHistoryResponse,
+} from "@/types/imageJob.interfaces";
 import { creditSettingsService } from "../../admin/creditSettingsService";
 import { notificationService } from "../../notification/notificationService";
 import { imageGenerationService } from "../imageGenerationService";
@@ -31,6 +35,25 @@ const LIST_LIMIT = 20;
 const ENQUEUE_HEALTH_MAX_AGE_MS = 15_000;
 
 const ACTIVE_STATUSES = [ImageJobStatus.PENDING, ImageJobStatus.RUNNING];
+// 이 상태로 끝난 작업은 모두 선차감한 크레딧을 돌려받았다.
+const REFUNDED_STATUSES = [
+  ImageJobStatus.FAILED,
+  ImageJobStatus.CANCELED,
+  ImageJobStatus.EXPIRED,
+];
+
+const HISTORY_FILTER_STATUSES: Record<ImageJobHistoryFilter, ImageJobStatus[] | null> = {
+  all: null,
+  active: ACTIVE_STATUSES,
+  succeeded: [ImageJobStatus.SUCCEEDED],
+  failed: [ImageJobStatus.FAILED, ImageJobStatus.EXPIRED],
+  canceled: [ImageJobStatus.CANCELED],
+};
+
+export const isImageJobHistoryFilter = (value: string): value is ImageJobHistoryFilter =>
+  value in HISTORY_FILTER_STATUSES;
+
+const imageSelect = { image: { select: { id: true, imageUrl: true, ratio: true } } };
 
 /** 다른 워커가 이미 가져갔거나 끝낸 작업. 결과를 버린다. */
 export class StaleImageJobError extends Error {
@@ -80,6 +103,21 @@ function toDto(job: JobWithImage, position: number | null): ImageJobDto {
     finishedAt: job.finishedAt?.toISOString() ?? null,
     expiresAt: job.expiresAt.toISOString(),
   };
+}
+
+/** 대기 순번은 전체 진행 중 작업 가운데 내 앞에 몇 개가 있는지로 센다. */
+async function withPositions(jobs: JobWithImage[]): Promise<ImageJobDto[]> {
+  const activeIds = jobs.some((job) => job.status === ImageJobStatus.PENDING)
+    ? (
+        await prisma.imageJob.findMany({
+          where: { status: { in: ACTIVE_STATUSES } },
+          select: { id: true },
+          orderBy: { id: "asc" },
+        })
+      ).map(({ id }) => id)
+    : [];
+
+  return jobs.map((job) => toDto(job, activeIds.indexOf(job.id)));
 }
 
 /** 상태를 바꾼 경우에만 같은 트랜잭션에서 환불한다. 두 번 불려도 한 번만 돌려준다. */
@@ -208,21 +246,64 @@ export const imageJobService = {
       },
       orderBy: { id: "desc" },
       take: LIST_LIMIT,
-      include: { image: { select: { id: true, imageUrl: true, ratio: true } } },
+      include: imageSelect,
     });
+    return withPositions(jobs);
+  },
 
-    // 대기 순번은 전체 진행 중 작업 가운데 내 앞에 몇 개가 있는지로 센다.
-    const activeIds = jobs.some((job) => job.status === ImageJobStatus.PENDING)
-      ? (
-          await prisma.imageJob.findMany({
-            where: { status: { in: ACTIVE_STATUSES } },
-            select: { id: true },
-            orderBy: { id: "asc" },
-          })
-        ).map(({ id }) => id)
-      : [];
+  /** 프로필의 생성 요청 탭: 내 요청 전체를 최신순으로, 상태별 개수·크레딧 합계와 함께 돌려준다. */
+  async historyForUser(
+    userId: number,
+    { page, limit, filter }: { page: number; limit: number; filter: ImageJobHistoryFilter },
+  ): Promise<Omit<ImageJobHistoryResponse, "success">> {
+    const statuses = HISTORY_FILTER_STATUSES[filter];
+    const where: Prisma.ImageJobWhereInput = {
+      userId,
+      ...(statuses ? { status: { in: statuses } } : {}),
+    };
 
-    return jobs.map((job) => toDto(job, activeIds.indexOf(job.id)));
+    const [jobs, totalCount, byStatus] = await Promise.all([
+      prisma.imageJob.findMany({
+        where,
+        orderBy: { id: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+        include: imageSelect,
+      }),
+      prisma.imageJob.count({ where }),
+      prisma.imageJob.groupBy({
+        by: ["status"],
+        where: { userId },
+        _count: { _all: true },
+        _sum: { creditCost: true },
+      }),
+    ]);
+
+    const countOf = (list: ImageJobStatus[]) =>
+      byStatus
+        .filter((row) => list.includes(row.status))
+        .reduce((sum, row) => sum + row._count._all, 0);
+    const creditsOf = (list: ImageJobStatus[]) =>
+      byStatus
+        .filter((row) => list.includes(row.status))
+        .reduce((sum, row) => sum + (row._sum.creditCost ?? 0), 0);
+
+    return {
+      jobs: await withPositions(jobs),
+      totalCount,
+      currentPage: page,
+      hasNextPage: page * limit < totalCount,
+      summary: {
+        total: countOf(Object.values(ImageJobStatus)),
+        active: countOf(ACTIVE_STATUSES),
+        succeeded: countOf([ImageJobStatus.SUCCEEDED]),
+        failed: countOf([ImageJobStatus.FAILED, ImageJobStatus.EXPIRED]),
+        canceled: countOf([ImageJobStatus.CANCELED]),
+        spentCredits: creditsOf([ImageJobStatus.SUCCEEDED]),
+        reservedCredits: creditsOf(ACTIVE_STATUSES),
+        refundedCredits: creditsOf(REFUNDED_STATUSES),
+      },
+    };
   },
 
   async cancel(userId: number, jobId: number): Promise<ImageJobDto> {
@@ -247,7 +328,7 @@ export const imageJobService = {
 
     const updated = await prisma.imageJob.findUniqueOrThrow({
       where: { id: jobId },
-      include: { image: { select: { id: true, imageUrl: true, ratio: true } } },
+      include: imageSelect,
     });
     return toDto(updated, null);
   },

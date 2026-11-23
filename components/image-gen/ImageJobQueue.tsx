@@ -2,58 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
-import { ko } from "date-fns/locale";
 import { toast } from "sonner";
-import { Ban, CheckCircle2, Clock, Loader2, PowerOff, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
 import { Model } from "@/types/model.interfaces";
 import type { ImageJob } from "@/types/imageJob.interfaces";
 import { useCancelImageJobMutation, useImageJobsQuery } from "@/queries/image/jobs";
-
-const isActive = (job: ImageJob) => job.status === "PENDING" || job.status === "RUNNING";
-
-function describe(job: ImageJob): string {
-  switch (job.status) {
-    case "PENDING":
-      if (job.waitingForServer) return "AI 서버가 켜지면 자동으로 생성돼요";
-      return job.position ? `앞에 ${job.position}개 작업이 있어요` : "곧 시작해요";
-    case "RUNNING":
-      return job.progress ?? "생성 중이에요";
-    case "SUCCEEDED":
-      return job.finishedAt
-        ? `${formatDistanceToNow(new Date(job.finishedAt), { addSuffix: true, locale: ko })} 완성`
-        : "완성";
-    case "CANCELED":
-      return `취소됨 · ${job.creditCost} 크레딧 환불`;
-    case "FAILED":
-    case "EXPIRED":
-      return `${job.error ?? "생성 실패"} · ${job.creditCost} 크레딧 환불`;
-  }
-}
-
-function StatusIcon({ job }: { job: ImageJob }) {
-  const className = "size-4";
-  switch (job.status) {
-    case "PENDING":
-      return job.waitingForServer ? (
-        <PowerOff className={cn(className, "text-amber-500")} />
-      ) : (
-        <Clock className={cn(className, "text-muted-foreground")} />
-      );
-    case "RUNNING":
-      return <Loader2 className={cn(className, "animate-spin text-primary")} />;
-    case "SUCCEEDED":
-      return <CheckCircle2 className={cn(className, "text-emerald-500")} />;
-    case "CANCELED":
-      return <Ban className={cn(className, "text-muted-foreground")} />;
-    case "FAILED":
-    case "EXPIRED":
-      return <XCircle className={cn(className, "text-destructive")} />;
-  }
-}
+import { ImageJobStatusIcon, describeImageJob, isActiveImageJob } from "./imageJobStatus";
 
 /** 로컬 모델 생성 대기열. 진행 중인 작업과 최근 24시간 안에 끝난 작업을 보여준다. */
 export function ImageJobQueue() {
@@ -63,7 +18,7 @@ export function ImageJobQueue() {
 
   if (jobs.length === 0) return null;
 
-  const activeCount = jobs.filter(isActive).length;
+  const activeCount = jobs.filter(isActiveImageJob).length;
 
   const handleCancel = (job: ImageJob) => {
     cancelJob(job.id, {
@@ -76,9 +31,12 @@ export function ImageJobQueue() {
     <div className="border-t border-border px-5 py-3">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-foreground">내 대기열</h3>
-        <span className="text-xs text-muted-foreground">
-          {activeCount > 0 ? `진행 중 ${activeCount}개` : "최근 24시간"}
-        </span>
+        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <span>{activeCount > 0 ? `진행 중 ${activeCount}개` : "최근 24시간"}</span>
+          <Link href="/profile?tab=jobs" className="font-medium text-primary hover:underline">
+            전체 기록
+          </Link>
+        </div>
       </div>
 
       <ul className="mt-2 max-h-48 space-y-1 overflow-y-auto">
@@ -91,14 +49,14 @@ export function ImageJobQueue() {
               {job.image ? (
                 <Image src={job.image.imageUrl} alt="" fill className="object-cover" unoptimized />
               ) : (
-                <StatusIcon job={job} />
+                <ImageJobStatusIcon job={job} />
               )}
             </div>
 
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm text-foreground">{job.prompt}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {MODEL_CREDIT_SETTINGS[job.model as Model]?.label ?? job.model} · {describe(job)}
+                {MODEL_CREDIT_SETTINGS[job.model as Model]?.label ?? job.model} · {describeImageJob(job)}
               </p>
             </div>
 

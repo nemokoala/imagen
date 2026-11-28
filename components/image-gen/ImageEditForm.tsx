@@ -13,7 +13,6 @@ import {
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { MaskCanvas, type MaskCanvasHandle } from "@/components/image-gen/MaskCanvas";
 import { useGetPromptTranslationQuery } from "@/queries/admin/llmSettings";
@@ -222,10 +221,17 @@ export function ImageEditForm({
             </div>
           </div>
 
-          {sourcePreview && maskEnabled ? (
+          {/* 원본을 올리면 미리보기와 칠하기를 같은 캔버스에서 해서, 칠하기를 켜도 이미지가 움직이지 않는다. */}
+          {sourcePreview ? (
             <MaskCanvas
               ref={maskRef}
               src={sourcePreview}
+              enabled={maskEnabled}
+              onEnabledChange={(checked) => {
+                setMaskEnabled(checked);
+                if (!checked) setHasMask(false);
+              }}
+              onPick={() => openPicker(SOURCE_INPUT_ID)}
               disabled={isPending}
               onPaintedChange={setHasMask}
             />
@@ -234,42 +240,13 @@ export function ImageEditForm({
               type="button"
               disabled={isPending}
               onClick={() => openPicker(SOURCE_INPUT_ID)}
-              className="flex min-h-32 w-full cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-border bg-muted/30 transition-colors hover:border-primary/50 hover:bg-primary-soft/40"
+              className="flex min-h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-muted/30 py-8 text-sm text-muted-foreground transition-colors hover:border-primary/50 hover:bg-primary-soft/40"
             >
-              {sourcePreview ? (
-                <Image
-                  src={sourcePreview}
-                  alt="원본 이미지"
-                  width={640}
-                  height={480}
-                  unoptimized
-                  className="max-h-[min(50vh,360px)] w-full object-contain"
-                />
-              ) : (
-                <span className="flex flex-col items-center gap-2 py-8 text-sm text-muted-foreground">
-                  <Upload className="h-6 w-6" />
-                  이미지 선택
-                </span>
-              )}
+              <Upload className="h-6 w-6" />
+              이미지 선택
             </button>
           )}
           {fileInput(SOURCE_INPUT_ID, false)}
-
-          <label
-            htmlFor="edit-mask-toggle"
-            className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border/70 px-3 py-2"
-          >
-            <span className="text-sm text-subtitle">칠한 곳만 편집</span>
-            <Switch
-              id="edit-mask-toggle"
-              checked={maskEnabled}
-              disabled={isPending || !source}
-              onCheckedChange={(checked) => {
-                setMaskEnabled(checked);
-                if (!checked) setHasMask(false);
-              }}
-            />
-          </label>
         </section>
 
         {/* 참고 이미지 (선택, 최대 MAX_REFERENCE_IMAGES장) */}

@@ -5,7 +5,9 @@ import Image from "next/image";
 import { Brush, Eraser, Trash2, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 
 export interface MaskCanvasHandle {
   /** 흰색(편집) / 검은색(유지) PNG 마스크. 칠한 영역이 없으면 null. */
@@ -15,6 +17,10 @@ export interface MaskCanvasHandle {
 
 interface MaskCanvasProps {
   src: string;
+  /** 칠하기를 켰는지. 꺼져 있으면 이미지만 보이고 누르면 onPick으로 원본을 바꾼다. */
+  enabled: boolean;
+  onEnabledChange: (enabled: boolean) => void;
+  onPick: () => void;
   disabled?: boolean;
   onPaintedChange?: (painted: boolean) => void;
   ref?: React.Ref<MaskCanvasHandle>;
@@ -49,7 +55,15 @@ function maskSize(width: number, height: number) {
   };
 }
 
-export function MaskCanvas({ src, disabled, onPaintedChange, ref }: MaskCanvasProps) {
+export function MaskCanvas({
+  src,
+  enabled,
+  onEnabledChange,
+  onPick,
+  disabled,
+  onPaintedChange,
+  ref,
+}: MaskCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cursorRef = useRef<HTMLDivElement>(null);
   const strokesRef = useRef<Stroke[]>([]);
@@ -273,114 +287,159 @@ export function MaskCanvas({ src, disabled, onPaintedChange, ref }: MaskCanvasPr
     [clear, getContext],
   );
 
+  // 끄면 칠한 내용을 버린다. 스위치는 켜고 끌 때 같은 자리에 남아 있어야 포커스가 유지되므로
+  // 이 컴포넌트가 함께 그린다.
+  const handleEnabledChange = (checked: boolean) => {
+    if (!checked) clear();
+    onEnabledChange(checked);
+  };
+
   return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border/70 px-2 py-1.5">
-        <ToggleGroup
-          type="single"
-          variant="outline"
-          size="sm"
-          value={tool}
-          onValueChange={(value) => value && setTool(value as Tool)}
-          disabled={disabled}
+    <div className="space-y-2">
+      {/* 칠하기를 켜도 이미지 크기와 위치는 그대로 두고, 도구는 스위치 아래로 펼친다. */}
+      <div className="relative flex justify-center overflow-hidden rounded-xl border-2 border-border bg-muted/30">
+        <div
+          className="relative max-w-full"
+          style={
+            size
+              ? {
+                  // 세로로 긴 사진이 화면을 다 먹지 않도록 높이를 기준으로 폭을 정한다.
+                  // 폭이 컬럼을 넘으면 max-width가 잡고 높이는 비율대로 줄어든다.
+                  aspectRatio: `${size.width} / ${size.height}`,
+                  width: `calc(min(50vh, 360px) * ${size.width / size.height})`,
+                }
+              : { width: "100%", height: "10rem" }
+          }
         >
-          <ToggleGroupItem value="brush" aria-label="칠하기">
-            <Brush className="h-4 w-4" /> 칠하기
-          </ToggleGroupItem>
-          <ToggleGroupItem value="eraser" aria-label="칠 지우기" disabled={!painted}>
-            <Eraser className="h-4 w-4" /> 칠 지우기
-          </ToggleGroupItem>
-        </ToggleGroup>
-
-        <div className="flex min-w-28 flex-1 items-center gap-2">
-          <Slider
-            value={[ratios[tool]]}
-            min={BRUSH_RATIO_MIN}
-            max={BRUSH_RATIO_MAX}
-            step={1}
-            disabled={disabled}
-            onValueChange={([value]) => setRatios((prev) => ({ ...prev, [tool]: value }))}
-            aria-label={tool === "eraser" ? "지우개 크기" : "브러시 크기"}
+          <Image
+            src={src}
+            alt="원본 이미지"
+            fill
+            unoptimized
+            draggable={false}
+            className="pointer-events-none object-contain select-none"
           />
-          <span className="w-8 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
-            {ratios[tool]}%
-          </span>
+          <canvas
+            ref={canvasRef}
+            width={size?.width ?? 0}
+            height={size?.height ?? 0}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={endStroke}
+            onPointerCancel={endStroke}
+            onPointerEnter={moveCursor}
+            onPointerLeave={() => {
+              if (cursorRef.current) cursorRef.current.style.opacity = "0";
+            }}
+            className={cn(
+              "absolute inset-0 h-full w-full touch-none opacity-50",
+              !enabled && "hidden",
+              disabled ? "cursor-not-allowed" : "cursor-none",
+            )}
+          />
+          <div
+            ref={cursorRef}
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute top-0 left-0 rounded-full border-2 border-white opacity-0",
+              tool === "eraser" ? "border-dashed" : "bg-red-500/30",
+            )}
+            // 흰 테두리 양쪽에 검은 선을 덧대 밝은 배경과 어두운 배경 모두에서 보이게 한다.
+            style={{
+              boxShadow: "0 0 0 1px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(0,0,0,0.85)",
+            }}
+          />
         </div>
 
-        <div className="flex items-center">
-          <Button
+        {!enabled && (
+          <button
             type="button"
-            size="icon"
-            variant="ghost"
-            onClick={undo}
-            disabled={disabled || strokeCount === 0}
-            aria-label="되돌리기"
-          >
-            <Undo2 className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            size="icon"
-            variant="ghost"
-            onClick={clear}
-            disabled={disabled || strokeCount === 0}
-            aria-label="전체 지우기"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+            disabled={disabled}
+            onClick={onPick}
+            aria-label="원본 이미지 변경"
+            className="absolute inset-0 cursor-pointer transition-colors hover:bg-primary-soft/20 disabled:cursor-not-allowed"
+          />
+        )}
       </div>
 
-      <div
-        className="relative mx-auto overflow-hidden rounded-xl border-2 border-border bg-muted/30"
-        style={
-          size
-            ? {
-                // 세로로 긴 사진이 화면을 다 먹지 않도록 높이를 기준으로 폭을 정한다.
-                // 폭이 컬럼을 넘으면 max-width가 잡고 높이는 비율대로 줄어든다.
-                aspectRatio: `${size.width} / ${size.height}`,
-                width: `calc(min(55vh, 380px) * ${size.width / size.height})`,
-                maxWidth: "100%",
-              }
-            : { minHeight: "10rem" }
-        }
-      >
-        <Image
-          src={src}
-          alt="편집 영역 지정 대상"
-          fill
-          unoptimized
-          draggable={false}
-          className="pointer-events-none object-contain select-none"
-        />
-        <canvas
-          ref={canvasRef}
-          width={size?.width ?? 0}
-          height={size?.height ?? 0}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={endStroke}
-          onPointerCancel={endStroke}
-          onPointerEnter={moveCursor}
-          onPointerLeave={() => {
-            if (cursorRef.current) cursorRef.current.style.opacity = "0";
-          }}
-          className={`absolute inset-0 h-full w-full touch-none opacity-50 ${
-            disabled ? "cursor-not-allowed" : "cursor-none"
-          }`}
-        />
-        <div
-          ref={cursorRef}
-          aria-hidden
-          className={`pointer-events-none absolute top-0 left-0 rounded-full border-2 border-white opacity-0 ${
-            tool === "eraser" ? "border-dashed" : "bg-red-500/30"
-          }`}
-          // 흰 테두리 양쪽에 검은 선을 덧대 밝은 배경과 어두운 배경 모두에서 보이게 한다.
-          style={{
-            boxShadow:
-              "0 0 0 1px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(0,0,0,0.85)",
-          }}
-        />
+      <div className="rounded-lg border border-border/70">
+        <label
+          htmlFor="edit-mask-toggle"
+          className="flex cursor-pointer items-center justify-between gap-3 px-3 py-2"
+        >
+          <span className="text-sm text-subtitle">칠한 곳만 편집</span>
+          <Switch
+            id="edit-mask-toggle"
+            checked={enabled}
+            disabled={disabled}
+            onCheckedChange={handleEnabledChange}
+          />
+        </label>
+
+        {enabled && (
+          <div className="flex items-center gap-2 border-t border-border/70 px-2 py-1.5">
+            <ToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              value={tool}
+              onValueChange={(value) => value && setTool(value as Tool)}
+              disabled={disabled}
+            >
+              <ToggleGroupItem value="brush" aria-label="칠하기" title="칠하기">
+                <Brush className="h-4 w-4" />
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="eraser"
+                aria-label="칠 지우기"
+                title="칠 지우기"
+                disabled={!painted}
+              >
+                <Eraser className="h-4 w-4" />
+              </ToggleGroupItem>
+            </ToggleGroup>
+
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              <Slider
+                value={[ratios[tool]]}
+                min={BRUSH_RATIO_MIN}
+                max={BRUSH_RATIO_MAX}
+                step={1}
+                disabled={disabled}
+                onValueChange={([value]) => setRatios((prev) => ({ ...prev, [tool]: value }))}
+                aria-label={tool === "eraser" ? "지우개 크기" : "브러시 크기"}
+              />
+              <span className="w-8 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+                {ratios[tool]}%
+              </span>
+            </div>
+
+            <div className="flex items-center">
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={undo}
+                disabled={disabled || strokeCount === 0}
+                aria-label="되돌리기"
+                title="되돌리기"
+              >
+                <Undo2 className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
+                onClick={clear}
+                disabled={disabled || strokeCount === 0}
+                aria-label="전체 지우기"
+                title="전체 지우기"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

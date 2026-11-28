@@ -194,10 +194,6 @@ export function ImageEditForm({
     <>
       {/* 생성 패널 안에서 쓰인다: 데스크톱에서는 이 영역만 스크롤되고 제출 버튼은 아래에 고정된다 */}
       <div className="space-y-4 px-5 py-5 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
-        <p className="text-sm text-muted-foreground">
-          Qwen Image 2.1 로컬 모델로 이미지를 편집합니다.
-        </p>
-
         {/* 원본 이미지 */}
         <section className="space-y-2">
           <div className="flex items-center justify-between gap-2">
@@ -252,7 +248,7 @@ export function ImageEditForm({
               ) : (
                 <span className="flex flex-col items-center gap-2 py-8 text-sm text-muted-foreground">
                   <Upload className="h-6 w-6" />
-                  편집할 이미지 선택
+                  이미지 선택
                 </span>
               )}
             </button>
@@ -263,12 +259,7 @@ export function ImageEditForm({
             htmlFor="edit-mask-toggle"
             className="flex cursor-pointer items-center justify-between gap-3 rounded-lg border border-border/70 px-3 py-2"
           >
-            <span className="text-sm text-subtitle">
-              편집 영역 지정
-              <span className="ml-1.5 text-xs text-muted-foreground">
-                칠한 곳만 바꾸고 나머지는 보존
-              </span>
-            </span>
+            <span className="text-sm text-subtitle">칠한 곳만 편집</span>
             <Switch
               id="edit-mask-toggle"
               checked={maskEnabled}
@@ -311,15 +302,10 @@ export function ImageEditForm({
                       unoptimized
                       className="h-12 w-12 shrink-0 rounded-md object-cover"
                     />
-                    <div className="min-w-0 flex-1">
-                      {/* 지시문에서 이 이미지를 가리킬 때 쓰는 이름 */}
-                      <p className="font-mono text-xs text-subtitle">
-                        {`<image${index + 2}>`}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">
-                        {item.file.name}
-                      </p>
-                    </div>
+                    {/* 지시문에서 이 이미지를 가리킬 때 쓰는 이름. 썸네일로 구분되므로 파일 이름은 두지 않는다. */}
+                    <p className="min-w-0 flex-1 font-mono text-xs text-subtitle">
+                      {`<image${index + 2}>`}
+                    </p>
                     <Button
                       type="button"
                       size="icon"
@@ -347,9 +333,7 @@ export function ImageEditForm({
               className="w-full border-dashed text-muted-foreground"
             >
               <Plus className="h-4 w-4" />
-              {references.length === 0
-                ? "참고 이미지 추가 (선택)"
-                : `참고 이미지 추가 (${references.length}/${MAX_REFERENCE_IMAGES})`}
+              참고 이미지 추가
             </Button>
           )}
           {fileInput(REFERENCE_INPUT_ID, true)}
@@ -367,20 +351,21 @@ export function ImageEditForm({
             placeholder={
               recommendEnglish
                 ? maskEnabled
-                  ? "예: Replace it with a white embroidered star. / Remove the person and fill the area with the snowy slope."
-                  : "예: Change the background to a sunlit greenhouse, keeping the person unchanged."
+                  ? "e.g. Replace it with a white star"
+                  : references.length > 0
+                    ? "e.g. Dress the person in the outfit from <image2>"
+                    : "e.g. Change the background to a greenhouse"
                 : maskEnabled
-                  ? "칠한 자리에 무엇이 있어야 하는지 적어주세요. 예: 흰색 자수 별무늬를 넣어줘 / 사람을 없애고 눈 덮인 슬로프로 채워줘"
-                  : "예: 인물은 유지하고 배경을 햇빛이 드는 온실로 바꿔줘. 참고 이미지를 쓸 때는 <image2>라고 적어주세요."
+                  ? "예: 흰색 별무늬로 바꿔줘"
+                  : references.length > 0
+                    ? "예: 인물에게 <image2>의 옷을 입혀줘"
+                    : "예: 배경을 온실로 바꿔줘"
             }
             className="min-h-24 resize-none bg-background"
             disabled={isPending}
           />
           {recommendEnglish && (
-            <p className="text-xs text-muted-foreground">
-              프롬프트 번역이 꺼져 있어 지시문이 그대로 모델에 전달됩니다. 영어로 적으면
-              결과가 훨씬 정확합니다.
-            </p>
+            <p className="text-xs text-muted-foreground">영어로 적으면 더 잘 따라요.</p>
           )}
         </section>
       </div>
@@ -416,10 +401,10 @@ export function ImageEditForm({
         {(!isAvailable || isOffline || (maskEnabled && !hasMask)) && (
           <p className="mt-2 text-center text-xs text-muted-foreground">
             {!isAvailable
-              ? "Qwen Image 2.1 모델이 중지돼 있어요."
+              ? "지금은 편집을 쓸 수 없어요."
               : maskEnabled && !hasMask
-                ? "브러시로 편집할 영역을 칠해주세요."
-                : "AI 서버가 꺼져 있어요. 대기열에 넣어 두면 서버가 켜질 때 순서대로 편집돼요."}
+                ? "바꿀 곳을 칠해주세요."
+                : "서버가 켜지면 순서대로 편집돼요."}
           </p>
         )}
       </div>

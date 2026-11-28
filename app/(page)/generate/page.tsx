@@ -692,11 +692,11 @@ export default function ImageGenPage() {
                       ? "편집한 이미지가 여기에 표시됩니다"
                       : "생성한 이미지가 여기에 표시됩니다"}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {activeTab === "edit"
-                      ? "원본 이미지를 올리고 편집 지시문을 입력해주세요."
-                      : `${ratio} 비율로 만들어져요.`}
-                  </p>
+                  {activeTab === "generate" && (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {ratio} 비율로 만들어져요.
+                    </p>
+                  )}
                 </div>
               </div>
             )}

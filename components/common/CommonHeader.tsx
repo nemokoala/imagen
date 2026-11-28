@@ -24,6 +24,8 @@ import { ProfileAvatar } from "../auth/ProfileAvatar";
 export const Header = () => {
   const { isAuthenticated, isLoading, logout, user } = useUserStore();
   const pathname = usePathname();
+  // 랜딩은 흐린 이미지 배경이 헤더 뒤까지 깔리므로, 경계선 없는 반투명 헤더로 배경을 비친다.
+  const isLanding = pathname === "/";
 
   // 비로그인 상태에서 /generate 로 가면 프록시가 랜딩으로 돌려보내므로 로그인으로 바로 보낸다.
   const navItems = [
@@ -52,7 +54,14 @@ export const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 flex h-15 w-full items-center justify-between border-b border-border/70 bg-background/80 pl-4 pr-3 backdrop-blur-md sm:pl-5 sm:pr-4">
+    <header
+      className={cn(
+        "sticky top-0 z-50 flex h-15 w-full items-center justify-between border-b pl-4 pr-3 backdrop-blur-md sm:pl-5 sm:pr-4",
+        isLanding
+          ? "border-transparent bg-background/25"
+          : "border-border/70 bg-background/80",
+      )}
+    >
       <div className="flex items-center gap-6">
         <Link
           className="flex-shrink-0 cursor-pointer transition-opacity hover:opacity-80"

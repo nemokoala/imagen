@@ -10,7 +10,6 @@ import {
   SelectItem,
 } from "../ui/select";
 import { useGetCreditSettingsQuery } from "@/queries/admin/creditSettings";
-import { HealthCheckResponse } from "@/types/common.interfaces";
 import { Model } from "@/types/model.interfaces";
 import { isLocalModel } from "@/constants/model.constants";
 import {
@@ -21,21 +20,13 @@ import {
 export const ModelSelect = ({
   model,
   setModel,
-  stableHealthCheck,
-  zimageHealthCheck,
-  qwenHealthCheck,
-  isStableHealthCheckLoading,
-  isZimageHealthCheckLoading,
-  isQwenHealthCheckLoading,
+  isModelHealthy,
+  isHealthLoading,
 }: {
   model: Model;
   setModel: (value: Model) => void;
-  stableHealthCheck: HealthCheckResponse | undefined;
-  zimageHealthCheck: HealthCheckResponse | undefined;
-  qwenHealthCheck: HealthCheckResponse | undefined;
-  isStableHealthCheckLoading: boolean;
-  isZimageHealthCheckLoading: boolean;
-  isQwenHealthCheckLoading: boolean;
+  isModelHealthy: (model: Model) => boolean;
+  isHealthLoading: boolean;
 }) => {
   const {
     data: creditSettings,
@@ -46,14 +37,7 @@ export const ModelSelect = ({
   const modelOptions = useMemo(() => {
     return CREDIT_MODEL_SETTING_OPTIONS.map((option) => {
       const isEnabled = creditSettings?.[option.enabledKey] ?? false;
-      const isHealthy =
-        option.model === Model.STABLE_DIFFUSION_XL
-          ? stableHealthCheck?.healthy === true
-          : option.model === Model.Z_IMAGE
-            ? zimageHealthCheck?.healthy === true
-            : option.model === Model.QWEN_IMAGE_21
-              ? qwenHealthCheck?.healthy === true
-            : true;
+      const isHealthy = isModelHealthy(option.model);
 
       return {
         ...option,
@@ -63,16 +47,10 @@ export const ModelSelect = ({
         isAvailable: isEnabled && (isHealthy || isLocalModel(option.model)),
       };
     });
-  }, [creditSettings, stableHealthCheck?.healthy, zimageHealthCheck?.healthy, qwenHealthCheck?.healthy]);
+  }, [creditSettings, isModelHealthy]);
 
   useEffect(() => {
-    if (
-      isStableHealthCheckLoading ||
-      isZimageHealthCheckLoading ||
-      isQwenHealthCheckLoading ||
-      isCreditSettingsLoading ||
-      creditSettingsError
-    ) {
+    if (isHealthLoading || isCreditSettingsLoading || creditSettingsError) {
       return;
     }
 
@@ -88,9 +66,7 @@ export const ModelSelect = ({
       setModel(nextAvailableOption.model);
     }
   }, [
-    isStableHealthCheckLoading,
-    isZimageHealthCheckLoading,
-    isQwenHealthCheckLoading,
+    isHealthLoading,
     isCreditSettingsLoading,
     creditSettingsError,
     model,
@@ -163,9 +139,7 @@ export const ModelSelect = ({
       value={model}
       onValueChange={(value: Model) => setModel(value)}
       disabled={
-        isStableHealthCheckLoading ||
-        isZimageHealthCheckLoading ||
-        isQwenHealthCheckLoading ||
+        isHealthLoading ||
         isCreditSettingsLoading ||
         Boolean(creditSettingsError) ||
         !hasAvailableModel
@@ -174,10 +148,7 @@ export const ModelSelect = ({
       <SelectTrigger className="h-10 w-full bg-background transition-colors disabled:cursor-not-allowed disabled:opacity-50">
         <SelectValue placeholder="모델 선택">
           <div className="flex items-center gap-2">
-            {isStableHealthCheckLoading ||
-            isZimageHealthCheckLoading ||
-            isQwenHealthCheckLoading ||
-            isCreditSettingsLoading ? (
+            {isHealthLoading || isCreditSettingsLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                 <span className="text-muted-foreground">모델 설정 확인 중...</span>

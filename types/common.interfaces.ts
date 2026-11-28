@@ -1,3 +1,5 @@
+import type { LocalModel } from "@/constants/model.constants";
+
 export interface ErrorResponse {
   message: string;
   code?: string;
@@ -10,9 +12,7 @@ export interface SuccessResponse<T = unkown> {
   message?: string;
 }
 
-export interface HealthCheckResponse {
-  target: string;
-  status: "healthy" | "unhealthy" | "error";
-  healthy: boolean;
-  error?: string;
+/** GET /api/health-check — 로컬 모델별 AI 서버 켜짐 여부 */
+export interface LocalModelHealthResponse {
+  models: Record<LocalModel, boolean>;
 }

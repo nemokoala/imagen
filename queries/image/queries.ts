@@ -5,7 +5,7 @@ import {
   GetImageByIdResponse,
   Image,
 } from "../../types/image.interfaces";
-import { HealthCheckResponse } from "../../types/common.interfaces";
+import { LocalModelHealthResponse } from "../../types/common.interfaces";
 import { GalleryResponse } from "../../types/image.interfaces";
 import {
   keepPreviousData,
@@ -137,14 +137,15 @@ export const useGetUserImagesInfiniteQuery = (
   });
 };
 
-export const useHealthCheckQuery = ({ target }: { target: string }) => {
+// 로컬 모델 상태는 한 번의 요청으로 모두 받는다. 서버가 모델마다 병렬로 확인한다.
+export const useLocalModelHealthQuery = () => {
   return useQuery({
-    queryKey: ["healthCheck", target],
-    queryFn: async (): Promise<HealthCheckResponse> => {
-      const response = await FetchUtil.get(`/api/health-check/${target}`, {
+    queryKey: ["localModelHealth"],
+    queryFn: async (): Promise<LocalModelHealthResponse> => {
+      const response = await FetchUtil.get("/api/health-check", {
         signal: AbortSignal.timeout(10000),
       });
-      return response as HealthCheckResponse;
+      return response as LocalModelHealthResponse;
     },
     retry: false,
   });

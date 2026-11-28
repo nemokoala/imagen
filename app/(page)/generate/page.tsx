@@ -15,7 +15,7 @@ import { Loader2, Sparkles, Download, Eye, Maximize2, Clock } from "lucide-react
 import Image from "next/image";
 import { Layout } from "@/components/layout/Layout";
 import { useGenerateImageMutation } from "@/queries/image/mutations";
-import { useHealthCheckQuery } from "@/queries/image/queries";
+import { useLocalModelHealthQuery } from "@/queries/image/queries";
 import { ModelSelect } from "@/components/image-gen/ModelSelect";
 import { CreditDisplay } from "@/components/image-gen/CreditDisplay";
 import { useGetUserCredit } from "@/queries/auth/queries";
@@ -29,7 +29,11 @@ import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
 import type { ImageJob } from "@/types/imageJob.interfaces";
-import { MODEL_RATIO_CONFIG, isLocalModel } from "@/constants/model.constants";
+import {
+  LOCAL_MODELS,
+  MODEL_RATIO_CONFIG,
+  isLocalModel,
+} from "@/constants/model.constants";
 import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
 import { cn, downloadImage } from "@/lib/utils";
 import { useSuggestCategories } from "@/queries/category/mutations";
@@ -75,13 +79,16 @@ export default function ImageGenPage() {
   const resultImageRef = useRef<HTMLDivElement>(null);
   const recommendPromptRef = useRef<RecommendPromptRef>(null);
 
-  const { data: stableHealthCheck, isLoading: isStableHealthCheckLoading } =
-    useHealthCheckQuery({ target: "stable" });
-
-  const { data: zimageHealthCheck, isLoading: isZimageHealthCheckLoading } =
-    useHealthCheckQuery({ target: "zimage" });
-  const { data: qwenHealthCheck, isLoading: isQwenHealthCheckLoading } =
-    useHealthCheckQuery({ target: "qwen-image-21" });
+  const { data: localHealth, isLoading: isLocalHealthLoading } =
+    useLocalModelHealthQuery();
+  // 외부 API 모델은 상태 확인 대상이 아니므로 늘 켜져 있다고 본다.
+  const isModelHealthy = useCallback(
+    (modelValue: Model) =>
+      isLocalModel(modelValue)
+        ? localHealth?.models[modelValue] === true
+        : true,
+    [localHealth],
+  );
 
   const { data: credit, isLoading: isCreditLoading } = useGetUserCredit();
   const {
@@ -102,32 +109,17 @@ export default function ImageGenPage() {
 
   // healthCheck에 따라 기본 모델 계산
   const defaultModel = useMemo(() => {
-    if (
-      stableHealthCheck?.healthy &&
-      isCreditModelEnabled(Model.STABLE_DIFFUSION_XL)
-    ) {
-      return Model.STABLE_DIFFUSION_XL;
-    }
-
-    if (zimageHealthCheck?.healthy && isCreditModelEnabled(Model.Z_IMAGE)) {
-      return Model.Z_IMAGE;
-    }
-
-    if (qwenHealthCheck?.healthy && isCreditModelEnabled(Model.QWEN_IMAGE_21)) {
-      return Model.QWEN_IMAGE_21;
-    }
+    const onlineLocalModel = LOCAL_MODELS.find(
+      (item) => isModelHealthy(item) && isCreditModelEnabled(item),
+    );
+    if (onlineLocalModel) return onlineLocalModel;
 
     return (
       [Model.DALL_E_3, Model.GOOGLE_IMAGEN, Model.NANO_BANANA].find((item) =>
         isCreditModelEnabled(item),
       ) ?? Model.DALL_E_3
     );
-  }, [
-    stableHealthCheck?.healthy,
-    zimageHealthCheck?.healthy,
-    qwenHealthCheck?.healthy,
-    isCreditModelEnabled,
-  ]);
+  }, [isModelHealthy, isCreditModelEnabled]);
 
   // 사용자가 수동으로 선택한 모델 (없으면 기본 모델 사용)
   const [manualModel, setManualModel] = useState<Model | null>(null);
@@ -135,14 +127,7 @@ export default function ImageGenPage() {
   // 실제 사용할 모델 (수동 선택이 있으면 그것을, 없으면 기본 모델 사용)
   const model = manualModel ?? defaultModel;
   const isSelectedModelEnabled = isCreditModelEnabled(model);
-  const isSelectedModelHealthy =
-    model === Model.STABLE_DIFFUSION_XL
-      ? stableHealthCheck?.healthy === true
-      : model === Model.Z_IMAGE
-        ? zimageHealthCheck?.healthy === true
-        : model === Model.QWEN_IMAGE_21
-          ? qwenHealthCheck?.healthy === true
-        : true;
+  const isSelectedModelHealthy = isModelHealthy(model);
   // 로컬 모델은 서버가 꺼져 있어도 대기열에 넣을 수 있다.
   const isSelectedModelAvailable =
     isSelectedModelEnabled && (isSelectedModelHealthy || isLocalModel(model));
@@ -368,11 +353,7 @@ export default function ImageGenPage() {
     !creditSettings ||
     !isSelectedModelAvailable;
 
-  const isModelStatusLoading =
-    isStableHealthCheckLoading ||
-    isZimageHealthCheckLoading ||
-    isQwenHealthCheckLoading ||
-    isCreditSettingsLoading;
+  const isModelStatusLoading = isLocalHealthLoading || isCreditSettingsLoading;
   const isSelectedModelOffline =
     isLocalModel(model) && !isModelStatusLoading && !isSelectedModelHealthy;
   const selectedCreditCost =
@@ -481,12 +462,8 @@ export default function ImageGenPage() {
                   <ModelSelect
                     model={model}
                     setModel={handleModelChange}
-                    stableHealthCheck={stableHealthCheck}
-                    zimageHealthCheck={zimageHealthCheck}
-                    qwenHealthCheck={qwenHealthCheck}
-                    isStableHealthCheckLoading={isStableHealthCheckLoading}
-                    isZimageHealthCheckLoading={isZimageHealthCheckLoading}
-                    isQwenHealthCheckLoading={isQwenHealthCheckLoading}
+                    isModelHealthy={isModelHealthy}
+                    isHealthLoading={isLocalHealthLoading}
                   />
                 </div>
 
@@ -588,7 +565,7 @@ export default function ImageGenPage() {
                 isPending={isPending}
                 isAvailable={isCreditModelEnabled(Model.QWEN_IMAGE_21)}
                 isOffline={
-                  !isQwenHealthCheckLoading && qwenHealthCheck?.healthy !== true
+                  !isLocalHealthLoading && !isModelHealthy(Model.QWEN_IMAGE_21)
                 }
                 creditCost={creditSettings?.qwenImage21}
                 onSubmit={handleImageEdit}

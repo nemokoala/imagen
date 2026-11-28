@@ -45,7 +45,9 @@ const FAN_SHIFT = [0, 0.458, 0.843];
 const FAN_VEIL = [0, 0.2, 0.4];
 /** 이미지 순서 → 가운데에서의 위치 (1위 가운데, 2·3위 양옆, 4·5위 바깥) */
 const FAN_OFFSETS = [0, -1, 1, -2, 2];
-const FAN_CARD_CLASS = "aspect-[4/5] w-[min(58vw,280px)]";
+// 높이가 낮은 휴대폰(예: 667px)에서도 버튼까지 한 화면에 들어오도록 화면 높이로도 크기를 제한한다
+const FAN_CARD_CLASS =
+  "aspect-[4/5] w-[min(62vw,300px,calc((100dvh-440px)*0.8))]";
 
 function getModelLabel(model: string) {
   return MODEL_CREDIT_SETTINGS[model as Model]?.label ?? model;
@@ -86,7 +88,7 @@ function HeroFan({ images }: { images: ImageType[] }) {
   const [main] = images;
 
   return (
-    <div className="relative mb-8 lg:hidden">
+    <div className="relative w-full">
       {/* 보이지 않는 자리 표시 요소가 높이를 잡고, 카드는 그 위에 겹친다 */}
       <div aria-hidden className={cn("invisible mx-auto", FAN_CARD_CLASS)} />
       {images.map((image, index) => {
@@ -228,17 +230,21 @@ export default async function LandingPage() {
             hasImages && "lg:grid-cols-[1.05fr_1fr]",
           )}
         >
-          <div className="min-w-0">
+          {/* 모바일 · 태블릿에서는 화면 높이(위 84px · 아래 40px 여백 제외)를 채운다 */}
+          <div className="flex min-h-[calc(100dvh-124px)] min-w-0 flex-col lg:block lg:min-h-0">
             {hasImages && (
-              <HeroFan images={heroImages.slice(0, HERO_FAN_COUNT)} />
+              <div className="flex flex-1 items-center pb-8 lg:hidden">
+                <HeroFan images={heroImages.slice(0, HERO_FAN_COUNT)} />
+              </div>
             )}
 
+            <div>
             <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               <span className="size-1.5 rounded-full bg-primary" />
               AI Image Studio
             </span>
 
-            <h1 className="mt-4 break-keep text-[44px] font-extrabold leading-[1.08] tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            <h1 className="mt-3 break-keep text-[34px] font-bold leading-[1.15] tracking-tight text-foreground sm:text-[40px] lg:text-[52px] lg:leading-[1.1]">
               AI로 만드는
               <br />
               <span className="text-primary">특별한 사진</span>
@@ -277,6 +283,7 @@ export default async function LandingPage() {
                   {label}
                 </span>
               ))}
+            </div>
             </div>
           </div>
 

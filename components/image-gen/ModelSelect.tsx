@@ -154,6 +154,9 @@ export const ModelSelect = ({
   };
 
   const hasAvailableModel = modelOptions.some((option) => option.isAvailable);
+  // 관리자가 중지한 모델은 목록에서 아예 뺀다. 오프라인처럼 잠깐 못 쓰는 모델은
+  // 상태를 보여 주려고 비활성으로 남겨 둔다.
+  const visibleOptions = modelOptions.filter((option) => option.isEnabled);
 
   return (
     <Select
@@ -179,6 +182,8 @@ export const ModelSelect = ({
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
                 <span className="text-muted-foreground">모델 설정 확인 중...</span>
               </>
+            ) : creditSettings && visibleOptions.length === 0 ? (
+              <span className="text-muted-foreground">사용 가능한 모델이 없습니다</span>
             ) : (
               <>
                 {getCreditText(model)}
@@ -190,7 +195,7 @@ export const ModelSelect = ({
       </SelectTrigger>
 
       <SelectContent>
-        {modelOptions.map((option) => (
+        {visibleOptions.map((option) => (
           <SelectItem
             key={option.model}
             value={option.model}

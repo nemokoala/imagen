@@ -216,6 +216,7 @@ export default function ImageGenPage() {
   const { data: imageJobs } = useImageJobsQuery();
   const [trackedJobId, setTrackedJobId] = useState<number | null>(null);
   const trackedJob = imageJobs?.find((job) => job.id === trackedJobId);
+  const hasImageJobs = (imageJobs?.length ?? 0) > 0;
 
   const enqueueAndTrack = async (
     mode: "generate" | "edit",
@@ -411,7 +412,17 @@ export default function ImageGenPage() {
 
   return (
     <Layout.Content className={cn("py-4 md:py-6 lg:overflow-hidden", WIDE_PAGE_GUTTER)}>
-      <div className={cn(WIDE_CONTAINER, "grid gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[400px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)] lg:gap-6")}>
+      <div
+        className={cn(
+          WIDE_CONTAINER,
+          "grid gap-4 lg:min-h-0 lg:flex-1 lg:grid-rows-[minmax(0,1fr)] lg:gap-6",
+          // 대기열 컬럼은 작업이 있을 때만 만든다. 빈 트랙이어도 간격은 생기기 때문이다.
+          // 대기열 너비(펼침·접힘)는 컬럼 안에서 정하므로 트랙은 auto다.
+          hasImageJobs
+            ? "lg:grid-cols-[400px_minmax(0,1fr)_auto]"
+            : "lg:grid-cols-[400px_minmax(0,1fr)]",
+        )}
+      >
         {/* 설정 패널: 데스크톱에서는 안쪽만 스크롤되고 생성 버튼은 아래에 고정된다 */}
         <aside className="flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card lg:min-h-0">
           <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4">
@@ -690,9 +701,9 @@ export default function ImageGenPage() {
               </div>
             )}
           </div>
-
-          <ImageJobQueue />
         </section>
+
+        <ImageJobQueue />
       </div>
 
       {imageUrl && (

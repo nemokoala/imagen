@@ -42,3 +42,5 @@ next-env.d.ts
 
 # editor
 .vscode/settings.json
+# prisma generate가 엔진 DLL 교체에 실패하면 남기는 임시 파일
+lib/generated/prisma/*.tmp*

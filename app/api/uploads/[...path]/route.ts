@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
-import { join } from "path";
+import { join, resolve, sep } from "path";
 import { existsSync } from "fs";
+
+// 공개로 내보내는 폴더. 편집 대기열 입력(job-inputs) 같은 나머지 폴더는 내보내지 않는다.
+const SERVED_DIRS = ["images", "profiles"];
 
 export async function GET(
   request: NextRequest,
@@ -12,9 +15,14 @@ export async function GET(
     // 환경 변수로 설정된 업로드 경로 사용 (기본값: process.cwd()/uploads)
     const uploadBaseDir =
       process.env.UPLOAD_PATH || join(process.cwd(), "uploads");
-    const filePath = join(uploadBaseDir, ...resolvedParams.path);
+    // 최종 경로를 풀어서 허용한 폴더 안인지 본다. ".."이나 인코딩된 "/"로 다른 폴더를 읽지 못하게 한다.
+    const baseDir = resolve(uploadBaseDir);
+    const filePath = resolve(baseDir, ...resolvedParams.path);
+    const isServed = SERVED_DIRS.some((dir) =>
+      filePath.startsWith(join(baseDir, dir) + sep),
+    );
 
-    if (!existsSync(filePath)) {
+    if (!isServed || !existsSync(filePath)) {
       return new NextResponse("File not found", { status: 404 });
     }
 

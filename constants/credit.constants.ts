@@ -65,7 +65,7 @@ export const CREDIT_MODEL_SETTING_OPTIONS: CreditModelSettingOption[] = [
   },
   {
     model: Model.QWEN_IMAGE_21,
-    label: "Qwen Image 2.1 (로컬)",
+    label: "Qwen Image 2.1",
     creditKey: "qwenImage21",
     enabledKey: "qwenImage21Enabled",
     defaultCost: DEFAULT_CREDIT_SETTINGS.qwenImage21,

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import {
   ClipboardPaste,
+  Clock,
   ImagePlus,
   Loader2,
   Plus,
@@ -21,7 +22,10 @@ import { toast } from "sonner";
 
 interface ImageEditFormProps {
   isPending: boolean;
+  /** 관리자가 모델을 켜 두었는지 */
   isAvailable: boolean;
+  /** AI 서버가 꺼져 있으면 대기열에 넣어 두고 켜질 때 편집한다. */
+  isOffline?: boolean;
   creditCost?: number;
   onSubmit: (form: FormData) => Promise<void>;
 }
@@ -40,6 +44,7 @@ interface ReferenceImage {
 export function ImageEditForm({
   isPending,
   isAvailable,
+  isOffline = false,
   creditCost,
   onSubmit,
 }: ImageEditFormProps) {
@@ -398,8 +403,8 @@ export function ImageEditForm({
             <><Loader2 className="h-4 w-4 animate-spin" />편집 중...</>
           ) : (
             <>
-              <Sparkles className="h-4 w-4" />
-              이미지 편집
+              {isOffline ? <Clock className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+              {isOffline ? "대기열에 추가" : "이미지 편집"}
               {creditCost !== undefined && (
                 <span className="text-sm font-normal opacity-80">
                   · {creditCost} 크레딧
@@ -408,11 +413,13 @@ export function ImageEditForm({
             </>
           )}
         </Button>
-        {(!isAvailable || (maskEnabled && !hasMask)) && (
+        {(!isAvailable || isOffline || (maskEnabled && !hasMask)) && (
           <p className="mt-2 text-center text-xs text-muted-foreground">
             {!isAvailable
-              ? "Qwen Image 2.1 모델 설정 또는 ComfyUI 연결을 확인해주세요."
-              : "브러시로 편집할 영역을 칠해주세요."}
+              ? "Qwen Image 2.1 모델이 중지돼 있어요."
+              : maskEnabled && !hasMask
+                ? "브러시로 편집할 영역을 칠해주세요."
+                : "AI 서버가 꺼져 있어요. 대기열에 넣어 두면 서버가 켜질 때 순서대로 편집돼요."}
           </p>
         )}
       </div>

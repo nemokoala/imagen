@@ -80,6 +80,26 @@ export const useEnqueueImageJobMutation = () => {
   });
 };
 
+/** 이미지 편집 접수. 원본·참고·마스크를 FormData로 보낸다. */
+export const useEnqueueEditJobMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (form: FormData): Promise<ImageJob> => {
+      const response = (await FetchUtil.post(
+        "/api/edit-image",
+        form,
+      )) as EnqueueImageJobResponse;
+      return response.job;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["credit"] });
+      queryClient.invalidateQueries({ queryKey: imageJobsQueryKey });
+      queryClient.invalidateQueries({ queryKey: imageJobHistoryQueryKey });
+    },
+  });
+};
+
 export const useCancelImageJobMutation = () => {
   const queryClient = useQueryClient();
 

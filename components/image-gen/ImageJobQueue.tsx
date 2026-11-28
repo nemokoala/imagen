@@ -4,11 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
-import { Model } from "@/types/model.interfaces";
 import type { ImageJob } from "@/types/imageJob.interfaces";
 import { useCancelImageJobMutation, useImageJobsQuery } from "@/queries/image/jobs";
-import { ImageJobStatusIcon, describeImageJob, isActiveImageJob } from "./imageJobStatus";
+import {
+  ImageJobStatusIcon,
+  describeImageJob,
+  imageJobModelLabel,
+  isActiveImageJob,
+} from "./imageJobStatus";
 
 /** 로컬 모델 생성 대기열. 진행 중인 작업과 최근 24시간 안에 끝난 작업을 보여준다. */
 export function ImageJobQueue() {
@@ -56,7 +59,7 @@ export function ImageJobQueue() {
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm text-foreground">{job.prompt}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {MODEL_CREDIT_SETTINGS[job.model as Model]?.label ?? job.model} · {describeImageJob(job)}
+                {imageJobModelLabel(job)} · {describeImageJob(job)}
               </p>
             </div>
 

@@ -8,8 +8,11 @@ export type ImageJobStatus =
   | "CANCELED"
   | "EXPIRED";
 
+export type ImageJobKind = "GENERATE" | "EDIT";
+
 export interface ImageJob {
   id: number;
+  kind: ImageJobKind;
   model: string;
   prompt: string;
   ratio: ImageRatio;

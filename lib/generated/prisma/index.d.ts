@@ -101,6 +101,14 @@ export const ImageJobStatus: {
 export type ImageJobStatus = (typeof ImageJobStatus)[keyof typeof ImageJobStatus]
 
 
+export const ImageJobKind: {
+  GENERATE: 'GENERATE',
+  EDIT: 'EDIT'
+};
+
+export type ImageJobKind = (typeof ImageJobKind)[keyof typeof ImageJobKind]
+
+
 export const NotificationType: {
   LIKE: 'LIKE',
   COMMENT: 'COMMENT',
@@ -123,6 +131,10 @@ export const AuthProvider: typeof $Enums.AuthProvider
 export type ImageJobStatus = $Enums.ImageJobStatus
 
 export const ImageJobStatus: typeof $Enums.ImageJobStatus
+
+export type ImageJobKind = $Enums.ImageJobKind
+
+export const ImageJobKind: typeof $Enums.ImageJobKind
 
 export type NotificationType = $Enums.NotificationType
 
@@ -6428,6 +6440,7 @@ export namespace Prisma {
   export type ImageJobMinAggregateOutputType = {
     id: number | null
     userId: number | null
+    kind: $Enums.ImageJobKind | null
     model: string | null
     prompt: string | null
     ratio: string | null
@@ -6449,6 +6462,7 @@ export namespace Prisma {
   export type ImageJobMaxAggregateOutputType = {
     id: number | null
     userId: number | null
+    kind: $Enums.ImageJobKind | null
     model: string | null
     prompt: string | null
     ratio: string | null
@@ -6470,6 +6484,8 @@ export namespace Prisma {
   export type ImageJobCountAggregateOutputType = {
     id: number
     userId: number
+    kind: number
+    inputs: number
     model: number
     prompt: number
     ratio: number
@@ -6510,6 +6526,7 @@ export namespace Prisma {
   export type ImageJobMinAggregateInputType = {
     id?: true
     userId?: true
+    kind?: true
     model?: true
     prompt?: true
     ratio?: true
@@ -6531,6 +6548,7 @@ export namespace Prisma {
   export type ImageJobMaxAggregateInputType = {
     id?: true
     userId?: true
+    kind?: true
     model?: true
     prompt?: true
     ratio?: true
@@ -6552,6 +6570,8 @@ export namespace Prisma {
   export type ImageJobCountAggregateInputType = {
     id?: true
     userId?: true
+    kind?: true
+    inputs?: true
     model?: true
     prompt?: true
     ratio?: true
@@ -6661,6 +6681,8 @@ export namespace Prisma {
   export type ImageJobGroupByOutputType = {
     id: number
     userId: number
+    kind: $Enums.ImageJobKind
+    inputs: JsonValue | null
     model: string
     prompt: string
     ratio: string
@@ -6702,6 +6724,8 @@ export namespace Prisma {
   export type ImageJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     userId?: boolean
+    kind?: boolean
+    inputs?: boolean
     model?: boolean
     prompt?: boolean
     ratio?: boolean
@@ -6728,6 +6752,8 @@ export namespace Prisma {
   export type ImageJobSelectScalar = {
     id?: boolean
     userId?: boolean
+    kind?: boolean
+    inputs?: boolean
     model?: boolean
     prompt?: boolean
     ratio?: boolean
@@ -6747,7 +6773,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ImageJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "model" | "prompt" | "ratio" | "categorySlugs" | "creditCost" | "status" | "attempts" | "externalId" | "progress" | "error" | "notifyOnFinish" | "imageId" | "startedAt" | "finishedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["imageJob"]>
+  export type ImageJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "kind" | "inputs" | "model" | "prompt" | "ratio" | "categorySlugs" | "creditCost" | "status" | "attempts" | "externalId" | "progress" | "error" | "notifyOnFinish" | "imageId" | "startedAt" | "finishedAt" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["imageJob"]>
   export type ImageJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     image?: boolean | ImageJob$imageArgs<ExtArgs>
@@ -6762,6 +6788,8 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       userId: number
+      kind: $Enums.ImageJobKind
+      inputs: Prisma.JsonValue | null
       model: string
       prompt: string
       ratio: string
@@ -7152,6 +7180,8 @@ export namespace Prisma {
   interface ImageJobFieldRefs {
     readonly id: FieldRef<"ImageJob", 'Int'>
     readonly userId: FieldRef<"ImageJob", 'Int'>
+    readonly kind: FieldRef<"ImageJob", 'ImageJobKind'>
+    readonly inputs: FieldRef<"ImageJob", 'Json'>
     readonly model: FieldRef<"ImageJob", 'String'>
     readonly prompt: FieldRef<"ImageJob", 'String'>
     readonly ratio: FieldRef<"ImageJob", 'String'>
@@ -13743,6 +13773,8 @@ export namespace Prisma {
   export const ImageJobScalarFieldEnum: {
     id: 'id',
     userId: 'userId',
+    kind: 'kind',
+    inputs: 'inputs',
     model: 'model',
     prompt: 'prompt',
     ratio: 'ratio',
@@ -14017,6 +14049,13 @@ export namespace Prisma {
    * Reference to a field of type 'DateTime'
    */
   export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'ImageJobKind'
+   */
+  export type EnumImageJobKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ImageJobKind'>
     
 
 
@@ -14422,6 +14461,8 @@ export namespace Prisma {
     NOT?: ImageJobWhereInput | ImageJobWhereInput[]
     id?: IntFilter<"ImageJob"> | number
     userId?: IntFilter<"ImageJob"> | number
+    kind?: EnumImageJobKindFilter<"ImageJob"> | $Enums.ImageJobKind
+    inputs?: JsonNullableFilter<"ImageJob">
     model?: StringFilter<"ImageJob"> | string
     prompt?: StringFilter<"ImageJob"> | string
     ratio?: StringFilter<"ImageJob"> | string
@@ -14446,6 +14487,8 @@ export namespace Prisma {
   export type ImageJobOrderByWithRelationInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    inputs?: SortOrderInput | SortOrder
     model?: SortOrder
     prompt?: SortOrder
     ratio?: SortOrder
@@ -14475,6 +14518,8 @@ export namespace Prisma {
     OR?: ImageJobWhereInput[]
     NOT?: ImageJobWhereInput | ImageJobWhereInput[]
     userId?: IntFilter<"ImageJob"> | number
+    kind?: EnumImageJobKindFilter<"ImageJob"> | $Enums.ImageJobKind
+    inputs?: JsonNullableFilter<"ImageJob">
     model?: StringFilter<"ImageJob"> | string
     prompt?: StringFilter<"ImageJob"> | string
     ratio?: StringFilter<"ImageJob"> | string
@@ -14498,6 +14543,8 @@ export namespace Prisma {
   export type ImageJobOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    inputs?: SortOrderInput | SortOrder
     model?: SortOrder
     prompt?: SortOrder
     ratio?: SortOrder
@@ -14528,6 +14575,8 @@ export namespace Prisma {
     NOT?: ImageJobScalarWhereWithAggregatesInput | ImageJobScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"ImageJob"> | number
     userId?: IntWithAggregatesFilter<"ImageJob"> | number
+    kind?: EnumImageJobKindWithAggregatesFilter<"ImageJob"> | $Enums.ImageJobKind
+    inputs?: JsonNullableWithAggregatesFilter<"ImageJob">
     model?: StringWithAggregatesFilter<"ImageJob"> | string
     prompt?: StringWithAggregatesFilter<"ImageJob"> | string
     ratio?: StringWithAggregatesFilter<"ImageJob"> | string
@@ -15385,6 +15434,8 @@ export namespace Prisma {
   }
 
   export type ImageJobCreateInput = {
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -15408,6 +15459,8 @@ export namespace Prisma {
   export type ImageJobUncheckedCreateInput = {
     id?: number
     userId: number
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -15428,6 +15481,8 @@ export namespace Prisma {
   }
 
   export type ImageJobUpdateInput = {
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -15451,6 +15506,8 @@ export namespace Prisma {
   export type ImageJobUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -15473,6 +15530,8 @@ export namespace Prisma {
   export type ImageJobCreateManyInput = {
     id?: number
     userId: number
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -15493,6 +15552,8 @@ export namespace Prisma {
   }
 
   export type ImageJobUpdateManyMutationInput = {
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -15514,6 +15575,8 @@ export namespace Prisma {
   export type ImageJobUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -16477,6 +16540,13 @@ export namespace Prisma {
     id?: SortOrder
     userId?: SortOrder
   }
+
+  export type EnumImageJobKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobKind | EnumImageJobKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobKind[]
+    notIn?: $Enums.ImageJobKind[]
+    not?: NestedEnumImageJobKindFilter<$PrismaModel> | $Enums.ImageJobKind
+  }
   export type JsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
         Either<Required<JsonNullableFilterBase<$PrismaModel>>, Exclude<keyof Required<JsonNullableFilterBase<$PrismaModel>>, 'path'>>,
@@ -16533,6 +16603,8 @@ export namespace Prisma {
   export type ImageJobCountOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
+    inputs?: SortOrder
     model?: SortOrder
     prompt?: SortOrder
     ratio?: SortOrder
@@ -16563,6 +16635,7 @@ export namespace Prisma {
   export type ImageJobMaxOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
     model?: SortOrder
     prompt?: SortOrder
     ratio?: SortOrder
@@ -16584,6 +16657,7 @@ export namespace Prisma {
   export type ImageJobMinOrderByAggregateInput = {
     id?: SortOrder
     userId?: SortOrder
+    kind?: SortOrder
     model?: SortOrder
     prompt?: SortOrder
     ratio?: SortOrder
@@ -16608,6 +16682,16 @@ export namespace Prisma {
     creditCost?: SortOrder
     attempts?: SortOrder
     imageId?: SortOrder
+  }
+
+  export type EnumImageJobKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobKind | EnumImageJobKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobKind[]
+    notIn?: $Enums.ImageJobKind[]
+    not?: NestedEnumImageJobKindWithAggregatesFilter<$PrismaModel> | $Enums.ImageJobKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumImageJobKindFilter<$PrismaModel>
+    _max?: NestedEnumImageJobKindFilter<$PrismaModel>
   }
   export type JsonNullableWithAggregatesFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -17618,6 +17702,10 @@ export namespace Prisma {
     connect?: GeneratedImageWhereUniqueInput
   }
 
+  export type EnumImageJobKindFieldUpdateOperationsInput = {
+    set?: $Enums.ImageJobKind
+  }
+
   export type EnumImageJobStatusFieldUpdateOperationsInput = {
     set?: $Enums.ImageJobStatus
   }
@@ -18120,11 +18208,28 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type NestedEnumImageJobKindFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobKind | EnumImageJobKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobKind[]
+    notIn?: $Enums.ImageJobKind[]
+    not?: NestedEnumImageJobKindFilter<$PrismaModel> | $Enums.ImageJobKind
+  }
+
   export type NestedEnumImageJobStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.ImageJobStatus | EnumImageJobStatusFieldRefInput<$PrismaModel>
     in?: $Enums.ImageJobStatus[]
     notIn?: $Enums.ImageJobStatus[]
     not?: NestedEnumImageJobStatusFilter<$PrismaModel> | $Enums.ImageJobStatus
+  }
+
+  export type NestedEnumImageJobKindWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ImageJobKind | EnumImageJobKindFieldRefInput<$PrismaModel>
+    in?: $Enums.ImageJobKind[]
+    notIn?: $Enums.ImageJobKind[]
+    not?: NestedEnumImageJobKindWithAggregatesFilter<$PrismaModel> | $Enums.ImageJobKind
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumImageJobKindFilter<$PrismaModel>
+    _max?: NestedEnumImageJobKindFilter<$PrismaModel>
   }
   export type NestedJsonNullableFilter<$PrismaModel = never> =
     | PatchUndefined<
@@ -18354,6 +18459,8 @@ export namespace Prisma {
   }
 
   export type ImageJobCreateWithoutUserInput = {
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -18375,6 +18482,8 @@ export namespace Prisma {
 
   export type ImageJobUncheckedCreateWithoutUserInput = {
     id?: number
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -18633,6 +18742,8 @@ export namespace Prisma {
     NOT?: ImageJobScalarWhereInput | ImageJobScalarWhereInput[]
     id?: IntFilter<"ImageJob"> | number
     userId?: IntFilter<"ImageJob"> | number
+    kind?: EnumImageJobKindFilter<"ImageJob"> | $Enums.ImageJobKind
+    inputs?: JsonNullableFilter<"ImageJob">
     model?: StringFilter<"ImageJob"> | string
     prompt?: StringFilter<"ImageJob"> | string
     ratio?: StringFilter<"ImageJob"> | string
@@ -19075,6 +19186,8 @@ export namespace Prisma {
   }
 
   export type ImageJobCreateWithoutImageInput = {
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -19097,6 +19210,8 @@ export namespace Prisma {
   export type ImageJobUncheckedCreateWithoutImageInput = {
     id?: number
     userId: number
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -19265,6 +19380,8 @@ export namespace Prisma {
   }
 
   export type ImageJobUpdateWithoutImageInput = {
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -19287,6 +19404,8 @@ export namespace Prisma {
   export type ImageJobUncheckedUpdateWithoutImageInput = {
     id?: IntFieldUpdateOperationsInput | number
     userId?: IntFieldUpdateOperationsInput | number
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -20530,6 +20649,8 @@ export namespace Prisma {
 
   export type ImageJobCreateManyUserInput = {
     id?: number
+    kind?: $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model: string
     prompt: string
     ratio: string
@@ -20716,6 +20837,8 @@ export namespace Prisma {
   }
 
   export type ImageJobUpdateWithoutUserInput = {
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -20737,6 +20860,8 @@ export namespace Prisma {
 
   export type ImageJobUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string
@@ -20758,6 +20883,8 @@ export namespace Prisma {
 
   export type ImageJobUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
+    kind?: EnumImageJobKindFieldUpdateOperationsInput | $Enums.ImageJobKind
+    inputs?: NullableJsonNullValueInput | InputJsonValue
     model?: StringFieldUpdateOperationsInput | string
     prompt?: StringFieldUpdateOperationsInput | string
     ratio?: StringFieldUpdateOperationsInput | string

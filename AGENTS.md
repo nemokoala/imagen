@@ -52,7 +52,7 @@ AI 이미지 생성 플랫폼. 다중 AI 모델 지원, 소셜 기능(좋아요/
 
 ## 로컬 모델 생성 대기열
 
-- 집 AI 서버(ComfyUI: Z-Image·Qwen, A1111: Stable Diffusion XL)는 늘 켜져 있지 않다. 로컬 모델 생성 요청은 `ImageJob` 테이블에 접수하고(`POST /api/generate-image` → 202), 워커가 서버가 켜지면 `id` 순서대로 처리한다.
+- 집 AI 서버(ComfyUI: Z-Image·Qwen, A1111: Stable Diffusion XL)는 늘 켜져 있지 않다. 로컬 모델의 생성(`POST /api/generate-image`)과 Qwen 편집(`POST /api/edit-image`)은 모두 `ImageJob` 테이블에 접수하고(202, `kind`가 `GENERATE`·`EDIT`), 워커가 서버가 켜지면 `id` 순서대로 한 건씩 처리한다. 워커 하나가 직렬로 돌기 때문에 GPU를 동시에 쓰지 않는다.
 - 코드는 `lib/services/image/jobs/`에 있다.
   - `imageJobService`: 접수·조회·취소·환불
   - `imageJobWorker`: 처리 루프. `instrumentation.ts`에서 시작한다.
@@ -60,6 +60,7 @@ AI 이미지 생성 플랫폼. 다중 AI 모델 지원, 소셜 기능(좋아요/
   - `comfyClient`: ComfyUI 제출과 결과 대기
   - `localServer`: 에러 분류와 `localFetch`
   - `localHealth`: 서버 상태 캐시
+  - `jobInputs`: 편집 입력 이미지 저장·읽기·삭제
 - 크레딧은 접수할 때 먼저 차감하고, 실패·취소·만료 때 상태 변경과 같은 트랜잭션에서 돌려준다. 로컬 모델 경로에서 `updateUserCredit`을 다시 부르지 않는다.
 - AI 서버 호출은 `localFetch`·`readLocalJson`·`readLocalBuffer`로 한다.
   - 서버에 닿지 않으면 `LocalServerUnavailableError`다. 작업을 대기열로 되돌린다.
@@ -67,7 +68,11 @@ AI 이미지 생성 플랫폼. 다중 AI 모델 지원, 소셜 기능(좋아요/
 - ComfyUI `prompt_id`는 `externalId`에 저장해 두고, 재시작 뒤에는 다시 제출하지 않고 이어서 기다린다. 작업 완료는 가져갈 때 늘린 `attempts`(펜싱 토큰)가 그대로일 때만 기록된다.
 - 워커는 프로세스 하나에서만 돈다는 전제다(PM2 fork 1개). 같은 DB를 보는 프로세스가 더 있으면 하나만 남기고 나머지는 `IMAGE_JOB_WORKER_ENABLED=false`로 끈다.
 - 실패·취소·만료 기록은 지우지 않는다. 별도 크레딧 거래 테이블이 없어서 환불했다는 근거가 이 기록뿐이다.
-- 편집(`/api/edit-image`)은 아직 대기열을 쓰지 않고 서버가 켜져 있을 때만 받는다. 대신 `localImageQueue.runExclusive`로 워커와 GPU 차례를 공유한다.
+- 편집 입력(원본·참고·마스크)은 접수할 때 `UPLOAD_PATH/job-inputs/<uuid>/`에 저장하고 `ImageJob.inputs`에 파일 이름만 둔다. 배포 때 앱 폴더가 바뀌므로 생성 이미지와 같은 `UPLOAD_PATH` 아래에 둔다.
+  - 작업이 끝나면(완성·실패·취소·만료) 입력 파일을 지운다. 대기열로 되돌릴 때는 남긴다. 지우지 못하고 남은 폴더는 워커가 한 시간마다 정리한다.
+  - `ImageJob.model`은 `Qwen-Image-2.1` 그대로 둔다. 갤러리에 저장하는 이미지 모델명만 `Qwen-Image-2.1-Edit`다. 작업 모델을 바꾸면 헬스체크·크레딧·모델 켜짐 확인이 모두 빗나간다.
+  - 지시문 번역과 ComfyUI 업로드는 AI 서버가 켜져 있어야 하므로 실행할 때 한다. `<imageN>` 슬롯 검증처럼 사용자가 고칠 수 있는 오류는 접수할 때 막는다.
+- `/api/uploads/[...path]`는 `images/`·`profiles/` 안의 파일만 내보낸다. 새 공개 폴더가 필요하면 `SERVED_DIRS`에 추가하고, 내부용 파일은 그 밖에 둔다.
 - 환경 변수(모두 선택)는 다음과 같다.
 
 | 변수 | 기본값 |

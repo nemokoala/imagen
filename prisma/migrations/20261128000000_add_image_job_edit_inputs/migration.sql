@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE `ImageJob` ADD COLUMN `inputs` JSON NULL,
+    ADD COLUMN `kind` ENUM('GENERATE', 'EDIT') NOT NULL DEFAULT 'GENERATE';
+

@@ -1,5 +1,7 @@
+import { randomUUID } from "crypto";
 import { readFile } from "fs/promises";
 import { join } from "path";
+import type { EditUpload } from "./jobInputs";
 import {
   GenerationFailedError,
   LocalServerUnavailableError,
@@ -8,7 +10,10 @@ import {
   readLocalJson,
 } from "./localServer";
 
-export type ComfyWorkflow = Record<string, { inputs: Record<string, unknown> }>;
+export type ComfyWorkflow = Record<
+  string,
+  { class_type?: string; inputs: Record<string, unknown> }
+>;
 
 interface ComfyImageRef {
   filename: string;
@@ -64,6 +69,30 @@ export async function loadWorkflow(fileName: string): Promise<ComfyWorkflow> {
 }
 
 export const randomSeed = () => Math.floor(Math.random() * 2 ** 48);
+
+/** 편집 입력 이미지를 ComfyUI input 폴더에 올리고, 워크플로에서 쓸 파일 이름을 돌려준다. */
+export async function uploadComfyImage(comfyUrl: string, image: EditUpload): Promise<string> {
+  const extension = image.mimeType === "image/jpeg" ? "jpg" : image.mimeType.split("/")[1];
+  const form = new FormData();
+  form.append(
+    "image",
+    new Blob([new Uint8Array(image.data)], { type: image.mimeType }),
+    `imagegen-edit-${randomUUID()}.${extension}`,
+  );
+  form.append("type", "input");
+
+  const response = await localFetch(`${comfyUrl}/upload/image`, {
+    method: "POST",
+    body: form,
+    timeoutMs: 60_000,
+  });
+  const result = await readLocalJson<{ name?: unknown }>(response);
+  if (!response.ok || typeof result.name !== "string") {
+    console.error("[comfy] 이미지 업로드 거부:", response.status, result);
+    throw new GenerationFailedError("AI 서버에 편집할 이미지를 올리지 못했습니다.");
+  }
+  return result.name;
+}
 
 async function submit(
   comfyUrl: string,

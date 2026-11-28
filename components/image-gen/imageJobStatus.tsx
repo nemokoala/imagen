@@ -2,10 +2,18 @@ import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 import { Ban, CheckCircle2, Clock, Loader2, PowerOff, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
+import { Model } from "@/types/model.interfaces";
 import type { ImageJob, ImageJobStatus } from "@/types/imageJob.interfaces";
 
 export const isActiveImageJob = (job: ImageJob) =>
   job.status === "PENDING" || job.status === "RUNNING";
+
+/** 목록에 보일 모델 이름. 편집 요청은 뒤에 "편집"을 붙인다. */
+export function imageJobModelLabel(job: ImageJob): string {
+  const label = MODEL_CREDIT_SETTINGS[job.model as Model]?.label ?? job.model;
+  return job.kind === "EDIT" ? `${label} 편집` : label;
+}
 
 export const IMAGE_JOB_STATUS_LABEL: Record<ImageJobStatus, string> = {
   PENDING: "대기",
@@ -20,7 +28,9 @@ export const IMAGE_JOB_STATUS_LABEL: Record<ImageJobStatus, string> = {
 export function describeImageJob(job: ImageJob): string {
   switch (job.status) {
     case "PENDING":
-      if (job.waitingForServer) return "AI 서버가 켜지면 자동으로 생성돼요";
+      if (job.waitingForServer) {
+        return `AI 서버가 켜지면 자동으로 ${job.kind === "EDIT" ? "편집" : "생성"}돼요`;
+      }
       return job.position ? `앞에 ${job.position}개 작업이 있어요` : "곧 시작해요";
     case "RUNNING":
       return job.progress ?? "생성 중이에요";

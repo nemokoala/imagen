@@ -12,8 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
-import { Model } from "@/types/model.interfaces";
 import type {
   ImageJob,
   ImageJobHistoryFilter,
@@ -27,6 +25,7 @@ import {
   IMAGE_JOB_STATUS_LABEL,
   ImageJobStatusIcon,
   describeImageJob,
+  imageJobModelLabel,
 } from "@/components/image-gen/imageJobStatus";
 
 const FILTERS: {
@@ -87,7 +86,7 @@ function JobRow({ job }: { job: ImageJob }) {
             >
               {IMAGE_JOB_STATUS_LABEL[job.status]}
             </span>
-            <span>{MODEL_CREDIT_SETTINGS[job.model as Model]?.label ?? job.model}</span>
+            <span>{imageJobModelLabel(job)}</span>
             <span aria-hidden>·</span>
             <span>
               {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true, locale: ko })} 요청

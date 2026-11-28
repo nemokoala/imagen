@@ -3,8 +3,8 @@ import { isLocalModel, type LocalModel } from "@/constants/model.constants";
 import { ImageRatio } from "@/types/image.interfaces";
 import { creditSettingsService } from "../../admin/creditSettingsService";
 import { discordService } from "../../logs/logService";
-import { localImageQueue } from "../localImageQueue";
 import { StaleImageJobError, imageJobService } from "./imageJobService";
+import { sweepOrphanEditInputs } from "./jobInputs";
 import { checkLocalModelHealth, markLocalModelUnavailable } from "./localHealth";
 import { runLocalModel } from "./localRunners";
 import { GenerationFailedError, LocalServerUnavailableError } from "./localServer";
@@ -16,6 +16,9 @@ const OFFLINE_MIN_DELAY_MS = 15_000;
 const OFFLINE_MAX_DELAY_MS = 60_000;
 const STALE_RUNNING_MS = 15 * 60_000;
 const HEARTBEAT_MS = 60_000;
+// 삭제에 실패했거나 접수 도중 끊겨 남은 편집 입력 폴더를 한 시간마다 정리한다.
+const SWEEP_INTERVAL_MS = 60 * 60_000;
+const ORPHAN_MIN_AGE_MS = 60 * 60_000;
 const MAX_ATTEMPTS =
   Number(process.env.IMAGE_JOB_MAX_ATTEMPTS) > 0
     ? Number(process.env.IMAGE_JOB_MAX_ATTEMPTS)
@@ -27,6 +30,7 @@ class ImageJobWorker {
   private wakeRequested = false;
   private timer: NodeJS.Timeout | undefined;
   private offlineStreak = 0;
+  private lastSweepAt = 0;
 
   start() {
     if (this.started) return;
@@ -78,6 +82,14 @@ class ImageJobWorker {
   private async step(): Promise<number> {
     await imageJobService.expireOverdue();
     await imageJobService.recoverStale(STALE_RUNNING_MS);
+    if (Date.now() - this.lastSweepAt >= SWEEP_INTERVAL_MS) {
+      this.lastSweepAt = Date.now();
+      const removed = await sweepOrphanEditInputs(
+        await imageJobService.activeInputDirs(),
+        ORPHAN_MIN_AGE_MS,
+      );
+      if (removed > 0) console.log(`[image-job] 남은 편집 입력 폴더 ${removed}개 정리`);
+    }
 
     const models = (await imageJobService.pendingModels()).filter(isLocalModel);
     if (models.length === 0) {
@@ -105,14 +117,11 @@ class ImageJobWorker {
     }
     this.offlineStreak = 0;
 
-    // GPU 차례를 먼저 받고 나서 작업을 가져간다. 편집이 GPU를 쓰는 동안 작업이 RUNNING으로 묶이지 않게 한다.
-    const ran = await localImageQueue.runExclusive(async () => {
-      const job = await imageJobService.claimNext(online);
-      if (!job) return false;
-      await this.run(job);
-      return true;
-    });
-    return ran ? 0 : OFFLINE_MIN_DELAY_MS;
+    // 생성과 편집이 모두 이 워커 하나로 한 건씩 돌기 때문에 GPU를 동시에 쓰지 않는다.
+    const job = await imageJobService.claimNext(online);
+    if (!job) return OFFLINE_MIN_DELAY_MS;
+    await this.run(job);
+    return 0;
   }
 
   private async run(job: ImageJob) {
@@ -135,7 +144,13 @@ class ImageJobWorker {
     let lastWriteAt = Date.now();
     try {
       const result = await runLocalModel(
-        { model, prompt: job.prompt, ratio: job.ratio as ImageRatio },
+        {
+          kind: job.kind,
+          model,
+          prompt: job.prompt,
+          ratio: job.ratio as ImageRatio,
+          inputs: job.inputs,
+        },
         {
           externalId: job.externalId,
           onSubmitted: (externalId) => imageJobService.setExternalId(job, externalId),
@@ -152,7 +167,7 @@ class ImageJobWorker {
       const image = await imageJobService.complete(job, result);
       console.log(`[image-job] #${job.id} 완료 (시도 ${job.attempts}회)`);
       discordService.sendLog(
-        `대기열 이미지 생성 성공 #${job.id}: ${process.env.NEXT_PUBLIC_BASE_URL}${image.imageUrl}`,
+        `대기열 이미지 ${job.kind === "EDIT" ? "편집" : "생성"} 성공 #${job.id}: ${process.env.NEXT_PUBLIC_BASE_URL}${image.imageUrl}`,
       );
     } catch (error) {
       if (error instanceof StaleImageJobError) {

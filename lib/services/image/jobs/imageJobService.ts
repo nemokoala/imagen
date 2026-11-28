@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import {
+  ImageJobKind,
   ImageJobStatus,
   NotificationType,
   type ImageJob,
@@ -17,6 +18,13 @@ import type {
 import { creditSettingsService } from "../../admin/creditSettingsService";
 import { notificationService } from "../../notification/notificationService";
 import { imageGenerationService } from "../imageGenerationService";
+import {
+  deleteEditInputs,
+  parseEditInputs,
+  saveEditInputs,
+  type EditJobInputs,
+  type EditUploads,
+} from "./jobInputs";
 import { checkLocalModelHealth, getCachedLocalModelHealth } from "./localHealth";
 import type { LocalRunResult } from "./localRunners";
 
@@ -87,6 +95,7 @@ function toDto(job: JobWithImage, position: number | null): ImageJobDto {
 
   return {
     id: job.id,
+    kind: job.kind,
     model: job.model,
     prompt: job.prompt,
     ratio: job.ratio as ImageRatio,
@@ -127,7 +136,7 @@ async function closeWithRefund(
   status: ImageJobStatus,
   reason: string,
 ): Promise<boolean> {
-  return prisma.$transaction(async (tx) => {
+  const closed = await prisma.$transaction(async (tx) => {
     const { count } = await tx.imageJob.updateMany({
       where: { ...where, id: job.id },
       data: {
@@ -145,6 +154,90 @@ async function closeWithRefund(
     });
     return true;
   });
+  // 끝난 작업은 다시 실행되지 않으므로 편집 입력 파일을 지운다.
+  if (closed) await deleteEditInputs(job.inputs);
+  return closed;
+}
+
+const isEdit = (job: ImageJob) => job.kind === ImageJobKind.EDIT;
+
+// Prisma JSON 컬럼은 인터페이스 타입을 받지 않으므로 같은 모양의 평범한 객체로 옮긴다.
+const toJsonInputs = (inputs: EditJobInputs): Prisma.InputJsonObject => ({
+  dir: inputs.dir,
+  source: { ...inputs.source },
+  references: inputs.references.map((reference) => ({ ...reference })),
+  ...(inputs.mask ? { mask: { ...inputs.mask } } : {}),
+});
+
+interface CreateJobParams {
+  userId: number;
+  kind: ImageJobKind;
+  model: LocalModel;
+  prompt: string;
+  ratio: ImageRatio;
+  categorySlugs?: string[];
+  inputs?: EditJobInputs;
+}
+
+/** 한도 확인 → 크레딧 선차감 → 작업 생성. 생성과 편집 접수가 함께 쓴다. */
+async function createJob(params: CreateJobParams): Promise<ImageJobDto> {
+  const { userId, kind, model, prompt, ratio, categorySlugs = [], inputs } = params;
+
+  const [userActive, totalActive] = await Promise.all([
+    prisma.imageJob.count({
+      where: { userId, status: { in: ACTIVE_STATUSES } },
+    }),
+    prisma.imageJob.count({ where: { status: { in: ACTIVE_STATUSES } } }),
+  ]);
+  if (userActive >= MAX_ACTIVE_PER_USER) {
+    throw new ApiError(
+      `대기 중인 작업은 ${MAX_ACTIVE_PER_USER}개까지 둘 수 있습니다. 앞선 작업이 끝난 뒤 다시 시도해주세요.`,
+      429,
+      "IMAGE_JOB_USER_LIMIT",
+    );
+  }
+  if (totalActive >= MAX_ACTIVE_TOTAL) {
+    throw new ApiError(
+      "생성 대기열이 가득 찼습니다. 잠시 후 다시 시도해주세요.",
+      429,
+      "IMAGE_JOB_QUEUE_FULL",
+    );
+  }
+
+  const settings = await creditSettingsService.getCreditSettings();
+  const creditCost = settings[MODEL_CREDIT_SETTINGS[model].creditKey];
+  const serverOnline = await checkLocalModelHealth(model, ENQUEUE_HEALTH_MAX_AGE_MS);
+
+  // 크레딧을 먼저 잡아 둔다. 잔액 확인과 차감이 한 문장이라 동시 요청에도 음수가 되지 않는다.
+  const job = await prisma.$transaction(async (tx) => {
+    const { count } = await tx.user.updateMany({
+      where: { id: userId, credits: { gte: creditCost } },
+      data: { credits: { decrement: creditCost } },
+    });
+    if (count !== 1) {
+      throw new ApiError("크레딧이 부족합니다.", 400, "INSUFFICIENT_CREDITS");
+    }
+
+    return tx.imageJob.create({
+      data: {
+        userId,
+        kind,
+        model,
+        prompt,
+        ratio,
+        categorySlugs: categorySlugs.length ? categorySlugs : undefined,
+        inputs: inputs ? toJsonInputs(inputs) : undefined,
+        creditCost,
+        notifyOnFinish: !serverOnline,
+        expiresAt: new Date(Date.now() + IMAGE_JOB_TTL_HOURS * 60 * 60_000),
+      },
+    });
+  });
+
+  const ahead = await prisma.imageJob.count({
+    where: { status: { in: ACTIVE_STATUSES }, id: { lt: job.id } },
+  });
+  return toDto({ ...job, image: null }, ahead);
 }
 
 async function notify(
@@ -173,66 +266,39 @@ export const imageJobService = {
     ratio: ImageRatio;
     categorySlugs: unknown;
   }): Promise<ImageJobDto> {
-    const { userId, model, prompt, ratio } = input;
     const categorySlugs = Array.isArray(input.categorySlugs)
       ? input.categorySlugs
           .filter((slug): slug is string => typeof slug === "string")
           .slice(0, MAX_CATEGORY_SLUGS)
       : [];
+    return createJob({ ...input, kind: ImageJobKind.GENERATE, categorySlugs });
+  },
 
-    const [userActive, totalActive] = await Promise.all([
-      prisma.imageJob.count({
-        where: { userId, status: { in: ACTIVE_STATUSES } },
-      }),
-      prisma.imageJob.count({ where: { status: { in: ACTIVE_STATUSES } } }),
-    ]);
-    if (userActive >= MAX_ACTIVE_PER_USER) {
-      throw new ApiError(
-        `대기 중인 작업은 ${MAX_ACTIVE_PER_USER}개까지 둘 수 있습니다. 앞선 작업이 끝난 뒤 다시 시도해주세요.`,
-        429,
-        "IMAGE_JOB_USER_LIMIT",
-      );
-    }
-    if (totalActive >= MAX_ACTIVE_TOTAL) {
-      throw new ApiError(
-        "생성 대기열이 가득 찼습니다. 잠시 후 다시 시도해주세요.",
-        429,
-        "IMAGE_JOB_QUEUE_FULL",
-      );
-    }
-
-    const settings = await creditSettingsService.getCreditSettings();
-    const creditCost = settings[MODEL_CREDIT_SETTINGS[model].creditKey];
-    const serverOnline = await checkLocalModelHealth(model, ENQUEUE_HEALTH_MAX_AGE_MS);
-
-    // 크레딧을 먼저 잡아 둔다. 잔액 확인과 차감이 한 문장이라 동시 요청에도 음수가 되지 않는다.
-    const job = await prisma.$transaction(async (tx) => {
-      const { count } = await tx.user.updateMany({
-        where: { id: userId, credits: { gte: creditCost } },
-        data: { credits: { decrement: creditCost } },
+  /**
+   * 편집 접수. 입력 이미지를 먼저 디스크에 저장하고, 크레딧이 부족하거나 한도에 걸려
+   * 작업을 만들지 못하면 저장한 파일을 지운다.
+   */
+  async enqueueEdit(input: {
+    userId: number;
+    model: LocalModel;
+    prompt: string;
+    uploads: EditUploads;
+  }): Promise<ImageJobDto> {
+    const inputs = await saveEditInputs(input.uploads);
+    try {
+      return await createJob({
+        userId: input.userId,
+        kind: ImageJobKind.EDIT,
+        model: input.model,
+        prompt: input.prompt,
+        // 편집 결과 비율은 원본을 따른다. 실제 비율은 완료할 때 결과 이미지로 정한다.
+        ratio: ImageRatio.RATIO_1_1,
+        inputs,
       });
-      if (count !== 1) {
-        throw new ApiError("크레딧이 부족합니다.", 400, "INSUFFICIENT_CREDITS");
-      }
-
-      return tx.imageJob.create({
-        data: {
-          userId,
-          model,
-          prompt,
-          ratio,
-          categorySlugs: categorySlugs.length ? categorySlugs : undefined,
-          creditCost,
-          notifyOnFinish: !serverOnline,
-          expiresAt: new Date(Date.now() + IMAGE_JOB_TTL_HOURS * 60 * 60_000),
-        },
-      });
-    });
-
-    const ahead = await prisma.imageJob.count({
-      where: { status: { in: ACTIVE_STATUSES }, id: { lt: job.id } },
-    });
-    return toDto({ ...job, image: null }, ahead);
+    } catch (error) {
+      await deleteEditInputs(inputs);
+      throw error;
+    }
   },
 
   async listForUser(userId: number): Promise<ImageJobDto[]> {
@@ -414,9 +480,9 @@ export const imageJobService = {
           prompt: job.prompt,
           translatedPrompt: result.translatedPrompt,
           imageUrl,
-          model: job.model,
+          model: result.model ?? job.model,
           size: result.size,
-          ratio: job.ratio,
+          ratio: result.ratio ?? job.ratio,
           ...(categories.length ? { categories: { connect: categories } } : {}),
         },
       });
@@ -435,8 +501,14 @@ export const imageJobService = {
       return image;
     });
 
+    await deleteEditInputs(job.inputs);
     if (job.notifyOnFinish) {
-      await notify(job, NotificationType.GENERATION_DONE, "예약한 이미지가 완성됐어요.", image.id);
+      await notify(
+        job,
+        NotificationType.GENERATION_DONE,
+        isEdit(job) ? "예약한 이미지 편집이 끝났어요." : "예약한 이미지가 완성됐어요.",
+        image.id,
+      );
     }
     return image;
   },
@@ -447,7 +519,7 @@ export const imageJobService = {
       await notify(
         job,
         NotificationType.GENERATION_FAILED,
-        `예약한 이미지를 만들지 못했어요. ${job.creditCost} 크레딧을 돌려드렸어요.`,
+        `예약한 이미지${isEdit(job) ? " 편집을 하지" : "를 만들지"} 못했어요. ${job.creditCost} 크레딧을 돌려드렸어요.`,
       );
     }
   },
@@ -501,6 +573,19 @@ export const imageJobService = {
    * 프로세스가 뜰 때 RUNNING으로 남은 작업을 되돌린다(배포·재시작으로 끊긴 작업).
    * 워커는 프로세스 하나에서만 돈다는 전제다. 혹시 이전 프로세스가 살아 있어도 펜싱 토큰 때문에 결과를 덮어쓰지 못한다.
    */
+  /** 진행 중인 편집 작업이 쓰는 입력 폴더. 이 밖의 폴더는 정리 대상이다. */
+  async activeInputDirs(): Promise<Set<string>> {
+    const rows = await prisma.imageJob.findMany({
+      where: { status: { in: ACTIVE_STATUSES }, kind: ImageJobKind.EDIT },
+      select: { inputs: true },
+    });
+    return new Set(
+      rows
+        .map((row) => parseEditInputs(row.inputs)?.dir)
+        .filter((dir): dir is string => dir !== undefined),
+    );
+  },
+
   async recoverInterrupted(): Promise<number> {
     const { count } = await prisma.imageJob.updateMany({
       where: { status: ImageJobStatus.RUNNING },

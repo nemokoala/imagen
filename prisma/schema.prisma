@@ -110,11 +110,19 @@ enum ImageJobStatus {
   EXPIRED
 }
 
+enum ImageJobKind {
+  GENERATE
+  EDIT
+}
+
 // 로컬 모델(ComfyUI·A1111) 생성 대기열. AI 서버가 꺼져 있어도 접수해 두고 켜지면 순서대로 처리한다.
 model ImageJob {
   id             Int             @id @default(autoincrement()) // 처리 순서(FIFO) 기준
   userId         Int
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind           ImageJobKind    @default(GENERATE)
+  // 편집 입력 파일(원본·참고·마스크)이 있는 UPLOAD_PATH/job-inputs/<폴더> 정보. 작업이 끝나면 파일은 지운다.
+  inputs         Json?
   model          String
   prompt         String          @db.Text
   ratio          String

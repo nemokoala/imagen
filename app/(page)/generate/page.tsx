@@ -28,10 +28,10 @@ import {
 import { CategorySelect } from "@/components/image-gen/CategorySelect";
 import { Model } from "@/types/model.interfaces";
 import { ImageRatio } from "@/types/image.interfaces";
+import type { ImageJob } from "@/types/imageJob.interfaces";
 import { MODEL_RATIO_CONFIG, isLocalModel } from "@/constants/model.constants";
 import { MODEL_CREDIT_SETTINGS } from "@/constants/credit.constants";
 import { cn, downloadImage } from "@/lib/utils";
-import { FetchUtil } from "@/lib/Fetch.util";
 import { useSuggestCategories } from "@/queries/category/mutations";
 import Link from "next/link";
 import { useScrollStore } from "@/stores/scrollStore";
@@ -41,6 +41,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GenerationLoader } from "@/components/image-gen/GenerationLoader";
 import { ImageJobQueue } from "@/components/image-gen/ImageJobQueue";
 import {
+  useEnqueueEditJobMutation,
   useEnqueueImageJobMutation,
   useImageJobsQuery,
 } from "@/queries/image/jobs";
@@ -62,10 +63,6 @@ export default function ImageGenPage() {
   const [prompt, setPrompt] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageId, setImageId] = useState<number | null>(null);
-  const [generationProgress, setGenerationProgress] = useState<string | null>(
-    null,
-  );
-  const [isStreaming, setIsStreaming] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [ratio, setRatio] = useState<ImageRatio>(ImageRatio.RATIO_1_1);
   const [displayRatio, setDisplayRatio] = useState<ImageRatio>(
@@ -183,7 +180,6 @@ export default function ImageGenPage() {
     setImageUrl(result.imageUrl);
     setImageId(result.id);
     setDisplayRatio(result.ratio ?? ratio);
-    setGenerationProgress(null);
     toast.success(mode === "edit" ? "이미지 편집 완료!" : "이미지 생성 완료!", {
       description:
         mode === "edit"
@@ -212,97 +208,27 @@ export default function ImageGenPage() {
       },
     );
 
-  // 편집은 서버가 켜져 있을 때만 받으므로 지금처럼 스트림으로 진행 상황을 받는다.
-  const handleEditStream = async (editForm: FormData) => {
-    try {
-      setIsStreaming(true);
-      setResultMode("edit");
-      setGenerationProgress("연결 중...");
-      setImageUrl(null);
-      setImageId(null);
-
-      const response = await FetchUtil.postRaw("/api/edit-image", editForm);
-
-      if (!response.ok) {
-        let message = `HTTP error! status: ${response.status}`;
-
-        try {
-          const errorData = await response.json();
-          message = errorData.message || message;
-        } catch {
-          // Ignore non-JSON error responses.
-        }
-
-        throw new Error(message);
-      }
-
-      if (!response.body) {
-        throw new Error("Response body is empty");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-        buffer += chunk;
-
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() || ""; // Incomplete line remains in buffer
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            const dataStr = line.slice(6);
-            try {
-              const data = JSON.parse(dataStr);
-
-              if (data.status === "progress") {
-                setGenerationProgress(data.message);
-              } else if (data.status === "complete") {
-                showResult(data, "edit");
-              } else if (data.status === "error" || data.status === "fail") {
-                toast.error(
-                  data.message || "이미지 생성 중 오류가 발생했습니다.",
-                );
-                return;
-              }
-            } catch (e) {
-              console.error("JSON parse error", e);
-            }
-          }
-        }
-      }
-    } catch (error: unknown) {
-      toast.error(
-        (error as Error)?.message || "이미지 생성 중 오류가 발생했습니다.",
-      );
-      setGenerationProgress(null);
-    } finally {
-      setIsStreaming(false);
-      setGenerationProgress(null);
-    }
-  };
-
-  // 로컬 모델: 대기열에 접수하고, 서버가 켜져 있으면 이 화면에서 끝까지 따라간다.
+  // 로컬 모델의 생성·편집은 대기열에 접수하고, 서버가 켜져 있으면 이 화면에서 끝까지 따라간다.
   const { mutateAsync: enqueueImageJob, isPending: isEnqueuing } =
     useEnqueueImageJobMutation();
+  const { mutateAsync: enqueueEditJob, isPending: isEnqueuingEdit } =
+    useEnqueueEditJobMutation();
   const { data: imageJobs } = useImageJobsQuery();
   const [trackedJobId, setTrackedJobId] = useState<number | null>(null);
   const trackedJob = imageJobs?.find((job) => job.id === trackedJobId);
 
-  const handleQueueGenerate = async (categories: string[]) => {
-    setResultMode("generate");
+  const enqueueAndTrack = async (
+    mode: "generate" | "edit",
+    enqueue: () => Promise<ImageJob>,
+  ) => {
+    setResultMode(mode);
     setImageUrl(null);
     setImageId(null);
     try {
-      const job = await enqueueImageJob({ prompt, model, ratio, categories });
+      const job = await enqueue();
       if (job.waitingForServer) {
         toast.info("AI 서버가 꺼져 있어 대기열에 넣었어요", {
-          description: "서버가 켜지면 순서대로 생성하고 알림으로 알려드려요.",
+          description: "서버가 켜지면 순서대로 처리하고 알림으로 알려드려요.",
         });
       } else {
         setTrackedJobId(job.id);
@@ -312,26 +238,36 @@ export default function ImageGenPage() {
     }
   };
 
+  const handleQueueGenerate = (categories: string[]) =>
+    enqueueAndTrack("generate", () =>
+      enqueueImageJob({ prompt, model, ratio, categories }),
+    );
+
   // 따라가던 작업이 끝나면 결과를 보여준다. 도중에 서버가 꺼지면 대기열에 맡기고 화면을 풀어 준다.
   useEffect(() => {
     if (!trackedJob) return;
+    const mode = trackedJob.kind === "EDIT" ? "edit" : "generate";
     if (trackedJob.status === "SUCCEEDED" && trackedJob.image) {
       setTrackedJobId(null);
-      showResult(trackedJob.image, "generate");
+      showResult(trackedJob.image, mode);
     } else if (
       trackedJob.status === "FAILED" ||
       trackedJob.status === "EXPIRED" ||
       trackedJob.status === "CANCELED"
     ) {
       setTrackedJobId(null);
-      toast.error(trackedJob.error ?? "이미지를 생성하지 못했습니다.", {
-        description: `${trackedJob.creditCost} 크레딧을 돌려드렸어요.`,
-      });
+      toast.error(
+        trackedJob.error ??
+          (mode === "edit" ? "이미지를 편집하지 못했습니다." : "이미지를 생성하지 못했습니다."),
+        {
+          description: `${trackedJob.creditCost} 크레딧을 돌려드렸어요.`,
+        },
+      );
       queryClient.invalidateQueries({ queryKey: ["credit"] });
     } else if (trackedJob.status === "PENDING" && trackedJob.waitingForServer) {
       setTrackedJobId(null);
       toast.info("AI 서버가 꺼져 대기열에 맡겼어요", {
-        description: "서버가 켜지면 이어서 생성하고 알림으로 알려드려요.",
+        description: "서버가 켜지면 이어서 처리하고 알림으로 알려드려요.",
       });
     }
     // 끝난 작업은 바로 추적을 풀므로 폴링으로 다시 불려도 결과를 한 번만 보여준다.
@@ -342,7 +278,7 @@ export default function ImageGenPage() {
       ? trackedJob.progress
       : trackedJob?.position
         ? `대기열에서 앞의 ${trackedJob.position}개 작업을 기다리는 중입니다...`
-        : "곧 생성을 시작합니다..."
+        : "곧 시작합니다..."
     : null;
 
   const handleGenerate = async () => {
@@ -418,10 +354,9 @@ export default function ImageGenPage() {
   }, [prompt, selectedCategories]);
 
   const isPending =
-    isMutationPending || isStreaming || isEnqueuing || trackedJobId !== null;
-  const handleImageEdit = async (form: FormData) => {
-    await handleEditStream(form);
-  };
+    isMutationPending || isEnqueuing || isEnqueuingEdit || trackedJobId !== null;
+  const handleImageEdit = (form: FormData) =>
+    enqueueAndTrack("edit", () => enqueueEditJob(form));
   const isGenerateDisabled =
     isPending ||
     isSuggestingCategories ||
@@ -640,9 +575,9 @@ export default function ImageGenPage() {
             <TabsContent value="edit" className="mt-0 flex min-h-0 flex-col">
               <ImageEditForm
                 isPending={isPending}
-                isAvailable={
-                  qwenHealthCheck?.healthy === true &&
-                  isCreditModelEnabled(Model.QWEN_IMAGE_21)
+                isAvailable={isCreditModelEnabled(Model.QWEN_IMAGE_21)}
+                isOffline={
+                  !isQwenHealthCheckLoading && qwenHealthCheck?.healthy !== true
                 }
                 creditCost={creditSettings?.qwenImage21}
                 onSubmit={handleImageEdit}
@@ -703,7 +638,7 @@ export default function ImageGenPage() {
           <div className="flex items-center justify-center bg-muted/40 bg-[radial-gradient(circle,var(--color-border)_1px,transparent_1px)] bg-[length:20px_20px] p-4 [container-type:inline-size] md:p-6 lg:min-h-0 lg:flex-1 lg:p-8 lg:[container-type:size]">
             {isPending ? (
               <GenerationLoader
-                message={trackedJobMessage ?? generationProgress}
+                message={trackedJobMessage}
                 mode={resultMode}
                 className={frameClass}
                 style={frameStyle}
